@@ -2,9 +2,11 @@
 #include "GameObject.h"
 #include "Transform.h"
 
-namespace dae
+namespace rujin
 {
-	class Font;
+	//TODO: transform into component.
+
+	/*class Font;
 	class Texture2D;
 	class TextObject final : public GameObject
 	{
@@ -27,5 +29,5 @@ namespace dae
 		Transform m_Transform;
 		std::shared_ptr<Font> m_Font;
 		std::shared_ptr<Texture2D> m_TextTexture;
-	};
+	};*/
 }

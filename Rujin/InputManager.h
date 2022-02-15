@@ -2,7 +2,7 @@
 #include <XInput.h>
 #include "Singleton.h"
 
-namespace dae
+namespace rujin
 {
 	enum class ControllerButton
 	{
@@ -16,6 +16,7 @@ namespace dae
 	{
 	public:
 		bool ProcessInput();
+		bool IsPressed(ControllerButton button) const;
 		bool IsPressed(ControllerButton button) const;
 	private:
 		XINPUT_STATE m_CurrentState{};

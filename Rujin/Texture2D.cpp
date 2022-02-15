@@ -1,17 +1,16 @@
 #include "RujinPCH.h"
 #include "Texture2D.h"
 
-dae::Texture2D::~Texture2D()
+rujin::Texture2D::Texture2D(SDL_Texture* pTexture)
+	: m_pTexture(pTexture)
+{}
+
+rujin::Texture2D::~Texture2D()
 {
-	SDL_DestroyTexture(m_Texture);
+	SDL_DestroyTexture(m_pTexture);
 }
 
-SDL_Texture* dae::Texture2D::GetSDLTexture() const
+SDL_Texture* rujin::Texture2D::GetSDLTexture() const
 {
-	return m_Texture;
-}
-
-dae::Texture2D::Texture2D(SDL_Texture* texture)
-{
-	m_Texture = texture;
+	return m_pTexture;
 }

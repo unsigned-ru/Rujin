@@ -1,22 +1,45 @@
 #include "RujinPCH.h"
 #include "GameObject.h"
-#include "ResourceManager.h"
-#include "Renderer.h"
 
-dae::GameObject::~GameObject() = default;
-
-void dae::GameObject::Update(){}
-
-void dae::GameObject::FixedUpdate()
+void rujin::GameObject::Start()
 {
+	for (const std::shared_ptr<Component> component : m_Components)
+	{
+		component->Start();
+	}
 }
 
-
-void dae::GameObject::Render() const
+void rujin::GameObject::Update()
 {
+	for (const std::shared_ptr<Component> component : m_Components)
+	{
+		component->Update();
+	}
 }
 
-void dae::GameObject::SetPosition(float x, float y)
+void rujin::GameObject::FixedUpdate()
 {
-	m_Transform.SetPosition(x, y, 0.0f);
+	for (const std::shared_ptr<Component> component : m_Components)
+	{
+		component->FixedUpdate();
+	}
+}
+
+void rujin::GameObject::Render() const
+{
+	for (const std::shared_ptr<Component> component : m_Components)
+	{
+		component->Render();
+	}
+}
+
+void rujin::GameObject::SetPosition(const float x, const float y)
+{
+	m_Transform.SetPosition(x, y, 0.f);
+}
+
+void rujin::GameObject::SetParent(const std::weak_ptr<GameObject> parent)
+{
+	//TODO: maybe do a children check
+	m_Parent = parent;
 }

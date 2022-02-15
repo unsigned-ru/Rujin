@@ -1,5 +1,5 @@
 #pragma once
-namespace dae
+namespace rujin
 {
 	template <typename T>
 	class Singleton

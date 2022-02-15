@@ -1,35 +1,48 @@
 #include "RujinPCH.h"
 #include "Scene.h"
-#include "GameObject.h"
 
-using namespace dae;
+using namespace rujin;
 
 unsigned int Scene::m_IdCounter = 0;
 
-Scene::Scene(const std::string& name) : m_Name(name) {}
+Scene::Scene(const std::string& name)
+	: MonoBehaviour()
+	, m_Name(name)
+	, m_GameObjects()
+	, m_ActiveGameObjects()
+	, m_InactiveGameObjects()
+{}
 
 Scene::~Scene() = default;
 
-void Scene::Add(const std::shared_ptr<SceneObject>& object)
+
+void Scene::Start()
 {
-	m_Objects.push_back(object);
+	for (const auto& object : m_GameObjects)
+	{
+		object->Start();
+	}
 }
 
 void Scene::Update()
 {
-	for(auto& object : m_Objects)
+	for (const auto& object : m_GameObjects)
 	{
 		object->Update();
 	}
 }
 
-void dae::Scene::FixedUpdate()
+void rujin::Scene::FixedUpdate()
 {
+	for (const auto& object : m_GameObjects)
+	{
+		object->FixedUpdate();
+	}
 }
 
 void Scene::Render() const
 {
-	for (const auto& object : m_Objects)
+	for (const auto& object : m_GameObjects)
 	{
 		object->Render();
 	}

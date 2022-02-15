@@ -24,7 +24,7 @@ void PrintSDLVersion()
 		linked.major, linked.minor, linked.patch);
 }
 
-void dae::Rujin::Initialize()
+void rujin::Rujin::Initialize()
 {
 	PrintSDLVersion();
 	
@@ -52,7 +52,7 @@ void dae::Rujin::Initialize()
 /**
  * Code constructing the scene world starts here
  */
-void dae::Rujin::LoadGame() const
+void rujin::Rujin::LoadGame() const
 {
 	auto& scene = SceneManager::GetInstance().CreateScene("Demo");
 
@@ -71,7 +71,7 @@ void dae::Rujin::LoadGame() const
 	scene.Add(to);
 }
 
-void dae::Rujin::Cleanup()
+void rujin::Rujin::Cleanup()
 {
 	Renderer::GetInstance().Destroy();
 	SDL_DestroyWindow(m_Window);
@@ -79,7 +79,7 @@ void dae::Rujin::Cleanup()
 	SDL_Quit();
 }
 
-void dae::Rujin::Run()
+void rujin::Rujin::Run()
 {
 	Initialize();
 

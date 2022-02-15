@@ -1,11 +1,8 @@
 #pragma once
 
 struct _TTF_Font;
-namespace dae
+namespace rujin
 {
-	/**
-	 * Simple RAII wrapper for an _TTF_Font
-	 */
 	class Font
 	{
 	public:

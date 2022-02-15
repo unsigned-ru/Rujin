@@ -183,8 +183,10 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Component.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="MonoBehaviour.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Rujin.h" />
     <ClInclude Include="RujinPCH.h" />
@@ -198,10 +200,12 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Component.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MonoBehaviour.cpp" />
     <ClCompile Include="Rujin.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
