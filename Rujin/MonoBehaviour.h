@@ -1,5 +1,8 @@
 #pragma once
 
+//for-real we should fix our language...
+#define MonoBehavior MonoBehaviour
+
 class MonoBehaviour
 {
 public:
@@ -14,17 +17,16 @@ public:
 	virtual void Update() = 0;
 	virtual void FixedUpdate() = 0;
 	virtual void Render() const = 0;
-
-	virtual void Destroy();
+	virtual void Destroy() = 0;
 
 	void SetEnabled(const bool enabled);
 	void Enable();
 	void Disable();
 	bool IsEnabled() const;
 
-	virtual void OnEnable();
+	/*virtual void OnEnable();
 	virtual void OnDisable();
-	virtual void OnDestroy();
+	virtual void OnDestroy();*/
 
 protected:
 	bool m_IsEnabled = true;

@@ -17,7 +17,6 @@ namespace rujin
 	public:
 		bool ProcessInput();
 		bool IsPressed(ControllerButton button) const;
-		bool IsPressed(ControllerButton button) const;
 	private:
 		XINPUT_STATE m_CurrentState{};
 	};

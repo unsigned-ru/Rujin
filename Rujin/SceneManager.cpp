@@ -26,6 +26,7 @@ void rujin::SceneManager::FixedUpdate()
 	}
 }
 
+
 void rujin::SceneManager::Render() const
 {
 	for (const auto& scene : m_Scenes)

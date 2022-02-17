@@ -48,3 +48,13 @@ void Scene::Render() const
 	}
 }
 
+void Scene::Destroy()
+{
+}
+
+std::weak_ptr<GameObject> Scene::AddGameObject(const std::shared_ptr<GameObject> gameObject)
+{
+	m_GameObjects.push_back(gameObject);
+	return gameObject;
+}
+

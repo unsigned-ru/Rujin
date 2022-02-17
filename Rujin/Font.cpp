@@ -18,6 +18,11 @@ rujin::Font::~Font()
 	TTF_CloseFont(m_Font);
 }
 
+uint32_t rujin::Font::GetSize() const
+{
+	return m_Size;
+}
+
 
 TTF_Font* rujin::Font::GetFont() const {
 	return m_Font;

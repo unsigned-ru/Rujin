@@ -1,27 +1,35 @@
 #include "RujinPCH.h"
 #include "Component.h"
+#include "GameObject.h"
 
-Component::Component(const bool startEnabled)
+
+rujin::Component::Component(const std::weak_ptr<GameObject> gameObject)
 	: MonoBehaviour()
+	, m_GameObject(gameObject)
 {
 }
 
-void Component::Start()
+void rujin::Component::Start()
 {
-
 }
 
-void Component::Update()
+void rujin::Component::Update()
 {
-
 }
 
-void Component::FixedUpdate()
+void rujin::Component::FixedUpdate()
 {
-
 }
 
-void Component::Render() const
+void rujin::Component::Render() const
 {
+}
 
+void rujin::Component::Destroy()
+{
+}
+
+std::weak_ptr<rujin::GameObject> rujin::Component::GetGameObject() const
+{
+	return m_GameObject;
 }

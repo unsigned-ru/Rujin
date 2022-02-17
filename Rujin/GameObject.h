@@ -1,15 +1,16 @@
 #pragma once
 #include "Component.h"
-#include "Transform.h"
-
 #include "MonoBehaviour.h"
 
 namespace rujin
 {
-	class GameObject final : public MonoBehaviour
+	/**
+	 * \brief Uses shared_ptr only policy.
+	 * \note GameObjectFactory handles instantiation.
+	*/
+	class GameObject final : public MonoBehaviour, public std::enable_shared_from_this<GameObject>
 	{
 	public:
-		explicit GameObject() = default;
 		~GameObject() override = default;
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
@@ -20,29 +21,36 @@ namespace rujin
 		void Update() override;
 		void FixedUpdate() override;
 		void Render() const override;
+		void Destroy() override;
 
-		template<typename ComponentType>
+		template<typename ComponentType, typename = std::enable_if<std::is_base_of_v<Component, ComponentType>>>
 		std::weak_ptr<ComponentType> AddComponent()
 		{
-			if constexpr(!std::is_base_of<Component, ComponentType>())
-				throw std::invalid_argument(std::string("Template type argument does not derive from Component."));
-
-			auto& component = std::shared_ptr(new ComponentType());
+			auto component = std::make_shared<ComponentType>(weak_from_this());
 			m_Components.push_back(component);
 			return component;
 		}
 
-		template<typename ComponentType>
+		template<typename ComponentType, typename = std::enable_if<std::is_base_of_v<Component, ComponentType>>>
 		std::weak_ptr<ComponentType> GetComponent() const
 		{
-			//TODO: implement, ask Laurens lol
+			for (const auto& component : m_Components)
+				if (const auto result = std::dynamic_pointer_cast<ComponentType>(component); result != nullptr)
+					return result;
+
+			return std::weak_ptr<ComponentType>();
 		}
 
-		void SetPosition(float x, float y);
 		void SetParent(std::weak_ptr<GameObject> parent);
 
+		std::string GetName() const;
+
 	private:
-		Transform m_Transform{};
+		friend class GameObjectFactory;
+		explicit GameObject(const std::string& name); 
+
+		std::string m_Name{};
+
 		std::weak_ptr<GameObject> m_Parent{};
 		std::vector<std::weak_ptr<GameObject>> m_Children{};
 		std::vector<std::shared_ptr<Component>> m_Components{};

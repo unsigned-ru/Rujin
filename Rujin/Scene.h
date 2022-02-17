@@ -19,13 +19,14 @@ namespace rujin
 		void Update() override;
 		void FixedUpdate() override;
 		void Render() const override;
+		void Destroy() override;
 
-		std::weak_ptr<GameObject> CreateGameObject(const GameObject& gameObject);
+		std::weak_ptr<GameObject> AddGameObject(const std::shared_ptr<GameObject> gameObject);
 
 	private:
 		friend class SceneManager;
 		explicit Scene(const std::string& name);
-
+	private:
 		const std::string m_Name;
 		static uint32_t m_IdCounter;
 

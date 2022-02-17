@@ -28,18 +28,50 @@ void rujin::ResourceManager::Init(const std::string& dataPath)
 	}
 }
 
-std::shared_ptr<rujin::Texture2D> rujin::ResourceManager::LoadTexture(const std::string& file) const
+std::shared_ptr<rujin::Texture2D> rujin::ResourceManager::LoadTexture(const std::string& file)
 {
+	//check if we remember loading this texture before
+	const auto it = m_TextureDict.find(file);
+
+	if (it != m_TextureDict.end() && !it->second.expired())
+	{
+		//we found a remembered weak pointer to the texture
+		//weak pointer is still valid
+		//we can return a shared pointer to the already existing resource, we don't have to load in a new one.
+		return it->second.lock();
+	}
+
 	const auto fullPath = m_DataPath + file;
 	auto texture = IMG_LoadTexture(Renderer::GetInstance().GetSDLRenderer(), fullPath.c_str());
 	if (texture == nullptr) 
 	{
 		throw std::runtime_error(std::string("Failed to load texture: ") + SDL_GetError());
 	}
-	return std::make_shared<Texture2D>(texture);
+
+	auto rv = std::make_shared<Texture2D>(texture);
+
+	//remember we loaded in this texture, store a weakptr
+	m_TextureDict[file] = rv;
+
+	return rv;
 }
 
-std::shared_ptr<rujin::Font> rujin::ResourceManager::LoadFont(const std::string& file, unsigned int size) const
+std::shared_ptr<rujin::Font> rujin::ResourceManager::LoadFont(const std::string& file, uint32_t size)
 {
-	return std::make_shared<Font>(m_DataPath + file, size);
+	//check if we remember loading this font before
+	const auto it = m_FontDict.find(file + std::to_string(size));
+
+	if (it != m_FontDict.end() && !it->second.expired())
+	{
+		//we found a remembered weak pointer to the texture
+		//weak pointer is still valid
+		//we can return a shared pointer to the already existing resource, we don't have to load in a new one.
+		return it->second.lock();
+	}
+
+	//load in new font
+	const auto rv = std::make_shared<Font>(m_DataPath + file, size);
+	m_FontDict[file + std::to_string(size)] = rv;
+
+	return rv;
 }

@@ -7,13 +7,13 @@
 namespace rujin
 {
 	class Scene;
-	class SceneManager final : public Singleton<SceneManager>, public MonoBehaviour
+	class SceneManager final : public Singleton<SceneManager>
 	{
 	public:
-		void Start() override;
-		void Update() override;
-		void FixedUpdate() override;
-		void Render() const override;
+		void Start();
+		void Update();
+		void FixedUpdate();
+		void Render() const;
 
 		std::weak_ptr<Scene> CreateScene(const std::string& name);
 		std::weak_ptr<Scene> GetScene(const std::string& name) const;
