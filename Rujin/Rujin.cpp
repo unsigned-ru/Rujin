@@ -8,14 +8,12 @@
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
-#include "GameObject.h"
 #include "GameObjectFactory.h"
 #include "Scene.h"
 
 #include "TextureComponent.h"
 #include "TextureRenderComponent.h"
 #include "TextComponent.h"
-#include "RectTransformComponent.h"
 
 
 float rujin::Rujin::s_DeltaTime{};
@@ -72,7 +70,7 @@ void rujin::Rujin::LoadGame() const
 	auto scene = SceneManager::GetInstance().CreateScene("Demo");
 
 	//create game object
-	auto go = GameObjectFactory::CreateDefault("Background");
+	auto go = GameObjectFactory::CreateEmpty("Background");
 
 	//add texture component
 	auto textureComponent = go->AddComponent<TextureComponent>().lock();
@@ -87,7 +85,8 @@ void rujin::Rujin::LoadGame() const
 	scene.lock()->AddGameObject(go);
 
 	//create game object
-	go = GameObjectFactory::CreateDefault("Logo");
+	go = GameObjectFactory::CreateEmpty("Logo");
+	go->GetTransform().lock()->SetPosition({ 216, 180 });
 
 	//add texture component
 	textureComponent = go->AddComponent<TextureComponent>().lock();;
@@ -98,15 +97,13 @@ void rujin::Rujin::LoadGame() const
 	textureRenderComponent = go->AddComponent<TextureRenderComponent>().lock();
 	textureRenderComponent->SetTexture(texture);
 
-	//set transform
-	go->GetComponent<TransformComponent>().lock()->SetPosition({ 216, 180 });
-
+	
 	//add game object to scene
 	scene.lock()->AddGameObject(go);
 
 	//create game object
-	go = rujin::GameObjectFactory::CreateCanvas("Text");
-	go->GetComponent<RectTransformComponent>().lock()->SetPosition({ 80, 20 });
+	go = GameObjectFactory::CreateCanvas("Text");
+	go->GetTransform().lock()->SetPosition({ 80, 20 });
 
 	//add font component
 	auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
@@ -118,7 +115,6 @@ void rujin::Rujin::LoadGame() const
 	textComponent->SetText("Programming 4 Assignment");
 	textComponent->SetFont(fontComponent->GetFont());
 	textComponent->SetColor({ 255, 255, 255, 255 });
-	textComponent->GenerateTextTexture();
 
 	//add texture render component
 	textureRenderComponent = go->AddComponent<TextureRenderComponent>().lock();
@@ -127,8 +123,8 @@ void rujin::Rujin::LoadGame() const
 	scene.lock()->AddGameObject(go);
 
 	//create game object
-	go = rujin::GameObjectFactory::CreateCanvas("FpsCounter");
-	go->GetComponent<RectTransformComponent>().lock()->SetPosition({10, 10});
+	go = GameObjectFactory::CreateCanvas("FpsCounter");
+	go->GetTransform().lock()->SetPosition({10, 10});
 
 	//add font component
 	font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
@@ -140,7 +136,6 @@ void rujin::Rujin::LoadGame() const
 	textComponent->SetText("00 FPS");
 	textComponent->SetFont(fontComponent->GetFont());
 	textComponent->SetColor({ 255, 255, 0, 255 });
-	textComponent->GenerateTextTexture();
 
 	//add texture render component
 	textureRenderComponent = go->AddComponent<TextureRenderComponent>().lock();

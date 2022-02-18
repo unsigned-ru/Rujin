@@ -3,7 +3,8 @@
 
 rujin::Texture2D::Texture2D(SDL_Texture* pTexture)
 	: m_pTexture(pTexture)
-{}
+{
+}
 
 rujin::Texture2D::~Texture2D()
 {

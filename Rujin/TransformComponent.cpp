@@ -1,58 +1,128 @@
 #include "RujinPCH.h"
 #include "TransformComponent.h"
 
-rujin::TransformComponent::TransformComponent(const std::weak_ptr<GameObject> gameObject)
+#include "GameObject.h"
+
+rujin::TransformComponent::TransformComponent(std::weak_ptr<GameObject> gameObject)
 	: Component(gameObject)
 {
 }
 
-const glm::vec3& rujin::TransformComponent::GetPosition() const
+glm::vec3 rujin::TransformComponent::GetPosition() const
 {
-	return m_Position;
-}
+	//recursive
+	if (!m_GameObject.lock()->GetParent().expired())
+	{
+		return m_GameObject.lock()->GetParent().lock()->GetTransform().lock()->GetPosition() + GetLocalPosition();
+	}
 
-glm::vec3& rujin::TransformComponent::GetPosition()
-{
-	return m_Position;
-}
-
-const glm::vec3& rujin::TransformComponent::GetScale() const
-{
-	return m_Scale;
-}
-
-glm::vec3& rujin::TransformComponent::GetScale()
-{
-	return m_Scale;
-}
-
-void rujin::TransformComponent::SetPosition(const glm::vec3& pos)
-{
-	m_Position = pos;
+	return GetLocalPosition();
 }
 
 void rujin::TransformComponent::SetPosition(const glm::vec2& posXY)
 {
-	m_Position.x = posXY.x;
-	m_Position.y = posXY.y;
+	//localOffset for global = requestedGlobal - lastLocal
+	glm::vec3 lastLocal{};
+	if (!m_GameObject.lock()->GetParent().expired())
+	{
+		lastLocal = m_GameObject.lock()->GetParent().lock()->GetTransform().lock()->GetPosition();
+	}
+
+	const glm::vec3 posXYZ{ posXY.x, posXY.y, lastLocal.z };
+	m_localPosition = posXYZ - lastLocal;
 }
 
-const glm::quat& rujin::TransformComponent::GetRotation() const
+void rujin::TransformComponent::SetPosition(const glm::vec3& posXYZ)
 {
-	return m_Rotation;
+	glm::vec3 lastLocal{};
+	if (!m_GameObject.lock()->GetParent().expired())
+	{
+		lastLocal = m_GameObject.lock()->GetParent().lock()->GetTransform().lock()->GetPosition();
+	}
+
+	m_localPosition = posXYZ - lastLocal;
 }
 
-glm::quat& rujin::TransformComponent::GetRotation()
+glm::quat rujin::TransformComponent::GetRotation() const
 {
-	return m_Rotation;
+	if (!m_GameObject.lock()->GetParent().expired())
+	{
+		return m_GameObject.lock()->GetParent().lock()->GetTransform().lock()->GetRotation() * GetLocalRotation();
+	}
+
+	return GetLocalRotation();
+	
 }
 
-void rujin::TransformComponent::SetRotation(const glm::quat& rot)
+void rujin::TransformComponent::SetRotation(const glm::quat&)
 {
-	m_Rotation = rot;
+	//TODO: implement
+	// calculate local rotation offset to achieve said global rotation.
 }
 
-void rujin::TransformComponent::SetScale(const glm::vec3& scale)
+glm::vec3 rujin::TransformComponent::GetScale() const
 {
-	m_Scale = scale;
+	if (!m_GameObject.lock()->GetParent().expired())
+	{
+		return m_GameObject.lock()->GetParent().lock()->GetTransform().lock()->GetScale() * GetLocalScale();
+	}
+
+
+	return GetLocalScale();
+}
+
+void rujin::TransformComponent::SetScale(const glm::vec3&)
+{
+	//TODO: implement.
+}
+
+glm::vec3 rujin::TransformComponent::GetLocalPosition() const
+{
+	return m_localPosition;
+}
+
+glm::vec3& rujin::TransformComponent::GetLocalPosition()
+{
+	return m_localPosition;
+}
+
+void rujin::TransformComponent::SetLocalPosition(const glm::vec2& posXY)
+{
+	m_localPosition.x = posXY.x;
+	m_localPosition.y = posXY.y;
+}
+
+void rujin::TransformComponent::SetLocalPosition(const glm::vec3& posXYZ)
+{
+	m_localPosition = posXYZ;
+}
+
+glm::quat rujin::TransformComponent::GetLocalRotation() const
+{
+	return m_localRotation;
+}
+
+glm::quat& rujin::TransformComponent::GetLocalRotation()
+{
+	return m_localRotation;
+}
+
+void rujin::TransformComponent::SetLocalRotation(const glm::quat& rot)
+{
+	m_localRotation = rot;
+}
+
+glm::vec3 rujin::TransformComponent::GetLocalScale() const
+{
+	return m_localScale;
+}
+
+glm::vec3& rujin::TransformComponent::GetLocalScale()
+{
+	return m_localScale;
+}
+
+void rujin::TransformComponent::SetLocalScale(const glm::vec3& scale)
+{
+	m_localScale = scale;
 }

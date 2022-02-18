@@ -11,6 +11,7 @@ namespace rujin
 	public:
 		explicit FpsComponent(const std::weak_ptr<GameObject>& gameObject);
 
+		void Start() override;
 		void Update() override;
 
 		void SetTextComponent(const std::weak_ptr<TextComponent> textComp);

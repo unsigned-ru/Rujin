@@ -1,4 +1,5 @@
 #pragma once
+#include "RujinPCH.h"
 #include "TransformComponent.h"
 
 namespace rujin
@@ -8,13 +9,11 @@ namespace rujin
 	public:
 		explicit RectTransformComponent(const std::weak_ptr<GameObject> gameObject);
 
-		const glm::vec2& GetSize() const;
-		glm::vec2& GetSize();
+		glm::vec2 GetSize() const;
 		void SetSize(const glm::vec2& size);
 
-		const glm::vec2& GetPivot() const;
-		glm::vec2& GetPivot();
-		void SetPivot(const glm::vec2& pivot);
+		glm::vec2 GetPivot() const;
+		void SetPivot(const glm::vec2& size);
 
 	private:
 		glm::vec2 m_Size{};

@@ -10,6 +10,23 @@ rujin::FpsComponent::FpsComponent(const std::weak_ptr<GameObject>& gameObject)
 {
 }
 
+void rujin::FpsComponent::Start()
+{
+	Component::Start();
+
+	if (m_TextComponent.expired())
+		throw std::runtime_error("m_TextComponent is unnasigned");
+	if (m_TextureRenderComponent.expired())
+		throw std::runtime_error("m_TextureRenderComponent is unnasigned");
+
+
+	//assign initial fps value
+	m_TextComponent.lock()->SetText("00 FPS");
+
+	//reference text texture in textureRenderer
+	m_TextureRenderComponent.lock()->SetTexture(m_TextComponent.lock()->GetTexture());
+}
+
 void rujin::FpsComponent::Update()
 {
 	Component::Update();
@@ -26,8 +43,6 @@ void rujin::FpsComponent::Update()
 
 	//Update text
 	m_TextComponent.lock()->SetText(std::to_string(m_Fps) + " FPS");
-	m_TextureRenderComponent.lock()->SetTexture(m_TextComponent.lock()->GetTexture());
-
 }
 
 void rujin::FpsComponent::SetTextComponent(const std::weak_ptr<TextComponent> textComp)

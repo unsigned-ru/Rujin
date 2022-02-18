@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "MonoBehaviour.h"
+#include "TransformComponent.h"
 
 namespace rujin
 {
@@ -41,13 +42,16 @@ namespace rujin
 			return std::weak_ptr<ComponentType>();
 		}
 
+		std::weak_ptr<TransformComponent> GetTransform();
+
 		void SetParent(std::weak_ptr<GameObject> parent);
+		std::weak_ptr<GameObject> GetParent() const;
 
 		std::string GetName() const;
 
 	private:
 		friend class GameObjectFactory;
-		explicit GameObject(const std::string& name); 
+		explicit GameObject(const std::string& name);
 
 		std::string m_Name{};
 

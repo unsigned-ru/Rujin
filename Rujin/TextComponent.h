@@ -1,11 +1,10 @@
 #pragma once
-#include "Texture2D.h"
+#include "DynamicTexture2D.h"
 #include "TransformComponent.h"
 
 namespace rujin
 {
 	class Font;
-	class Texture2D;
 
 	class TextComponent final : public Component
 	{
@@ -21,18 +20,17 @@ namespace rujin
 
 		void SetText(const std::string& text);
 		void SetFont(const std::weak_ptr<Font> font);
-		void SetPosition(float x, float y);
 		void SetColor(SDL_Color color);
 
-		void GenerateTextTexture();
-
-		std::weak_ptr<Texture2D> GetTexture() const;
+		std::weak_ptr<DynamicTexture2D> GetTexture() const;
 
 	private:
+		void GenerateTextTexture();
+
 		bool m_NeedsUpdate{true};
 		std::string m_Text{"Sample Text"};
 		std::weak_ptr<Font> m_Font{};
 		SDL_Color m_Color{255, 255 , 255, 255};
-		std::shared_ptr<Texture2D> m_TextTexture{};
+		std::shared_ptr<DynamicTexture2D> m_TextTexture{std::make_shared<DynamicTexture2D>(nullptr)};
 	};
 }

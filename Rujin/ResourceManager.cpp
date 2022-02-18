@@ -50,7 +50,7 @@ std::shared_ptr<rujin::Texture2D> rujin::ResourceManager::LoadTexture(const std:
 
 	auto rv = std::make_shared<Texture2D>(texture);
 
-	//remember we loaded in this texture, store a weakptr
+	//remember we loaded in this texture, store a weak_ptr
 	m_TextureDict[file] = rv;
 
 	return rv;

@@ -41,10 +41,20 @@ void rujin::GameObject::Destroy()
 	}
 }
 
+std::weak_ptr<rujin::TransformComponent> rujin::GameObject::GetTransform()
+{
+	return GetComponent<TransformComponent>();
+}
+
 void rujin::GameObject::SetParent(const std::weak_ptr<GameObject> parent)
 {
 	//TODO: maybe do a children check
 	m_Parent = parent;
+}
+
+std::weak_ptr<rujin::GameObject> rujin::GameObject::GetParent() const
+{
+	return m_Parent;
 }
 
 std::string rujin::GameObject::GetName() const
@@ -57,3 +67,4 @@ rujin::GameObject::GameObject(const std::string& name)
 	, m_Name(name)
 {
 }
+
