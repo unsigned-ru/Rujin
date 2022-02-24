@@ -48,10 +48,10 @@ namespace rujin
 		std::weak_ptr<GameObject> GetParent() const;
 
 		std::string GetName() const;
-
-	private:
-		friend class GameObjectFactory;
 		explicit GameObject(const std::string& name);
+	private:
+		/*friend class GameObjectFactory;
+		explicit GameObject(const std::string& name);*/
 
 		std::string m_Name{};
 

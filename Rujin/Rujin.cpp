@@ -1,5 +1,7 @@
 #include "RujinPCH.h"
 #include "Rujin.h"
+
+#include <functional>
 #include <thread>
 
 #include "FontComponent.h"
@@ -12,12 +14,11 @@
 #include "Scene.h"
 
 #include "TextureComponent.h"
-#include "TextureRenderComponent.h"
 #include "TextComponent.h"
+#include "TextureRenderComponent.h"
 
 
 float rujin::Rujin::s_DeltaTime{};
-
 
 using namespace std;
 
@@ -47,8 +48,8 @@ void rujin::Rujin::Initialize()
 		"Programming 4 assignment",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		640,
-		480,
+		1280,
+		720,
 		SDL_WINDOW_OPENGL
 	);
 
@@ -97,7 +98,7 @@ void rujin::Rujin::LoadGame() const
 	textureRenderComponent = go->AddComponent<TextureRenderComponent>().lock();
 	textureRenderComponent->SetTexture(texture);
 
-	
+
 	//add game object to scene
 	scene.lock()->AddGameObject(go);
 
@@ -124,7 +125,7 @@ void rujin::Rujin::LoadGame() const
 
 	//create game object
 	go = GameObjectFactory::CreateCanvas("FpsCounter");
-	go->GetTransform().lock()->SetPosition({10, 10});
+	go->GetTransform().lock()->SetPosition({ 10, 10 });
 
 	//add font component
 	font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
@@ -166,8 +167,7 @@ void rujin::Rujin::Run()
 
 	LoadGame();
 
-
-	const auto& renderer = Renderer::GetInstance();
+	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
 

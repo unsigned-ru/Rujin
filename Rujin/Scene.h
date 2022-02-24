@@ -5,7 +5,7 @@
 
 namespace rujin
 {
-	class Scene final : public MonoBehaviour
+	class Scene : public MonoBehaviour
 	{
 	public:
 		Scene() = delete;
@@ -26,7 +26,8 @@ namespace rujin
 	private:
 		friend class SceneManager;
 		explicit Scene(const std::string& name);
-	private:
+
+	protected:
 		const std::string m_Name;
 		static uint32_t m_IdCounter;
 
