@@ -6,14 +6,12 @@ using namespace rujin;
 unsigned int Scene::m_IdCounter = 0;
 
 Scene::Scene(const std::string& name)
-	: MonoBehaviour()
+	: IGameLoopObject()
 	, m_Name(name)
 	, m_GameObjects()
 	, m_ActiveGameObjects()
 	, m_InactiveGameObjects()
 {}
-
-Scene::~Scene() = default;
 
 
 void Scene::Start()
@@ -40,6 +38,14 @@ void rujin::Scene::FixedUpdate()
 	}
 }
 
+void Scene::OnGui(SDL_Window* pWindow)
+{
+	for (const auto& object : m_GameObjects)
+	{
+		object->OnGui(pWindow);
+	}
+}
+
 void Scene::Render() const
 {
 	for (const auto& object : m_GameObjects)
@@ -52,9 +58,8 @@ void Scene::Destroy()
 {
 }
 
-std::weak_ptr<GameObject> Scene::AddGameObject(const std::shared_ptr<GameObject> gameObject)
+void Scene::AddGameObject(GameObject* gameObject)
 {
-	m_GameObjects.push_back(gameObject);
-	return gameObject;
+	m_GameObjects.push_back(std::unique_ptr<GameObject>(gameObject));
 }
 

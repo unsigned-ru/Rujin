@@ -1,4 +1,6 @@
 #pragma once
+#include <variant>
+
 #include "Component.h"
 namespace rujin
 {
@@ -7,19 +9,13 @@ namespace rujin
 	class TextureRenderComponent final : public Component
 	{
 	public:
-		explicit TextureRenderComponent(const std::weak_ptr<GameObject> gameObject);
+		explicit TextureRenderComponent() = default;
 
-		void Start() override;
-		void Update() override;
-		void FixedUpdate() override;
 		void Render() const override;
-		void Destroy() override;
-
-		void SetTexture(std::weak_ptr<Texture2D> texture);
-		
+		void SetTexture(const std::shared_ptr<Texture2D>& texture);
 
 	private:
-		std::weak_ptr<Texture2D> m_Texture{};
+		std::shared_ptr<Texture2D> m_pTexture{};
 	};
 }
 

@@ -7,7 +7,7 @@ namespace rujin
 	class RectTransformComponent final : public TransformComponent
 	{
 	public:
-		explicit RectTransformComponent(const std::weak_ptr<GameObject> gameObject);
+		explicit RectTransformComponent() = default;
 
 		glm::vec2 GetSize() const;
 		void SetSize(const glm::vec2& size);

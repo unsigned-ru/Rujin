@@ -9,28 +9,26 @@ namespace rujin
 	class TextComponent final : public Component
 	{
 	public:
-		explicit TextComponent(const std::weak_ptr<GameObject> gameObject);
+		explicit TextComponent() = default;
 		~TextComponent() override = default;
 		TextComponent(const TextComponent & other) = delete;
 		TextComponent(TextComponent && other) = delete;
 		TextComponent& operator=(const TextComponent & other) = delete;
 		TextComponent& operator=(TextComponent && other) = delete;
 
-		void Update() override;
-
 		void SetText(const std::string& text);
-		void SetFont(const std::weak_ptr<Font> font);
+		void SetFont(const std::shared_ptr<Font>& font);
 		void SetColor(SDL_Color color);
 
-		std::weak_ptr<DynamicTexture2D> GetTexture() const;
+		std::shared_ptr<Texture2D> GenerateTexture();
 
 	private:
-		void GenerateTextTexture();
-
-		bool m_NeedsUpdate{true};
+		bool m_NeedsUpdate{ true };
 		std::string m_Text{"Sample Text"};
-		std::weak_ptr<Font> m_Font{};
 		SDL_Color m_Color{255, 255 , 255, 255};
-		std::shared_ptr<DynamicTexture2D> m_TextTexture{std::make_shared<DynamicTexture2D>(nullptr)};
+
+		std::shared_ptr<Font> m_pFont;
+
+		std::weak_ptr<Texture2D> m_pLastGeneratedTexture;
 	};
 }

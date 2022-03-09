@@ -1,11 +1,6 @@
 #include "RujinPCH.h"
 #include "RectTransformComponent.h"
 
-rujin::RectTransformComponent::RectTransformComponent(const std::weak_ptr<GameObject> gameObject)
-	: TransformComponent(gameObject)
-{
-}
-
 glm::vec2 rujin::RectTransformComponent::GetSize() const
 {
 	return m_Size;

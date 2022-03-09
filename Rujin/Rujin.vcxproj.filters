@@ -32,16 +32,10 @@
     <ClInclude Include="TextComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="TextureComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="TextureRenderComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="FpsComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="FontComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">
@@ -74,7 +68,7 @@
     <ClInclude Include="GameObject.h">
       <Filter>Game Loop</Filter>
     </ClInclude>
-    <ClInclude Include="MonoBehaviour.h">
+    <ClInclude Include="IGameLoopObject.h">
       <Filter>Game Loop</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
@@ -119,6 +113,7 @@
     <ClInclude Include="..\3rdParty\imgui-1.86\imgui_plot.h">
       <Filter>ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="DearImGuiComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -136,16 +131,10 @@
     <ClCompile Include="TextComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="TextureComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="TextureRenderComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="FpsComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="FontComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="Font.cpp">
@@ -169,7 +158,7 @@
     <ClCompile Include="GameObjectFactory.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="MonoBehaviour.cpp">
+    <ClCompile Include="IGameLoopObject.cpp">
       <Filter>Game Loop</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
@@ -210,6 +199,9 @@
     </ClCompile>
     <ClCompile Include="..\3rdParty\imgui-1.86\imgui_plot.cpp">
       <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="DearImGuiComponent.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

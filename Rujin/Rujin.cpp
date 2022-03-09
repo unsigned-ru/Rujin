@@ -4,7 +4,6 @@
 #include <functional>
 #include <thread>
 
-#include "FontComponent.h"
 #include "FpsComponent.h"
 #include "InputManager.h"
 #include "SceneManager.h"
@@ -13,7 +12,6 @@
 #include "GameObjectFactory.h"
 #include "Scene.h"
 
-#include "TextureComponent.h"
 #include "TextComponent.h"
 #include "TextureRenderComponent.h"
 
@@ -68,86 +66,73 @@ void rujin::Rujin::Initialize()
  */
 void rujin::Rujin::LoadGame() const
 {
-	auto scene = SceneManager::GetInstance().CreateScene("Demo");
+	auto* pScene = SceneManager::GetInstance().CreateScene("Demo");
 
-	//create game object
-	auto go = GameObjectFactory::CreateEmpty("Background");
+	//load required textures
+	const auto pBackgroundTexture = ResourceManager::GetInstance().LoadTexture("background.jpg");
+	const auto pLogoTexture = ResourceManager::GetInstance().LoadTexture("logo.png");
+	const auto pLinguaFont = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
 
-	//add texture component
-	auto textureComponent = go->AddComponent<TextureComponent>().lock();
-	auto texture = ResourceManager::GetInstance().LoadTexture("background.jpg");
-	textureComponent->SetTexture(texture);
+	{
+		//create game object
+		auto* go = new GameObject("Background");
 
-	//add texture render component
-	auto textureRenderComponent = go->AddComponent<TextureRenderComponent>().lock();
-	textureRenderComponent->SetTexture(texture);
+		auto* pTextureRenderComp = go->AddComponent<TextureRenderComponent>();
+		pTextureRenderComp->SetTexture(pBackgroundTexture);
 
-	//add game object to scene
-	scene.lock()->AddGameObject(go);
+		//add game object to scene
+		pScene->AddGameObject(go);
+	}
 
-	//create game object
-	go = GameObjectFactory::CreateEmpty("Logo");
-	go->GetTransform().lock()->SetPosition({ 216, 180 });
+	{
+		//create game object
+		auto* go = new GameObject("Logo");
+		go->GetTransform()->SetPosition({ 216, 180 });
 
-	//add texture component
-	textureComponent = go->AddComponent<TextureComponent>().lock();;
-	texture = ResourceManager::GetInstance().LoadTexture("logo.png");
-	textureComponent->SetTexture(texture);
+		auto* pTextureRenderComp = go->AddComponent<TextureRenderComponent>();
+		pTextureRenderComp->SetTexture(pLogoTexture);
 
-	//add texture render component
-	textureRenderComponent = go->AddComponent<TextureRenderComponent>().lock();
-	textureRenderComponent->SetTexture(texture);
+		//add game object to scene
+		pScene->AddGameObject(go);
+	}
 
+	{
+		//create game object
+		auto* go = new GameObject("Title");
+		go->GetTransform()->SetPosition({ 80, 20 });
 
-	//add game object to scene
-	scene.lock()->AddGameObject(go);
+		//add text component
+		auto* pTextComponent = go->AddComponent<TextComponent>();
+		pTextComponent->SetText("Programming 4 Assignment");
+		pTextComponent->SetFont(pLinguaFont);
+		pTextComponent->SetColor({ 255, 255, 255, 255 });
 
-	//create game object
-	go = GameObjectFactory::CreateCanvas("Text");
-	go->GetTransform().lock()->SetPosition({ 80, 20 });
+		//add texture render component
+		auto* pTextureRenderComponent = go->AddComponent<TextureRenderComponent>();
+		pTextureRenderComponent->SetTexture(pTextComponent->GenerateTexture());
 
-	//add font component
-	auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	auto fontComponent = go->AddComponent<FontComponent>().lock();
-	fontComponent->SetFont(font);
+		pScene->AddGameObject(go);
+	}
+	
 
-	//add text component
-	auto textComponent = go->AddComponent<TextComponent>().lock();
-	textComponent->SetText("Programming 4 Assignment");
-	textComponent->SetFont(fontComponent->GetFont());
-	textComponent->SetColor({ 255, 255, 255, 255 });
+	{
+		//create game object
+		auto* go = new GameObject("FpsCounter");
+		go->GetTransform()->SetPosition({ 10, 10 });
 
-	//add texture render component
-	textureRenderComponent = go->AddComponent<TextureRenderComponent>().lock();
-	textureRenderComponent->SetTexture(textComponent->GetTexture());
+		//add text component
+		auto* pTextComponent = go->AddComponent<TextComponent>();
+		pTextComponent->SetFont(pLinguaFont);
+		pTextComponent->SetColor({ 255, 255, 0, 255 });
 
-	scene.lock()->AddGameObject(go);
+		//add texture render component
+		auto* pTextureRenderComponent = go->AddComponent<TextureRenderComponent>();
 
-	//create game object
-	go = GameObjectFactory::CreateCanvas("FpsCounter");
-	go->GetTransform().lock()->SetPosition({ 10, 10 });
+		//add fps component
+		go->AddComponent(new FpsComponent(pTextComponent, pTextureRenderComponent));
 
-	//add font component
-	font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
-	fontComponent = go->AddComponent<FontComponent>().lock();
-	fontComponent->SetFont(font);
-
-	//add text component
-	textComponent = go->AddComponent<TextComponent>().lock();
-	textComponent->SetText("00 FPS");
-	textComponent->SetFont(fontComponent->GetFont());
-	textComponent->SetColor({ 255, 255, 0, 255 });
-
-	//add texture render component
-	textureRenderComponent = go->AddComponent<TextureRenderComponent>().lock();
-	textureRenderComponent->SetTexture(textComponent->GetTexture());
-
-	//add fps component
-	const auto fpsComponent = go->AddComponent<FpsComponent>().lock();
-	fpsComponent->SetTextComponent(textComponent);
-	fpsComponent->SetTextureRenderComponent(textureRenderComponent);
-
-	scene.lock()->AddGameObject(go);
+		pScene->AddGameObject(go);
+	}
 }
 
 void rujin::Rujin::Cleanup()
@@ -167,7 +152,7 @@ void rujin::Rujin::Run()
 
 	LoadGame();
 
-	auto& renderer = Renderer::GetInstance();
+	const auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
 
@@ -189,6 +174,7 @@ void rujin::Rujin::Run()
 			sceneManager.FixedUpdate();
 			lag -= s_FixedTimestamp;
 		}
+		sceneManager.OnGui(m_Window);
 		renderer.Render();
 	}
 

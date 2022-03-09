@@ -2,6 +2,8 @@
 #include "SceneManager.h"
 #include "Scene.h"
 
+rujin::SceneManager::~SceneManager() = default;
+
 void rujin::SceneManager::Start()
 {
 	for (const auto& scene : m_Scenes)
@@ -26,6 +28,14 @@ void rujin::SceneManager::FixedUpdate()
 	}
 }
 
+void rujin::SceneManager::OnGui(SDL_Window* pWindow)
+{
+	for (const auto& scene : m_Scenes)
+	{
+		scene->OnGui(pWindow);
+	}
+}
+
 
 void rujin::SceneManager::Render() const
 {
@@ -35,40 +45,39 @@ void rujin::SceneManager::Render() const
 	}
 }
 
-std::weak_ptr<rujin::Scene> rujin::SceneManager::CreateScene(const std::string& name)
+rujin::Scene* rujin::SceneManager::CreateScene(const std::string& name)
 {
-	const auto& scene = std::shared_ptr<Scene>(new Scene(name));
-	m_Scenes.push_back(scene);
-	return std::weak_ptr(scene);
+	auto* pScene = new rujin::Scene(name);
+	m_Scenes.push_back(std::unique_ptr<rujin::Scene>(pScene));
+	return pScene;
 }
 
-std::weak_ptr<rujin::Scene> rujin::SceneManager::GetScene(const std::string& name) const
+rujin::Scene* rujin::SceneManager::GetScene(const std::string& name) const
 {
 	const auto it = std::ranges::find_if
 	(
 		m_Scenes,
-		[&name](const std::shared_ptr<Scene> scene)
+		[&name](const std::unique_ptr<Scene>& scene)
 		{
 			return scene->m_Name == name;
 		}
 	);
 
 	if (it == m_Scenes.end())
-		return std::weak_ptr<rujin::Scene>();
+		return nullptr;
 
-	return std::weak_ptr(*it);
+	return it->get();
 }
 
-std::weak_ptr<rujin::Scene> rujin::SceneManager::GetScene(const size_t idx) const
+rujin::Scene* rujin::SceneManager::GetScene(const size_t idx) const
 {
-	//TODO: not sure if this is the best way to do it
+	//TODO: could possibly optimize
 	try
 	{
-		return m_Scenes.at(idx);
+		return m_Scenes.at(idx).get();
 	}
 	catch (std::out_of_range& )
 	{
-		return std::weak_ptr<rujin::Scene>();
+		return nullptr;
 	}
-	
 }

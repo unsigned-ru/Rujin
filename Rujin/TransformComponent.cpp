@@ -3,18 +3,12 @@
 
 #include "GameObject.h"
 
-rujin::TransformComponent::TransformComponent(std::weak_ptr<GameObject> gameObject)
-	: Component(gameObject)
-{
-}
 
+//recursive
 glm::vec3 rujin::TransformComponent::GetPosition() const
 {
-	//recursive
-	if (!m_GameObject.lock()->GetParent().expired())
-	{
-		return m_GameObject.lock()->GetParent().lock()->GetTransform().lock()->GetPosition() + GetLocalPosition();
-	}
+	if (const auto* pParent = m_pGameObject->GetParent())
+		return pParent->GetTransform()->GetPosition() + GetLocalPosition();
 
 	return GetLocalPosition();
 }
@@ -23,10 +17,9 @@ void rujin::TransformComponent::SetPosition(const glm::vec2& posXY)
 {
 	//localOffset for global = requestedGlobal - lastLocal
 	glm::vec3 lastLocal{};
-	if (!m_GameObject.lock()->GetParent().expired())
-	{
-		lastLocal = m_GameObject.lock()->GetParent().lock()->GetTransform().lock()->GetPosition();
-	}
+
+	if (const auto* pParent = m_pGameObject->GetParent())
+		lastLocal = pParent->GetTransform()->GetPosition();
 
 	const glm::vec3 posXYZ{ posXY.x, posXY.y, lastLocal.z };
 	m_localPosition = posXYZ - lastLocal;
@@ -35,23 +28,18 @@ void rujin::TransformComponent::SetPosition(const glm::vec2& posXY)
 void rujin::TransformComponent::SetPosition(const glm::vec3& posXYZ)
 {
 	glm::vec3 lastLocal{};
-	if (!m_GameObject.lock()->GetParent().expired())
-	{
-		lastLocal = m_GameObject.lock()->GetParent().lock()->GetTransform().lock()->GetPosition();
-	}
+	if (const auto* pParent = m_pGameObject->GetParent())
+		lastLocal = pParent->GetTransform()->GetPosition();
 
 	m_localPosition = posXYZ - lastLocal;
 }
 
 glm::quat rujin::TransformComponent::GetRotation() const
 {
-	if (!m_GameObject.lock()->GetParent().expired())
-	{
-		return m_GameObject.lock()->GetParent().lock()->GetTransform().lock()->GetRotation() * GetLocalRotation();
-	}
+	if (const auto* pParent = m_pGameObject->GetParent())
+		return pParent->GetTransform()->GetRotation() * GetLocalRotation();
 
 	return GetLocalRotation();
-	
 }
 
 void rujin::TransformComponent::SetRotation(const glm::quat&)
@@ -62,11 +50,8 @@ void rujin::TransformComponent::SetRotation(const glm::quat&)
 
 glm::vec3 rujin::TransformComponent::GetScale() const
 {
-	if (!m_GameObject.lock()->GetParent().expired())
-	{
-		return m_GameObject.lock()->GetParent().lock()->GetTransform().lock()->GetScale() * GetLocalScale();
-	}
-
+	if (const auto* pParent = m_pGameObject->GetParent())
+		return pParent->GetTransform()->GetScale() * GetLocalScale();
 
 	return GetLocalScale();
 }

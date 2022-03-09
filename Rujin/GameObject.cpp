@@ -1,15 +1,17 @@
 #include "RujinPCH.h"
 #include "GameObject.h"
 
-void rujin::GameObject::Start()
+using namespace rujin;
+
+void GameObject::Start()
 {
-	for (const std::shared_ptr<Component> component : m_Components)
+	for (const auto& component : m_Components)
 	{
 		component->Start();
 	}
 }
 
-void rujin::GameObject::Update()
+void GameObject::Update()
 {
 	for (const auto& component : m_Components)
 	{
@@ -17,7 +19,7 @@ void rujin::GameObject::Update()
 	}
 }
 
-void rujin::GameObject::FixedUpdate()
+void GameObject::FixedUpdate()
 {
 	for (const auto& component : m_Components)
 	{
@@ -25,7 +27,15 @@ void rujin::GameObject::FixedUpdate()
 	}
 }
 
-void rujin::GameObject::Render() const
+void GameObject::OnGui(SDL_Window* pWindow)
+{
+	for (const auto& component : m_Components)
+	{
+		component->OnGui(pWindow);
+	}
+}
+
+void GameObject::Render() const
 {
 	for (const auto& component : m_Components)
 	{
@@ -33,7 +43,7 @@ void rujin::GameObject::Render() const
 	}
 }
 
-void rujin::GameObject::Destroy()
+void GameObject::Destroy()
 {
 	for (const auto& component : m_Components)
 	{
@@ -41,30 +51,31 @@ void rujin::GameObject::Destroy()
 	}
 }
 
-std::weak_ptr<rujin::TransformComponent> rujin::GameObject::GetTransform()
+TransformComponent* GameObject::GetTransform() const
 {
-	return GetComponent<TransformComponent>();
+	return m_pTransformComp;
 }
 
-void rujin::GameObject::SetParent(const std::weak_ptr<GameObject> parent)
+void GameObject::SetParent(GameObject* pParent)
 {
-	//TODO: maybe do a children check
-	m_Parent = parent;
+	//TODO: attach all children to this new parent, a new game object now owns all sub game objects
+	m_pParent = pParent;
 }
 
-std::weak_ptr<rujin::GameObject> rujin::GameObject::GetParent() const
+GameObject* GameObject::GetParent() const
 {
-	return m_Parent;
+	return m_pParent;
 }
 
-std::string rujin::GameObject::GetName() const
+std::string GameObject::GetName() const
 {
 	return m_Name;
 }
 
-rujin::GameObject::GameObject(const std::string& name)
-	: MonoBehaviour()
+GameObject::GameObject(const std::string& name)
+	: IGameLoopObject()
 	, m_Name(name)
+	, m_pTransformComp(AddComponent<TransformComponent>())
 {
 }
 

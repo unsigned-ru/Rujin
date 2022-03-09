@@ -10,7 +10,7 @@ namespace rujin
 	public:
 		explicit Texture2D(SDL_Texture* pTexture);
 		explicit Texture2D() = default;
-		~Texture2D();
+		virtual ~Texture2D();
 
 		Texture2D(const Texture2D &) = delete;
 		Texture2D(Texture2D &&) = delete;

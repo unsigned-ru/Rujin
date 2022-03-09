@@ -1,29 +1,32 @@
 #pragma once
 #include "Singleton.h"
-#include <unordered_map>
-
-#include "MonoBehaviour.h"
+#include "Scene.h"
 
 namespace rujin
 {
-	class Scene;
 	class SceneManager final : public Singleton<SceneManager>
 	{
 	public:
+		~SceneManager() override;
+		SceneManager(const SceneManager& other) = delete;
+		SceneManager(SceneManager&& other) noexcept = delete;
+		SceneManager& operator=(const SceneManager& other) = delete;
+		SceneManager& operator=(SceneManager&& other) noexcept = delete;
+
 		void Start();
 		void Update();
 		void FixedUpdate();
+		void OnGui(SDL_Window* pWindow);
 		void Render() const;
 
-		std::weak_ptr<Scene> CreateScene(const std::string& name);
-		std::weak_ptr<Scene> GetScene(const std::string& name) const;
-		std::weak_ptr<Scene> GetScene(const size_t idx = 0) const;
+		Scene* CreateScene(const std::string& name);
+		Scene* GetScene(const std::string& name) const;
+		Scene* GetScene(const size_t idx = 0) const;
 
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager() = default;
 
-		//All copies should be weak pointers!
-		std::vector<std::shared_ptr<Scene>> m_Scenes;
+		std::vector<std::unique_ptr<Scene>> m_Scenes;
 	};
 }

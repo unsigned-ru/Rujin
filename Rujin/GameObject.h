@@ -1,17 +1,22 @@
 #pragma once
 #include "Component.h"
-#include "MonoBehaviour.h"
+#include "IGameLoopObject.h"
 #include "TransformComponent.h"
 
 namespace rujin
 {
 	/**
-	 * \brief Uses shared_ptr only policy.
-	 * \note GameObjectFactory handles instantiation.
-	*/
-	class GameObject final : public MonoBehaviour, public std::enable_shared_from_this<GameObject>
+	 * \brief GameObject class given functionality by attaching components.
+	 * \note
+	 * - OWNS children
+	 * - OWNS components
+	 * - DOES NOT OWN pointer to parent
+	 * - Parent nullptr if at root of scene.
+	 */
+	class GameObject final : public IGameLoopObject
 	{
 	public:
+		explicit GameObject(const std::string& name);
 		~GameObject() override = default;
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
@@ -21,42 +26,50 @@ namespace rujin
 		void Start() override;
 		void Update() override;
 		void FixedUpdate() override;
+		void OnGui(SDL_Window* pWindow) override;
 		void Render() const override;
 		void Destroy() override;
 
 		template<typename ComponentType, typename = std::enable_if<std::is_base_of_v<Component, ComponentType>>>
-		std::weak_ptr<ComponentType> AddComponent()
+		ComponentType* AddComponent(ComponentType* component)
 		{
-			auto component = std::make_shared<ComponentType>(weak_from_this());
-			m_Components.push_back(component);
+			auto ptr = std::unique_ptr<ComponentType>(component);
+			ptr->m_pGameObject = this;
+			m_Components.push_back(std::move(ptr));
 			return component;
 		}
 
 		template<typename ComponentType, typename = std::enable_if<std::is_base_of_v<Component, ComponentType>>>
-		std::weak_ptr<ComponentType> GetComponent() const
+		ComponentType* AddComponent()
 		{
-			for (const auto& component : m_Components)
-				if (const auto result = std::dynamic_pointer_cast<ComponentType>(component); result != nullptr)
-					return result;
-
-			return std::weak_ptr<ComponentType>();
+			return AddComponent(new ComponentType());
 		}
 
-		std::weak_ptr<TransformComponent> GetTransform();
+		template<typename ComponentType, typename = std::enable_if<std::is_base_of_v<Component, ComponentType>>>
+		ComponentType* GetComponent() const
+		{
+			for (const auto& component : m_Components)
+				if (const auto result = dynamic_cast<ComponentType*>(component.get()); result != nullptr)
+					return result;
 
-		void SetParent(std::weak_ptr<GameObject> parent);
-		std::weak_ptr<GameObject> GetParent() const;
+			return nullptr;
+		}
 
+		void SetParent(GameObject* pParent);
+
+		GameObject* GetParent() const;
+		TransformComponent* GetTransform() const;
 		std::string GetName() const;
-		explicit GameObject(const std::string& name);
-	private:
-		/*friend class GameObjectFactory;
-		explicit GameObject(const std::string& name);*/
 
+	private:
 		std::string m_Name{};
 
-		std::weak_ptr<GameObject> m_Parent{};
-		std::vector<std::weak_ptr<GameObject>> m_Children{};
-		std::vector<std::shared_ptr<Component>> m_Components{};
+		GameObject* m_pParent{ nullptr }; //Note owned by GameObject
+		std::vector<std::unique_ptr<GameObject>> m_Children{}; //owned by GameObject
+		std::vector<std::unique_ptr<Component>> m_Components{}; //owned by GameObject
+
+		// all GO's have a transform so we can speed up access time by storing it explicitly
+		// gets destroyed by unique_ptr in m_Components going out of scope
+		TransformComponent* m_pTransformComp; 
 	};
 }

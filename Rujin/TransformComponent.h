@@ -7,7 +7,7 @@ namespace rujin
 	class TransformComponent : public Component
 	{
 	public:
-		explicit TransformComponent(std::weak_ptr<GameObject> gameObject);
+		explicit TransformComponent() = default;
 
 		//global
 		glm::vec3 GetPosition() const;

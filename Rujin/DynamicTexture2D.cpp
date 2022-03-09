@@ -14,3 +14,5 @@ void rujin::DynamicTexture2D::SetSDLTexture(SDL_Texture* texture)
 	//set new one
 	m_pTexture = texture;
 }
+
+rujin::DynamicTexture2D::~DynamicTexture2D() = default;
