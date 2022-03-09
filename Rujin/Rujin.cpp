@@ -4,6 +4,7 @@
 #include <functional>
 #include <thread>
 
+#include "DearImGuiComponent.h"
 #include "FpsComponent.h"
 #include "InputManager.h"
 #include "SceneManager.h"
@@ -131,6 +132,16 @@ void rujin::Rujin::LoadGame() const
 		//add fps component
 		go->AddComponent(new FpsComponent(pTextComponent, pTextureRenderComponent));
 
+		pScene->AddGameObject(go);
+	}
+
+	{
+		//create game object
+		auto* go = new GameObject("DearImGUI");
+		go->GetTransform()->SetPosition({ 80, 20 });
+
+		//add text component
+		go->AddComponent(new DearImGuiComponent());
 		pScene->AddGameObject(go);
 	}
 }
