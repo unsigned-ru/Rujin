@@ -21,73 +21,86 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Events">
+      <UniqueIdentifier>{0ab7a686-1f5a-420e-a00e-909fd15f887f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Events\ObserverPattern">
+      <UniqueIdentifier>{10679062-40a5-4a8d-932c-52fcc37a11b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Events\ObserverPattern\Interface">
+      <UniqueIdentifier>{782fb810-5fb0-4026-ae8e-8a03a0c5d1c7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ImGui">
-      <UniqueIdentifier>{613be219-825e-4970-b709-d6378e0240b8}</UniqueIdentifier>
+      <UniqueIdentifier>{bf503e89-4dea-4667-92a2-be8118e585b8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Component.h">
+    <ClInclude Include="RujinPCH.h" />
+    <ClInclude Include="Components\Component.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="TextComponent.h">
+    <ClInclude Include="Components\ComponentTemplate.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="TextureRenderComponent.h">
+    <ClInclude Include="Components\DearImGuiComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="FpsComponent.h">
+    <ClInclude Include="Components\FpsComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="Font.h">
+    <ClInclude Include="Components\PlayerHUDComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\PeterPepperComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\TextComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\TextureRenderComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\TransformComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers\InputManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers\ResourceManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers\SceneManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="DataTypes\Texture2D.h">
       <Filter>Data Types</Filter>
     </ClInclude>
-    <ClInclude Include="Texture2D.h">
+    <ClInclude Include="Events\GameEvents.h">
+      <Filter>Events\ObserverPattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\ObserverPattern\Interface\ISubject.h">
+      <Filter>Events\ObserverPattern\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\ObserverPattern\Interface\IObserver.h">
+      <Filter>Events\ObserverPattern\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="DataTypes\Font.h">
       <Filter>Data Types</Filter>
     </ClInclude>
-    <ClInclude Include="DynamicTexture2D.h">
-      <Filter>Data Types</Filter>
+    <ClInclude Include="GameLoop\IGameLoopObject.h">
+      <Filter>Game Loop</Filter>
     </ClInclude>
-    <ClInclude Include="GameObjectFactory.h">
+    <ClInclude Include="GameLoop\Scene.h">
+      <Filter>Game Loop</Filter>
+    </ClInclude>
+    <ClInclude Include="GameLoop\Renderer.h">
+      <Filter>Game Loop</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\Singleton.h">
       <Filter>Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="RujinPCH.h">
+    <ClInclude Include="Engine\Rujin.h">
       <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Rujin.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Game Loop</Filter>
-    </ClInclude>
-    <ClInclude Include="IGameLoopObject.h">
-      <Filter>Game Loop</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Game Loop</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Game Loop</Filter>
-    </ClInclude>
-    <ClInclude Include="Singleton.h">
-      <Filter>Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="TransformComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="RectTransformComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdParty\imgui-1.86\imconfig.h">
-      <Filter>ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\imgui-1.86\imgui.h">
       <Filter>ImGui</Filter>
@@ -95,86 +108,94 @@
     <ClInclude Include="..\3rdParty\imgui-1.86\imgui_internal.h">
       <Filter>ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\3rdParty\imgui-1.86\imstb_rectpack.h">
+    <ClInclude Include="..\3rdParty\imgui-1.86\imgui_plot.h">
       <Filter>ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\imgui-1.86\imstb_textedit.h">
       <Filter>ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="..\3rdParty\imgui-1.86\imstb_rectpack.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdParty\imgui-1.86\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="..\3rdParty\imgui-1.86\imstb_truetype.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="GameLoop\GameObject.h">
+      <Filter>Game Loop</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdParty\imgui-1.86\backends\imgui_impl_sdl.h">
       <Filter>ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\3rdParty\imgui-1.86\backends\imgui_impl_opengl2.h">
       <Filter>ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\3rdParty\imgui-1.86\backends\imgui_impl_sdl.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3rdParty\imgui-1.86\imgui_plot.h">
-      <Filter>ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="DearImGuiComponent.h" />
+    <ClInclude Include="Components\TextRenderComponent.h" />
+    <ClInclude Include="Commands.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="Engine\Main.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Rujin.cpp">
+    <ClCompile Include="Engine\Rujin.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="RujinPCH.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Component.cpp">
+    <ClCompile Include="Components\Component.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="TextComponent.cpp">
+    <ClCompile Include="Components\ComponentTemplate.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="TextureRenderComponent.cpp">
+    <ClCompile Include="Components\DearImGuiComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="FpsComponent.cpp">
+    <ClCompile Include="Components\FpsComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="Font.cpp">
-      <Filter>Data Types</Filter>
+    <ClCompile Include="Components\PlayerHUDComponent.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicTexture2D.cpp">
-      <Filter>Data Types</Filter>
+    <ClCompile Include="Components\PeterPepperComponent.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="Texture2D.cpp">
-      <Filter>Data Types</Filter>
+    <ClCompile Include="Components\TextComponent.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="InputManager.cpp">
+    <ClCompile Include="Components\TextureRenderComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\TransformComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Managers\InputManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
+    <ClCompile Include="Managers\ResourceManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
+    <ClCompile Include="Managers\SceneManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
-    <ClCompile Include="GameObjectFactory.cpp">
-      <Filter>Helpers</Filter>
-    </ClCompile>
-    <ClCompile Include="IGameLoopObject.cpp">
+    <ClCompile Include="GameLoop\IGameLoopObject.cpp">
       <Filter>Game Loop</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
+    <ClCompile Include="GameLoop\GameObject.cpp">
       <Filter>Game Loop</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
+    <ClCompile Include="DataTypes\Font.cpp">
+      <Filter>Data Types</Filter>
+    </ClCompile>
+    <ClCompile Include="GameLoop\Renderer.cpp">
       <Filter>Game Loop</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
+    <ClCompile Include="RujinPCH.cpp" />
+    <ClCompile Include="DataTypes\Texture2D.cpp">
+      <Filter>Data Types</Filter>
+    </ClCompile>
+    <ClCompile Include="GameLoop\Scene.cpp">
       <Filter>Game Loop</Filter>
-    </ClCompile>
-    <ClCompile Include="TransformComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="RectTransformComponent.cpp">
-      <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\imgui-1.86\imgui.cpp">
       <Filter>ImGui</Filter>
@@ -185,22 +206,25 @@
     <ClCompile Include="..\3rdParty\imgui-1.86\imgui_draw.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="..\3rdParty\imgui-1.86\imgui_plot.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
     <ClCompile Include="..\3rdParty\imgui-1.86\imgui_tables.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdParty\imgui-1.86\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdParty\imgui-1.86\backends\imgui_impl_opengl2.cpp">
-      <Filter>ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="..\3rdParty\imgui-1.86\backends\imgui_impl_sdl.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\3rdParty\imgui-1.86\imgui_plot.cpp">
+    <ClCompile Include="..\3rdParty\imgui-1.86\backends\imgui_impl_opengl2.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="DearImGuiComponent.cpp">
+    <ClCompile Include="Components\TextRenderComponent.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Commands.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
