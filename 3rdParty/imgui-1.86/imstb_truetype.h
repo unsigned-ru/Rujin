@@ -13,7 +13,8 @@
 //        render glyphs to one-channel bitmaps with antialiasing (box filter)
 //        render glyphs to one-channel SDF bitmaps (signed-distance field/function)
 //
-//   Todo:
+//   
+// 
 //        non-MS cmaps
 //        crashproof on bad data
 //        hinting? (no longer patented)

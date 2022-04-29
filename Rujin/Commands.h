@@ -1,18 +1,20 @@
 #pragma once
-#include "Components/Component.h"
+#include "Component.h"
 
 namespace rujin
 {
+	class BurgerComponent;
+	class EnemyComponent;
 	class Component;
 	class PeterPepperComponent;
 
 	namespace command
 	{
-		class Base
+		class IBase
 		{
 		public:
-			explicit Base(Component* pComp) : m_pComponent(pComp) {}
-			virtual ~Base() = default;
+			explicit IBase(Component* pComp) : m_pComponent(pComp) {}
+			virtual ~IBase() = default;
 			virtual void Execute() = 0;
 
 		protected:
@@ -23,18 +25,31 @@ namespace rujin
 			Component* m_pComponent;
 		};
 
-		class Die : public Base
+		class Die final : public IBase
 		{
 		public:
 			explicit Die(PeterPepperComponent* pComp);
 			void Execute() override;
 		};
 
-		class GainPoints : public Base
+		class DropBurger final : public IBase
 		{
 		public:
-			explicit GainPoints(PeterPepperComponent* pComp);
+			explicit DropBurger(PeterPepperComponent* pComp, BurgerComponent* pBurger);
 			void Execute() override;
+
+		private:
+			BurgerComponent* m_pBurger;
+		};
+
+		class KillEnemy final : public IBase
+		{
+		public:
+			explicit KillEnemy(PeterPepperComponent* pComp, EnemyComponent* pEnemy);
+			void Execute() override;
+
+		private:
+			EnemyComponent* m_pEnemy;
 		};
 	}
 }

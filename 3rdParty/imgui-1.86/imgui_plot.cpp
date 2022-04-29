@@ -97,7 +97,9 @@ PlotStatus Plot(const char* label, const PlotConfig& conf) {
             const int v_idx = cursor_to_idx(g.IO.MousePos, inner_bb, conf, x_min, x_max);
             const size_t data_idx = conf.values.offset + (v_idx % conf.values.count);
             const float x0 = conf.values.xs ? conf.values.xs[data_idx] : v_idx;
-            const float y0 = ys_list[0][data_idx]; // TODO: tooltip is only shown for the first y-value!
+            const float y0 = ys_list[0][data_idx]; // 
+
+            //tooltip is only shown for the first y-value!
             SetTooltip(conf.tooltip.format, x0, y0);
             v_hovered = v_idx;
         }
