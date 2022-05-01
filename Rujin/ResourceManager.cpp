@@ -9,8 +9,6 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include "AudioClip.h"
-
 void rujin::ResourceManager::Init(const std::string& dataPath)
 {
 	m_DataPath = dataPath;
@@ -84,63 +82,8 @@ std::shared_ptr<rujin::Font> rujin::ResourceManager::LoadFont(const std::string&
 	return rv;
 }
 
-std::shared_ptr<rujin::AudioClip> rujin::ResourceManager::LoadAudio(const std::string& file)
+std::string rujin::ResourceManager::GetDataPath() const
 {
-	const auto fullPath = m_DataPath + file;
-
-	//check wether there is an ID associated with this path
-	//(Has this audio clip been loaded before and linked to an ID)
-	const auto pathIt = m_AudioRememberedPaths.find(file);
-	if (pathIt != m_AudioRememberedPaths.end())
-	{
-		//We remember loading this path before, get the ID and see if the Clip is expired
-
-		const auto id = pathIt->second;
-		const auto clipIt = m_AudioClipDict.find(id);
-
-		//if we find a clip with that ID
-		if (clipIt != m_AudioClipDict.end())
-		{
-			if (!clipIt->second.expired())
-			{
-				//our resource still exists and is loaded.
-				//return a shared_ptr instance of our non expired weak_ptr
-				return clipIt->second.lock();
-			}
-			
-			//else
-			//weak_ptr expired, load resource
-			Mix_Chunk* pChunk = Mix_LoadWAV(fullPath.c_str());
-			if (!pChunk)
-				throw std::runtime_error(std::string("Failed to load Audio: ") + Mix_GetError());
-
-			//hand it the same ID as the expired one
-			auto rv = std::shared_ptr<AudioClip>(new AudioClip(id, pChunk));
-
-			m_AudioClipDict.at(id) = rv;
-			return rv;
-
-		}
-
-		//we did not find a clip with that ID, construct a new one! 
-	}
-
-	//Load resource
-	Mix_Chunk* pChunk = Mix_LoadWAV(fullPath.c_str());
-	if (!pChunk)
-		throw std::runtime_error(std::string("Failed to load Audio: ") + Mix_GetError());
-
-	//Create AudioClip
-	auto rv = std::shared_ptr<AudioClip>(new AudioClip(pChunk));
-	const clip_id id = rv->GetId();
-
-	//Add it to the dictionary
-	m_AudioClipDict.at(id) = rv;
-
-	//Remember the path
-	m_AudioRememberedPaths.at(file) = id;
-
-	return rv;
+	return m_DataPath;
 }
-
 

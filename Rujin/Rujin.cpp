@@ -30,7 +30,10 @@
 #include <functional>
 #include <thread>
 
+#include "FMOD_AudioProvider.h"
+#include "ServiceLocator.h"
 #include "SteamAchievementSystem.h"
+#include "Rutils/Logger.h"
 
 namespace rujin
 {
@@ -56,6 +59,8 @@ void PrintSDLVersion()
 
 void rujin::Rujin::Initialize()
 {
+	Logger::Initialize(); //TODO: make a service perhaps.
+
 	InitializeSDL();
 
 	InitializeSteamworks();
@@ -69,13 +74,7 @@ void rujin::Rujin::InitializeSDL()
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 	{
-		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
-	}
-
-	//Initialize SDL_mixer
-	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
-	{
-		throw std::runtime_error(std::string("SDL_Init mixer Error: ") + Mix_GetError());
+		LOG_ERROR(std::string("SDL_Init Error: ") + SDL_GetError());
 	}
 
 	m_Window = SDL_CreateWindow(
@@ -89,7 +88,7 @@ void rujin::Rujin::InitializeSDL()
 
 	if (m_Window == nullptr)
 	{
-		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
+		LOG_ERROR(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
 
 	SDL_GetWindowSize(m_Window, &m_WindowSize.x, &m_WindowSize.y);
@@ -116,21 +115,21 @@ void rujin::Rujin::InitializeSteamworks()
  */
 void rujin::Rujin::LoadGame() const
 {
+	auto& audioService = ServiceLocator::RegisterService<AudioService, FMOD_AudioProvider>();
 	auto* pScene = SceneManager::GetInstance().CreateScene("Demo");
-
 	auto& steamAch = achievement::SteamAchievementSystem::GetInstance();
+	auto& resourceManager = ResourceManager::GetInstance();
 
 	//load required textures
-	const auto pBackgroundTexture = ResourceManager::GetInstance().LoadTexture("background.jpg");
-	const auto pLogoTexture = ResourceManager::GetInstance().LoadTexture("logo.png");
-	const auto pLinguaFont = ResourceManager::GetInstance().LoadFont("Lingua.otf", 20);
+	const auto pBackgroundTexture = resourceManager.LoadTexture("background.jpg");
+	const auto pLogoTexture = resourceManager.LoadTexture("logo.png");
+	const auto pLinguaFont = resourceManager.LoadFont("Lingua.otf", 20);
 
-	{
-		//TODO: remove, this is for test purposes
-		auto audioServiceProvider = services::SDL_AudioProvider();
+	audioService.LoadSound("Ahem.wav");
 
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
+	this_thread::sleep_for(std::chrono::seconds(2));
+
+	audioService.PlaySound("Ahem.wav", 100);
 
 	{
 		//create game object
@@ -250,7 +249,8 @@ void rujin::Rujin::LoadGame() const
 	auto& pInput = input::InputManager::GetInstance();
 
 	//p1 commands
-	pInput.RegisterCommand(input::ControllerButton::A, std::make_unique<command::Die>(pP1PPC));
+	pInput.RegisterCommand(input::ControllerButton::A, std::make_unique<command::PlaySound>("Ahem.wav"));
+	//pInput.RegisterCommand(input::ControllerButton::A, std::make_unique<command::Die>(pP1PPC));
 	pInput.RegisterCommand(input::ControllerButton::B, std::make_unique<command::DropBurger>(pP1PPC, pBurgerComp));
 	pInput.RegisterCommand(input::ControllerButton::X, std::make_unique<command::KillEnemy>(pP1PPC, pEnemyComp));
 
@@ -284,6 +284,8 @@ void rujin::Rujin::Cleanup()
 	SDL_DestroyWindow(m_Window);
 	m_Window = nullptr;
 	SDL_Quit();
+
+	Logger::Release();
 }
 
 void rujin::Rujin::Run()
@@ -344,7 +346,7 @@ void rujin::Rujin::Run()
 		/* input */
 		input.ProcessInput(); //TODO: don't do this every frame, but in a polling interval
 
-		/* Update scene */
+		/* RunThread scene */
 		sceneManager.Update();
 
 		/* Fixed updates */

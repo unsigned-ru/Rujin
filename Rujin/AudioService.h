@@ -1,14 +1,24 @@
 #pragma once
+#include "Service.h"
+
 #include <cstdint>
 
-namespace rujin::services
+namespace rujin
 {
-	class AudioService
+	using sound_id = size_t;
+
+	class AudioService : public Service
 	{
 	public:
-		virtual ~AudioService() = default;
-		virtual void PlaySound(const uint16_t id, const float volume) = 0;
-		virtual void StopSound(const uint16_t id) = 0;
-		virtual void StopAllSounds() = 0;
+		virtual ~AudioService() override = default;
+
+		virtual void LoadSound(const std::string& filepath) = 0;
+		virtual void UnloadSound(const std::string& filepath) = 0;
+
+		virtual sound_id PlaySound(const std::string& filepath, float volume) = 0;
+
+
+		//TODO: playmusic
+		//TODO: 
 	};
 }

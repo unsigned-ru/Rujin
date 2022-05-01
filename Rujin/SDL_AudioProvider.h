@@ -1,11 +1,14 @@
 #pragma once
 
+#include <functional>
+#include <mutex>
+
 #include "AudioService.h"
 
 //forward declarations
 namespace std { class thread; }
 
-namespace rujin::services
+namespace rujin
 {
 	class SDL_AudioProvider final : public AudioService
 	{
@@ -13,20 +16,20 @@ namespace rujin::services
 		SDL_AudioProvider();
 		~SDL_AudioProvider() override;
 
-		void PlaySound(const uint16_t id, const float volume) override;
-		void StopSound(const uint16_t id) override;
-		void StopAllSounds() override;
+		sound_id PlaySound(const std::string& filepath, float volume) override;
 
+		void LoadSound(const std::string& filepath) override;
+		void UnloadSound(const std::string& filepath) override;
 
 	private:
-		void Update();
-
+		void RunThread();
+	private:
 		std::thread* m_pAudioThread;
 		std::atomic<bool> m_ExitThread;
+		std::mutex m_QueueMutex;
 
+		/*std::vector<AudioRequest> m_AudioQueue;*/
+		
 		static constexpr uint16_t C_POLLING_RATE{ 50 }; // in milliseconds
-		static constexpr uint16_t C_MAX_PENDING{ 50 }; // max pending sounds in 1 update
-
-
 	};
 }

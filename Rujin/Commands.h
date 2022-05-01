@@ -51,5 +51,15 @@ namespace rujin
 		private:
 			EnemyComponent* m_pEnemy;
 		};
+
+		class PlaySound final : public IBase
+		{
+		public:
+			explicit PlaySound(const std::string& soundPath);
+			void Execute() override;
+
+		private:
+			std::string m_SoundPath;
+		};
 	}
 }

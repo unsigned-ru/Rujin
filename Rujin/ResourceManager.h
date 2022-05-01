@@ -31,7 +31,8 @@ namespace rujin
 
 		std::shared_ptr<Texture2D> LoadTexture(const std::string& file);
 		std::shared_ptr<Font> LoadFont(const std::string& file, uint32_t size);
-		std::shared_ptr<AudioClip> LoadAudio(const std::string& file);
+
+		std::string GetDataPath() const;
 
 	private:
 		friend class Singleton<ResourceManager>;
@@ -39,9 +40,7 @@ namespace rujin
 
 		std::unordered_map<std::string, std::weak_ptr<Font>> m_FontDict;
 		std::unordered_map<std::string, std::weak_ptr<Texture2D>> m_TextureDict;
-		std::unordered_map<uint16_t, std::weak_ptr<AudioClip>> m_AudioClipDict;
-		std::unordered_map<std::string, uint16_t> m_AudioRememberedPaths;
-		
+
 		std::string m_DataPath{};
 	};
 }

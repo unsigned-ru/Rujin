@@ -16,7 +16,7 @@ namespace rujin
 	{
 	public:
 		explicit PeterPepperComponent(const std::vector<event::IObserver*>& pObservers = {});
-		~PeterPepperComponent() override{};
+		~PeterPepperComponent() override = default;
 		void Start() override;
 		void Update() override;
 

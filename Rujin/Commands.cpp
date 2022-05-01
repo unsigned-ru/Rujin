@@ -4,6 +4,7 @@
 #include "BurgerComponent.h"
 #include "PeterPepperComponent.h"
 #include "EnemyComponent.h"
+#include "ServiceLocator.h"
 
 rujin::command::Die::Die(PeterPepperComponent* pComp) : IBase(pComp) {};
 void rujin::command::Die::Execute()
@@ -28,6 +29,17 @@ rujin::command::KillEnemy::KillEnemy(PeterPepperComponent* pComp, EnemyComponent
 void rujin::command::KillEnemy::Execute()
 {
 	m_pEnemy->Die(GetComponent<PeterPepperComponent>());
+}
+
+rujin::command::PlaySound::PlaySound(const std::string& soundPath)
+	: IBase(nullptr)
+	, m_SoundPath(soundPath)
+
+{}
+
+void rujin::command::PlaySound::Execute()
+{
+	ServiceLocator::GetService<AudioService>().PlaySound(m_SoundPath, 100);
 }
 
 
