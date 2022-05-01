@@ -116,20 +116,18 @@ void rujin::Rujin::InitializeSteamworks()
 void rujin::Rujin::LoadGame() const
 {
 	auto& audioService = ServiceLocator::RegisterService<AudioService, FMOD_AudioProvider>();
-	auto* pScene = SceneManager::GetInstance().CreateScene("Demo");
-	auto& steamAch = achievement::SteamAchievementSystem::GetInstance();
 	auto& resourceManager = ResourceManager::GetInstance();
+	auto* pScene = SceneManager::GetInstance().CreateScene("Demo");
 
 	//load required textures
 	const auto pBackgroundTexture = resourceManager.LoadTexture("background.jpg");
 	const auto pLogoTexture = resourceManager.LoadTexture("logo.png");
+
+	//load required fonts
 	const auto pLinguaFont = resourceManager.LoadFont("Lingua.otf", 20);
 
+	//load sounds
 	audioService.LoadSound("Ahem.wav");
-
-	this_thread::sleep_for(std::chrono::seconds(2));
-
-	audioService.PlaySound("Ahem.wav", 100);
 
 	{
 		//create game object
@@ -171,7 +169,6 @@ void rujin::Rujin::LoadGame() const
 
 		pScene->AddGameObject(go);
 	}
-	
 
 	{
 		//create game object
@@ -190,89 +187,22 @@ void rujin::Rujin::LoadGame() const
 		pScene->AddGameObject(go);
 	}
 
-	auto p1GO = std::make_unique<GameObject>("Player1");
-	auto* const pP1PPC = p1GO->AddComponent(new PeterPepperComponent({ &steamAch }));
-	pScene->AddGameObject(p1GO);
-
-	auto p2GO = std::make_unique<GameObject>("Player2");
-	auto* const pP2PPC = p2GO->AddComponent(new PeterPepperComponent({&steamAch }));
-	pScene->AddGameObject(p2GO);
-
-	auto pHUD = std::make_unique<GameObject>("HUD");
-
-		auto p1HUD = std::make_unique<GameObject>("Player1HUD");
-		p1HUD->GetTransform()->SetPosition({ 20.f, m_WindowSize.y / 2.f });
-
-			auto pP1Lives = std::make_unique<GameObject>("Player1Lives");
-			auto* const pP1LivesTextComp = pP1Lives->AddComponent(new TextComponent(pLinguaFont));
-			auto* const pP1LivesTextureRenderComp = pP1Lives->AddComponent<TextureRenderComponent>(); //uses default ctor
-			pP1Lives->AddComponent(new TextRenderComponent(pP1LivesTextComp, pP1LivesTextureRenderComp));
-
-			auto pP1Points = std::make_unique<GameObject>("Player1Points");
-			pP1Points->GetTransform()->SetLocalPosition({ 0, 20.f });
-			auto* const pP1PointsTextComp = pP1Points->AddComponent(new TextComponent(pLinguaFont));
-			auto* const pP1PointsTextureRenderComp = pP1Points->AddComponent<TextureRenderComponent>(); //uses default ctor
-			pP1Points->AddComponent(new TextRenderComponent(pP1PointsTextComp, pP1PointsTextureRenderComp));
-
-		p1HUD->AddComponent(new PlayerHUDComponent(pP1LivesTextComp, pP1PointsTextComp, pP1PPC, { 255, 255, 0, 255 }));
-		p1HUD->AddChild(pP1Lives);
-		p1HUD->AddChild(pP1Points);
-
-		auto p2HUD = std::make_unique<GameObject>("Player2HUD");
-		p2HUD->GetTransform()->SetPosition({ 20.f, m_WindowSize.y / 2.f + 75.f });
-
-			auto pP2Lives = std::make_unique<GameObject>("Player2Lives");
-			auto* const pP2LivesTextComp = pP2Lives->AddComponent(new TextComponent(pLinguaFont));
-			auto* const pP2LivesTextureRenderComp = pP2Lives->AddComponent<TextureRenderComponent>(); //uses default ctor
-			pP2Lives->AddComponent(new TextRenderComponent(pP2LivesTextComp, pP2LivesTextureRenderComp));
-
-			auto pP2Points = std::make_unique<GameObject>("Player2Points");
-			pP2Points->GetTransform()->SetLocalPosition({ 0, 20.f });
-			auto* const pP2PointsTextComp = pP2Points->AddComponent(new TextComponent(pLinguaFont));
-			auto* const pP2PointsTextureRenderComp = pP2Points->AddComponent<TextureRenderComponent>(); //uses default ctor
-			pP2Points->AddComponent(new TextRenderComponent(pP2PointsTextComp, pP2PointsTextureRenderComp));
-
-		p2HUD->AddComponent(new PlayerHUDComponent(pP2LivesTextComp, pP2PointsTextComp, pP2PPC, { 255, 255, 0, 255 }));
-		p2HUD->AddChild(pP2Lives);
-		p2HUD->AddChild(pP2Points);
-
-	pHUD->AddChild(p1HUD);
-	pHUD->AddChild(p2HUD);
-
-	pScene->AddGameObject(pHUD);
-
-	auto pBurgerEnemtGO = std::make_unique<GameObject>("BurgerEnemyTestGameObject");
-	auto* pEnemyComp = pBurgerEnemtGO->AddComponent<EnemyComponent>();
-	auto* pBurgerComp = pBurgerEnemtGO->AddComponent<BurgerComponent>();
-
 	/* setup input commands */
 	auto& pInput = input::InputManager::GetInstance();
 
 	//p1 commands
 	pInput.RegisterCommand(input::ControllerButton::A, std::make_unique<command::PlaySound>("Ahem.wav"));
-	//pInput.RegisterCommand(input::ControllerButton::A, std::make_unique<command::Die>(pP1PPC));
-	pInput.RegisterCommand(input::ControllerButton::B, std::make_unique<command::DropBurger>(pP1PPC, pBurgerComp));
-	pInput.RegisterCommand(input::ControllerButton::X, std::make_unique<command::KillEnemy>(pP1PPC, pEnemyComp));
-
-	//p2 commands
-	pInput.RegisterCommand(input::ControllerButton::DPAD_DOWN, std::make_unique<command::Die>(pP2PPC));
-	pInput.RegisterCommand(input::ControllerButton::DPAD_RIGHT, std::make_unique<command::DropBurger>(pP2PPC, pBurgerComp));
-	pInput.RegisterCommand(input::ControllerButton::DPAD_LEFT, std::make_unique<command::KillEnemy>(pP2PPC, pEnemyComp));
 
 	/* Print instructions */
 	std::cout
 		<< "# ------------------ #" << std::endl
 		<< "# ---INSTRUCTIONS--- #" << std::endl
 		<< "# ------------------ #" << std::endl
-		<< "Note: For now all input is done on 1 controller, adding support for multiple controllers and keyboard input asap." << std::endl
-		<< "> Player 1 Controls <" << std::endl
-		<< "	Die:			A" << std::endl
-		<< "	DropBurger:		B" << std::endl
-		<< "	KillEnemy:		X" << std::endl
-		<< "> Player 2 Controls <" << std::endl
-		<< "	Die:			DPAD_DOWN" << std::endl
-		<< "	DropBurger:		DPAD_RIGHT" << std::endl
-		<< "	KillEnemy:		DPAD_LEFT" << std::endl;
+		<< "> Controls <" << std::endl
+		<< "	Start sound 1:		A" << std::endl
+		<< "	Start sound 2:		B" << std::endl
+		<< "	Start sound 3:		Y" << std::endl
+		<< "	Start sound 4:		X" << std::endl;
 }
 
 void rujin::Rujin::Cleanup()
