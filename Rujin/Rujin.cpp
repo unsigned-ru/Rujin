@@ -127,7 +127,10 @@ void rujin::Rujin::LoadGame() const
 	const auto pLinguaFont = resourceManager.LoadFont("Lingua.otf", 20);
 
 	//load sounds
-	audioService.LoadSound("Ahem.wav");
+	audioService.LoadAudio("Audio/SFX/ahem.wav");
+	audioService.LoadAudio("Audio/SFX/phone_ring.wav");
+	audioService.LoadAudio("Audio/SFX/rooster_song.wav");
+	audioService.LoadAudio("Audio/SFX/message.wav");
 
 	{
 		//create game object
@@ -191,18 +194,58 @@ void rujin::Rujin::LoadGame() const
 	auto& pInput = input::InputManager::GetInstance();
 
 	//p1 commands
-	pInput.RegisterCommand(input::ControllerButton::A, std::make_unique<command::PlaySound>("Ahem.wav"));
+	auto stop1{ std::make_unique<command::StopSound>() };
+	auto stop2{ std::make_unique<command::StopSound>() };
+	auto stop3{ std::make_unique<command::StopSound>() };
+	auto stop4{ std::make_unique<command::StopSound>() };
+
+	auto pause{ std::make_unique<command::ToggleSoundPaused>() };
+
+	pInput.RegisterCommand(input::ControllerButton::A, std::make_unique<command::PlaySound>("Audio/SFX/ahem.wav", stop1.get(), pause.get()));
+	pInput.RegisterCommand(input::ControllerButton::B, std::make_unique<command::PlaySound>("Audio/SFX/phone_ring.wav", stop2.get(), pause.get()));
+	pInput.RegisterCommand(input::ControllerButton::Y, std::make_unique<command::PlaySound>("Audio/SFX/rooster_song.wav", stop3.get(), pause.get()));
+	pInput.RegisterCommand(input::ControllerButton::X, std::make_unique<command::PlaySound>("Audio/SFX/message.wav", stop4.get(), pause.get()));
+
+
+	pInput.RegisterCommand(input::ControllerButton::DPAD_DOWN, std::move(stop1));
+	pInput.RegisterCommand(input::ControllerButton::DPAD_RIGHT, std::move(stop2));
+	pInput.RegisterCommand(input::ControllerButton::DPAD_UP, std::move(stop3));
+	pInput.RegisterCommand(input::ControllerButton::DPAD_LEFT, std::move(stop4));
+
+	pInput.RegisterCommand(input::ControllerButton::START, std::move(pause));
+	pInput.RegisterCommand(input::ControllerButton::BACK, std::make_unique<command::SwitchAudioProvider>());
+
 
 	/* Print instructions */
 	std::cout
 		<< "# ------------------ #" << std::endl
 		<< "# ---INSTRUCTIONS--- #" << std::endl
 		<< "# ------------------ #" << std::endl
-		<< "> Controls <" << std::endl
+		<< "> NOTE: <" << std::endl
+		<< "I have implemented both FMOD and SDL_Mixer Audio providers." << std::endl
+		<< "Due to limitations of SDL I switched to FMOD as the main audio provider. FMOD already uses it's separate Audio thread and event-queue system, making audio asynchronous." << std::endl
+		<< "To prove that i have the skills to make an asynchronous audio system using event-queued requests i implemented a part of the SDL provider." << std::endl
+		<< "But not all pure virtuals are implemented in SDL because SDL's does not support all the features i want the audio service to have." << std::endl
+		<< "So Event-queue and separate thread audio with my own implementation: SDL_AudioProvider.cpp" << std::endl
+		<< "And Main Audio implementation i will use with support for more complex things (like pausing, stopping, etc...) FMOD_AudioProvider.cpp (The one that is fully implemented)" << std::endl
+		<< std::endl
+		<< "To switch between audio systems you can press the MENU button." << std::endl
+		<< std::endl
+		<< "> Controls: Starting Sound <" << std::endl
 		<< "	Start sound 1:		A" << std::endl
 		<< "	Start sound 2:		B" << std::endl
 		<< "	Start sound 3:		Y" << std::endl
-		<< "	Start sound 4:		X" << std::endl;
+		<< "	Start sound 4:		X" << std::endl
+		<< "> Controls: Stopping Sound <" << std::endl
+		<< "	Stop sound 1:		DPAD_DOWN" << std::endl
+		<< "	Stop sound 2:		DPAD_RIGHT" << std::endl
+		<< "	Stop sound 3:		DPAD_UP" << std::endl
+		<< "	Stop sound 4:		DPAD_LEFT" << std::endl
+		<< "> Controls: Toggle Pause <" << std::endl
+		<< "	Pause/Unpause		START_BUTTON" << std::endl
+		<< "	Last playing sound:" << std::endl;
+
+	LOG_INFO("ACTIVE AUDIO PROVIDER: FMOD");
 }
 
 void rujin::Rujin::Cleanup()

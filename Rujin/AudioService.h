@@ -12,13 +12,22 @@ namespace rujin
 	public:
 		virtual ~AudioService() override = default;
 
-		virtual void LoadSound(const std::string& filepath) = 0;
-		virtual void UnloadSound(const std::string& filepath) = 0;
+		virtual void LoadAudio(const std::string& filepath) = 0;
+		virtual void UnloadAudio(const std::string& filepath) = 0;
 
-		virtual sound_id PlaySound(const std::string& filepath, float volume) = 0;
+		virtual sound_id PlaySoundEffect(const std::string& filepath) = 0;
+		virtual sound_id PlayMusic(const std::string& filepath, bool loop = true) = 0;
 
+		virtual void StopAudio(const sound_id id) = 0;
+		virtual void SetAudioPaused(const sound_id id, const bool isPaused) = 0;
 
-		//TODO: playmusic
-		//TODO: 
+		virtual bool IsFinished(const sound_id id) = 0;
+		virtual bool IsPaused(const sound_id id) = 0;
+
+		virtual void SetMusicVolume(float volume) = 0;
+		virtual void SetSoundEffectVolume(float volume) = 0;
+
+		virtual float GetMusicVolume() const = 0;
+		virtual float GetSoundEffectVolume() const = 0;
 	};
 }

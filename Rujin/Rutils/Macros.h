@@ -1,20 +1,12 @@
 #pragma once
 
 #pragma region Error Checking
-#define ASSERT_IF_(isTrue)\
-	if(isTrue){HANDLE_ERROR("[ASSERT]" #isTrue);}
+#define ASSERT_IF(isTrue)\
+	if(isTrue){LOG_ERROR("[ASSERT]" #isTrue);}
 
-#define ASSERT_IF(isTrue, ...)\
-	if(isTrue){HANDLE_ERROR(__VA_ARGS__);}
+#define ASSERT_NULL(object)\
+	if((object) == nullptr){LOG_ERROR("[ASSERT]" #object " == nullptr");}
 
-#define ASSERT_NULL_(object)\
-	if((object) == nullptr){HANDLE_ERROR("[ASSERT]" #object " == nullptr");}
-
-#define ASSERT_NULL(object, ...)\
-	if((object) == nullptr){HANDLE_ERROR(__VA_ARGS__);}
-
-#define HANDLE_ERROR(...)\
-	Logger::LogError(LOG_STRING(__VA_ARGS__))
 #pragma endregion
 
 

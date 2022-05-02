@@ -52,14 +52,52 @@ namespace rujin
 			EnemyComponent* m_pEnemy;
 		};
 
+
+		class StopSound final : public IBase
+		{
+		public:
+			explicit StopSound();
+			void Execute() override;
+
+		private:
+			friend class PlaySound;
+			size_t m_soundId;
+
+		};
+
+		class ToggleSoundPaused final : public IBase
+		{
+		public:
+			explicit ToggleSoundPaused();
+			void Execute() override;
+
+		private:
+			friend class PlaySound;
+			size_t m_soundId;
+		};
+
 		class PlaySound final : public IBase
 		{
 		public:
-			explicit PlaySound(const std::string& soundPath);
+			explicit PlaySound(const std::string& soundPath, StopSound* pStopCmd = nullptr, ToggleSoundPaused* pPauseCmd = nullptr);
 			void Execute() override;
 
 		private:
 			std::string m_SoundPath;
+			StopSound* m_pStopCmd;
+			ToggleSoundPaused* m_pPauseCmd;
 		};
+
+		class SwitchAudioProvider final : public IBase
+		{
+		public:
+			explicit SwitchAudioProvider();
+			void Execute() override;
+
+		private:
+			bool sdl = false;
+		};
+
+	
 	}
 }

@@ -4,6 +4,7 @@
 #include "BurgerComponent.h"
 #include "PeterPepperComponent.h"
 #include "EnemyComponent.h"
+#include "FMOD_AudioProvider.h"
 #include "ServiceLocator.h"
 
 rujin::command::Die::Die(PeterPepperComponent* pComp) : IBase(pComp) {};
@@ -31,15 +32,58 @@ void rujin::command::KillEnemy::Execute()
 	m_pEnemy->Die(GetComponent<PeterPepperComponent>());
 }
 
-rujin::command::PlaySound::PlaySound(const std::string& soundPath)
+rujin::command::StopSound::StopSound() : IBase(nullptr) {}
+
+void rujin::command::StopSound::Execute()
+{
+	ServiceLocator::GetService<AudioService>().StopAudio(m_soundId);
+}
+
+rujin::command::ToggleSoundPaused::ToggleSoundPaused() : IBase(nullptr) {}
+
+void rujin::command::ToggleSoundPaused::Execute()
+{
+	auto& audioService = ServiceLocator::GetService<AudioService>();
+
+	//toggle pause
+	audioService.SetAudioPaused(m_soundId, !audioService.IsPaused(m_soundId));
+}
+
+rujin::command::PlaySound::PlaySound(const std::string& soundPath, StopSound* pStopCmd, ToggleSoundPaused* pPauseCmd)
 	: IBase(nullptr)
 	, m_SoundPath(soundPath)
-
+	, m_pStopCmd(pStopCmd)
+	, m_pPauseCmd(pPauseCmd)
 {}
 
 void rujin::command::PlaySound::Execute()
 {
-	ServiceLocator::GetService<AudioService>().PlaySound(m_SoundPath, 100);
+	const auto id = ServiceLocator::GetService<AudioService>().PlaySoundEffect(m_SoundPath);
+
+	if (m_pStopCmd)
+		m_pStopCmd->m_soundId = id;
+
+	if (m_pPauseCmd)
+		m_pPauseCmd->m_soundId = id;
+
+}
+
+rujin::command::SwitchAudioProvider::SwitchAudioProvider() : IBase(nullptr) {}
+
+void rujin::command::SwitchAudioProvider::Execute()
+{
+	if (!sdl)
+	{
+		ServiceLocator::RegisterService<AudioService, SDL_AudioProvider>();
+		sdl = true;
+		LOG_INFO("ACTIVE AUDIO PROVIDER: SDL_Mixer");
+	}
+	else
+	{
+		ServiceLocator::RegisterService<AudioService, FMOD_AudioProvider>();
+		sdl = false;
+		LOG_INFO("ACTIVE AUDIO PROVIDER: FMOD");
+	}
 }
 
 
