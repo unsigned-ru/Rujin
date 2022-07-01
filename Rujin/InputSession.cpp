@@ -3,14 +3,13 @@
 
 //TODO: input update frequency
 
-rujin::InputSession::InputSession(const PlayerIndex playerIndex, const InputDeviceType&& deviceType)
+rujin::InputSession::InputSession(const InputDeviceType&& deviceType)
 	: m_InputDeviceType{deviceType}
-	, m_PlayerIndex{ playerIndex }
 {
 }
 
-rujin::KeyboardAndMouseInputSession::KeyboardAndMouseInputSession(const PlayerIndex playerIndex)
-	: InputSession(playerIndex, InputDeviceType::KeyboardAndMouse)
+rujin::KeyboardAndMouseInputSession::KeyboardAndMouseInputSession()
+	: InputSession(InputDeviceType::KeyboardAndMouse)
 {
 	m_pKeyboardState0 = new BYTE[256];
 	m_pKeyboardState1 = new BYTE[256];
@@ -74,11 +73,11 @@ bool rujin::KeyboardAndMouseInputSession::UpdateStates()
 	return true;
 }
 
-rujin::GamepadInputSession::GamepadInputSession(const PlayerIndex playerIndex, const ControllerIndex controllerIndex, const XINPUT_STATE& state)
-	: InputSession(playerIndex, InputDeviceType::Gamepad)
+rujin::GamepadInputSession::GamepadInputSession(const GamepadIndex gamepadIndex, const XINPUT_STATE& state)
+	: InputSession(InputDeviceType::Gamepad)
 	, m_OldGamepadState{state}
 	, m_CurrGamepadState{state}
-	, m_ControllerIndex{controllerIndex}
+	, m_GamepadIndex{ gamepadIndex }
 {}
 
 bool rujin::GamepadInputSession::UpdateStates()
@@ -88,7 +87,7 @@ bool rujin::GamepadInputSession::UpdateStates()
 
 	// Simply get the state of the controller from XInput.
 	DWORD dwResult;
-	dwResult = XInputGetState(m_ControllerIndex, &m_CurrGamepadState);
+	dwResult = XInputGetState(m_GamepadIndex, &m_CurrGamepadState);
 
 	return !(dwResult != ERROR_SUCCESS);
 }
@@ -165,7 +164,7 @@ void rujin::GamepadInputSession::SetVibration(float vibration)
 	vibrationState.wLeftMotorSpeed = static_cast<WORD>(vibration * 65535);
 	vibrationState.wRightMotorSpeed = static_cast<WORD>(vibration * 65535);
 
-	XInputSetState(m_ControllerIndex, &vibrationState);
+	XInputSetState(m_GamepadIndex, &vibrationState);
 }
 
 void rujin::GamepadInputSession::SetLeftVibration(float leftVibration)
@@ -178,7 +177,7 @@ void rujin::GamepadInputSession::SetLeftVibration(float leftVibration)
 	vibrationState.wLeftMotorSpeed = static_cast<WORD>(leftVibration * 65535);
 	vibrationState.wRightMotorSpeed = 0;
 
-	XInputSetState(m_ControllerIndex, &vibrationState);
+	XInputSetState(m_GamepadIndex, &vibrationState);
 }
 
 void rujin::GamepadInputSession::SetRightVibration(float rightVibration)
@@ -191,5 +190,5 @@ void rujin::GamepadInputSession::SetRightVibration(float rightVibration)
 	vibrationState.wLeftMotorSpeed = 0;
 	vibrationState.wRightMotorSpeed = static_cast<WORD>(rightVibration * 65535);;
 
-	XInputSetState(m_ControllerIndex, &vibrationState);
+	XInputSetState(m_GamepadIndex, &vibrationState);
 }

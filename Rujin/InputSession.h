@@ -1,6 +1,7 @@
 #pragma once
 #include "InputStructs.h"
 #include <Xinput.h>
+#include <unordered_map>
 
 namespace rujin
 {
@@ -13,35 +14,22 @@ namespace rujin
 	class InputSession
 	{
 	public:
-		InputSession(const PlayerIndex playerIndex, const InputDeviceType&& deviceType);
+		InputSession(const InputDeviceType&& deviceType);
 		virtual ~InputSession() = default;
 
 		//returns false if input device disconnects.
 		virtual bool UpdateStates() = 0;
 
-		PlayerIndex GetPlayerIndex() const { return m_PlayerIndex; };
 		InputDeviceType GetInputDeviceType() const { return m_InputDeviceType; };
 
 	private:
-		PlayerIndex m_PlayerIndex;
 		InputDeviceType m_InputDeviceType;
 	};
 
-	template <typename ButtonType>
-	class InputSessionCommands
+	class KeyboardAndMouseInputSession final : public InputSession
 	{
 	public:
-		InputSessionCommands() = default;
-		virtual ~InputSessionCommands() = default;
-
-	protected:
-		std::vector<KeybindData<ButtonType>> m_KeybindCommands{};
-	};
-
-	class KeyboardAndMouseInputSession final : public InputSession, public InputSessionCommands<KeyboardAndMouseButton>
-	{
-	public:
-		KeyboardAndMouseInputSession(const PlayerIndex playerIndex);
+		KeyboardAndMouseInputSession();
 		~KeyboardAndMouseInputSession();
 
 		bool IsMouseButtonDown(int button, bool previousFrame = false) const;
@@ -63,10 +51,10 @@ namespace rujin
 	};
 
 
-	class GamepadInputSession final : public InputSession, public InputSessionCommands<GamepadButton>
+	class GamepadInputSession final : public InputSession
 	{
 	public:
-		GamepadInputSession(const PlayerIndex playerIndex, const ControllerIndex controllerIndex, const XINPUT_STATE& state);
+		GamepadInputSession(const GamepadIndex gamepadIndex, const XINPUT_STATE& state);
 		~GamepadInputSession() = default;
 
 		virtual bool UpdateStates() override;
@@ -83,20 +71,12 @@ namespace rujin
 		void SetLeftVibration(float leftVibration);
 		void SetRightVibration(float rightVibration);
 
-		ControllerIndex GetGamepadIndex() const { return m_ControllerIndex; };
+		GamepadIndex GetGamepadIndex() const { return m_GamepadIndex; };
 
 	private:
 		XINPUT_STATE m_OldGamepadState{};
 		XINPUT_STATE m_CurrGamepadState{};
 
-		//point to one of the above
-		BYTE* m_pCurrKeyboardState{};
-		BYTE* m_pOldKeyboardState{};
-
-		POINT m_OldMousePosition{};
-		POINT m_CurrMousePosition{};
-		POINT m_MouseMovement{};
-
-		ControllerIndex m_ControllerIndex;
+		GamepadIndex m_GamepadIndex;
 	};
 }

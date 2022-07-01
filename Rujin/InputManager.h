@@ -1,13 +1,10 @@
 #pragma once
 #include <memory>
 #include "Singleton.h"
-#include <variant>
 #include "InputStructs.h"
 
 namespace rujin
 {
-	using InputButton = std::variant<GamepadButton, KeyboardAndMouseButton>;
-
 	namespace command
 	{
 		class IBase;
@@ -23,7 +20,7 @@ namespace rujin
 
 		public:
 			InputManager();
-			~InputManager() override;
+			~InputManager();
 
 			InputManager(InputManager&) = delete;
 			InputManager& operator=(InputManager&) = delete;
@@ -32,16 +29,16 @@ namespace rujin
 
 			void ProcessInput(float deltaTime) const;
 
-			void RegisterKeybind(InputButton button, ButtonState triggerState, std::unique_ptr<command::IBase>&& pCommand, PlayerIndex playerIndex = 0);
-			
-			glm::vec2& GetMousePosition() const;
-			glm::vec2& GetMouseMovement() const;
+			//glm::vec2& GetMousePosition() const;
+			//glm::vec2& GetMouseMovement() const;
 
-			InputSession* GetPlayerInputSession(PlayerIndex playerIndex = 0) const;
+			PlayerIndex RegisterPlayer();
+			void AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds);
+			void AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds);
 
 		private:
-			class InputManagerImpl;
-			std::unique_ptr<InputManagerImpl> m_pImpl;
+			class InputManagerXInputImpl;
+			std::unique_ptr<InputManagerXInputImpl> m_pImpl;
 		};
 
 	}

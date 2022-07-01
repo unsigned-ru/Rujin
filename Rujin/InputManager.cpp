@@ -1,7 +1,7 @@
 #include "RujinPCH.h"
 #include "InputManager.h"
-#include "Commands.h"
-#include "InputSession.h"
+
+#include "PlayerInput.h"
 #include "Rutils/DeltaTimer.h"
 
 #define WIN32_LEAN_AND_MEAN
@@ -9,11 +9,9 @@
 #include <Xinput.h>
 #pragma comment(lib, "xinput.lib")
 
-#include <unordered_map>
-#include <queue>
-#include <numeric>
 #include <array>
-
+#include <numeric>
+#include <queue>
 
 namespace rujin::input
 {
@@ -22,19 +20,14 @@ namespace rujin::input
 	public:
 		InputManager::InputManagerXInputImpl()
 			: m_DeviceScanTimer{s_DeviceScanDelay, true}
+			, m_AvailableGamepads{}
 		{
-			//make sure all booleans default to false.
-			ZeroMemory(&m_ConnectedGamepads, sizeof(m_ConnectedGamepads));
-
-			//Set up ioata data for player index queue.
+			//Set up iota data for player index queue.
 			std::array<unsigned char, s_MaxPlayerCount> tempArr{};
 			std::iota(tempArr.begin(), tempArr.end(), 0);
 
 			//create player index queue
-			m_PlayerIndexQueue = std::priority_queue<PlayerIndex, std::greater<PlayerIndex>>(tempArr.begin(), tempArr.end());
-
-			//Register devices
-			RegisterNewDevices();
+			m_PlayerIndexQueue = std::priority_queue<PlayerIndex, std::vector<PlayerIndex>, std::greater<PlayerIndex>>(tempArr.begin(), tempArr.end());
 		}
 
 		void ProcessInput(float deltaTime)
@@ -44,99 +37,120 @@ namespace rujin::input
 				RegisterNewDevices();
 
 			//update connected devices
-			for (auto it = m_pInputSessions.begin(); it != m_pInputSessions.end(); ++it)
+			for (auto it = m_Players.begin(); it != m_Players.end(); ++it)
 			{
-				InputSession* pSession = it->second;
-				if (!pSession->UpdateStates())
-				{
-					//Tried to update device, but it lost connection.
-					//handle disconnect.
+				it->second.Update();
+			//	if (!pSession->UpdateStates())
+			//	{
+			//		//Tried to update device, but it lost connection.
+			//		//handle disconnect.
 
-					//add player index back into the pool
-					m_PlayerIndexQueue.push(pSession->GetPlayerIndex());
+			//		//add player index back into the pool
+			//		m_PlayerIndexQueue.push(pSession->GetPlayerIndex());
 
-					switch (pSession->GetInputDeviceType())
-					{
-						case InputDeviceType::KeyboardAndMouse:
-						{
-							if (dynamic_cast<KeyboardAndMouseInputSession*>(pSession))
-							{
-								//mark keyboard as inactive
-								m_pKeyboardSession = nullptr;
-							}
-							break;
-						}
-						case InputDeviceType::Gamepad:
-						{
-							if (GamepadInputSession* pGamepadSession = dynamic_cast<GamepadInputSession*>(pSession))
-							{
-								//mark keyboard as inactive
-								m_ConnectedGamepads[pGamepadSession->GetGamepadIndex()] = false;
-							}
-							break;
-						}
-					}
+			//		switch (pSession->GetInputDeviceType())
+			//		{
+			//			case InputDeviceType::KeyboardAndMouse:
+			//			{
+			//				if (dynamic_cast<KeyboardAndMouseInputSession*>(pSession))
+			//				{
+			//					//mark keyboard as inactive
+			//					m_pKeyboardSession = nullptr;
+			//				}
+			//				break;
+			//			}
+			//			case InputDeviceType::Gamepad:
+			//			{
+			//				if (GamepadInputSession* pGamepadSession = dynamic_cast<GamepadInputSession*>(pSession))
+			//				{
+			//					//mark keyboard as inactive
+			//					m_ConnectedGamepads[pGamepadSession->GetGamepadIndex()] = false;
+			//				}
+			//				break;
+			//			}
+			//		}
 
-					//remove session from list.
-					it = m_pInputSessions.erase(it);
-				}
+			//		//remove session from list.
+			//		it = m_pInputSessions.erase(it);
+			//	}
 			}
 		}
-		InputSession* GetPlayerInputSession(PlayerIndex playerIndex)
-		{
-			auto it = m_pInputSessions.find(playerIndex);
 
-			if (it != m_pInputSessions.end())
-				return it->second;
-			else 
-				return nullptr;
+		PlayerIndex RegisterPlayer() 
+		{
+			//get next player index
+			PlayerIndex playerIndex = m_PlayerIndexQueue.top();
+			m_PlayerIndexQueue.pop();
+
+			//Create player.
+			PlayerInput player = PlayerInput(playerIndex);
+
+			return playerIndex;
+		}
+
+		void AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds)
+		{
+			auto it = m_Players.find(player);
+			
+			if (it != m_Players.end())
+				it->second.AddInputAction(inputAction, keybinds);
+		}
+
+		void AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds)
+		{
+			auto it = m_Players.find(player);
+
+			if (it != m_Players.end())
+				it->second.AddAxisAction(axisAction, keybinds);
 		}
 
 	private:
+		std::unordered_map<PlayerIndex, PlayerInput> m_Players;
+
 		rutils::DeltaTimer m_DeviceScanTimer;
 		KeyboardAndMouseInputSession* m_pKeyboardSession = nullptr;
 
-		bool m_ConnectedGamepads[XUSER_MAX_COUNT];
-		std::priority_queue<PlayerIndex, std::greater<PlayerIndex>> m_PlayerIndexQueue;
-
-		std::unordered_map<PlayerIndex, InputSession*> m_pInputSessions{};
+		GamepadAvailability m_AvailableGamepads[XUSER_MAX_COUNT];
+		std::priority_queue<PlayerIndex, std::vector<PlayerIndex>, std::greater<PlayerIndex>> m_PlayerIndexQueue;
 
 		void RegisterNewDevices()
 		{
-			if (m_PlayerIndexQueue.empty())
+			//check if any Players need an input device.
+			for (auto& pair : m_Players)
 			{
-				LOG_WARNING("New input device detected, but maximum allowed input devices exceeded.");
-				return;
-			}
-
-			if ((!m_pKeyboardSession) && GetKeyboardState(nullptr))
-			{
-				PlayerIndex playerIndex = m_PlayerIndexQueue.top();
-				auto* kbSession = new KeyboardAndMouseInputSession(playerIndex);
-				m_pInputSessions.insert(std::make_pair(playerIndex, kbSession));
-				m_PlayerIndexQueue.pop();
-				m_pKeyboardSession = kbSession;
-			}
-
-			for (DWORD i = 0; i < XUSER_MAX_COUNT; ++i)
-			{
-				if (m_PlayerIndexQueue.empty())
+				PlayerInput& player = pair.second;
+				if (!player.HasInputDevice())
 				{
-					LOG_WARNING("New input device detected, but maximum allowed input devices exceeded.");
-					return;
-				}
+					//check if we have keyboard and mouse available.
+					if ((!m_pKeyboardSession) && GetKeyboardState(nullptr))
+					{
+						//keyboard is available, create session and assign to player.
+						m_pKeyboardSession = new KeyboardAndMouseInputSession();
+			
+						player.RegisterInputSession(m_pKeyboardSession);
+						continue;
+					}
 
-				//check if got connected
-				XINPUT_STATE state;
-				ZeroMemory(&state, sizeof(XINPUT_STATE));
+					//check if we have a gamepad available
+					for (GamepadIndex i = 0; i < XUSER_MAX_COUNT; ++i)
+					{
+						GamepadAvailability& gamepad = m_AvailableGamepads[i];
 
-				if (!m_ConnectedGamepads[i] && XInputGetState(i, &state) == ERROR_SUCCESS)
-				{
-					//create gamepad input session with correct ids.
-					PlayerIndex playerIndex = m_PlayerIndexQueue.top();
-					m_pInputSessions.insert(std::make_pair(playerIndex, new GamepadInputSession(m_PlayerIndexQueue.top(), i, state)));
-					m_PlayerIndexQueue.pop();
-					m_ConnectedGamepads[i] = true;
+						XINPUT_STATE state;
+						ZeroMemory(&state, sizeof(XINPUT_STATE));
+						
+						//check if gamepad got connected
+						if (!gamepad.isConnected && XInputGetState(i, &state) == ERROR_SUCCESS)
+							gamepad.isConnected = true;
+
+						//check if gamped is connected and available.
+						if (gamepad.isConnected && !gamepad.isInUse)
+						{
+							//we found an availble gamepad, create input session and assign to player
+							player.RegisterInputSession(new GamepadInputSession(i, state));
+							gamepad.isInUse = true; //mark gamepad as in-use.
+						}
+					}
 				}
 			}
 		}
@@ -152,9 +166,20 @@ namespace rujin::input
 		m_pImpl->ProcessInput(deltaTime);
 	}
 
-	InputSession* InputManager::GetPlayerInputSession(PlayerIndex playerIndex) const
+
+	PlayerIndex rujin::input::InputManager::RegisterPlayer()
 	{
-		return m_pImpl->GetPlayerInputSession(playerIndex);
+		return m_pImpl->RegisterPlayer();
+	}
+
+	void rujin::input::InputManager::AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds)
+	{
+		m_pImpl->AddInputAction(player, inputAction, keybinds);
+	}
+
+	void rujin::input::InputManager::AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds)
+	{
+		m_pImpl->AddAxisAction(player, axisAction, keybinds);
 	}
 
 #pragma endregion

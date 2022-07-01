@@ -4,9 +4,20 @@
 
 namespace rujin
 {
-	
+	//Note: 16bit int, to have the 0-256 range, but also -1, can optimize and use the remaining bits in future
+	using KeyboardAndMouseButton = int16_t; //VK_... code 
+	using PlayerIndex = unsigned char;
+	using GamepadIndex = unsigned char;
 
-	enum class GamepadButton : uint16_t
+	enum class ButtonState
+	{
+		Pressed,
+		Released,
+		Down,
+		Up
+	};
+
+	enum class GamepadButton : int32_t
 	{
 		A = 0x1000,
 		B = 0x2000,
@@ -22,55 +33,48 @@ namespace rujin
 		RIGHT_STICK = 0x0080,
 		LEFT_SHOULDER = 0x0100,
 		RIGHT_SHOULDER = 0x0200,
+		None = -1
 	};
 
-	
-	using KeyboardAndMouseButton = unsigned char; //VK_... code 
-	using PlayerIndex = unsigned char;
-	using ControllerIndex = unsigned char;
-
-	enum class ButtonState
+	enum class MouseAxis : int8_t
 	{
-		Pressed,
-		Released,
-		Down,
-		Up
+		X,
+		Y,
+		None = -1
 	};
 
-	template <typename ButtonType>
-	struct KeybindData
+	//We can always expand this with future supported input devices without breaking old game code!
+	struct AxisActionKeybinds
 	{
-		KeybindData(const ButtonType button, const ButtonState triggerState, std::unique_ptr<command::IBase>& pCommand)
-			: m_Button(button)
-			, m_TriggerState(triggerState)
-			, m_pCommand(std::move(pCommand))
+		AxisActionKeybinds(KeyboardAndMouseButton kbOrMouseButton = -1, GamepadButton gpButton = GamepadButton::None, MouseAxis mouseAxis = MouseAxis::None)
+			: kbOrMouseButton{ kbOrMouseButton }
+			, gpButton{ gpButton }
+			, mouseAxis{mouseAxis}
 		{}
 
-		~KeybindData() = default;
-
-		KeybindData(const KeybindData& other) = delete;
-		KeybindData(KeybindData&& other) noexcept
-			: m_Button(other.m_Button)
-			, m_TriggerState(other.m_TriggerState)
-			, m_pCommand(std::move(other.m_pCommand))
-		{
-		}
-		KeybindData& operator=(const KeybindData& other) = delete;
-		KeybindData& operator=(KeybindData&& other) noexcept
-		{
-			this->m_Button = other.m_Button;
-			this->m_TriggerState = other.m_TriggerState;
-			this->m_pCommand = std::move(other.m_pCommand);
-		}
-
-		//Button that will trigger the command
-		ButtonType m_Button;
-
-		//required state of the button that will trigger the command
-		ButtonState m_TriggerState;
-
-		//command that will be executed when the button requirements are met.
-		std::unique_ptr<command::IBase> m_pCommand;
+		KeyboardAndMouseButton kbOrMouseButton = -1;
+		GamepadButton gpButton = GamepadButton::None;
+		MouseAxis mouseAxis = MouseAxis::None;
 	};
 
+	//We can always expand this with future supported input devices without breaking old game code!
+	struct InputActionKeybinds
+	{
+		InputActionKeybinds(ButtonState triggerState = ButtonState::Pressed, KeyboardAndMouseButton kbOrMouseButton = -1, GamepadButton gpButton = GamepadButton::None)
+			: triggerState{ triggerState }
+			, kbOrMouseButton{ kbOrMouseButton }
+			, gpButton{ gpButton }
+		{}
+
+		ButtonState triggerState = ButtonState::Pressed;
+		KeyboardAndMouseButton kbOrMouseButton = -1;
+		GamepadButton gpButton = GamepadButton::None;
+	};
+
+
+	struct GamepadAvailability
+	{
+		bool isConnected = false;
+		bool isInUse = false;
+	};
 }

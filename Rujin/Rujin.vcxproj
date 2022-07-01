@@ -254,6 +254,7 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClInclude Include="PlayerHUDComponent.h" />
     <ClInclude Include="PeterPepperComponent.h" />
     <ClInclude Include="InputSession.h" />
+    <ClInclude Include="PlayerInput.h" />
     <ClInclude Include="Rutils\DeltaTimer.h" />
     <ClInclude Include="Rutils\General.h" />
     <ClInclude Include="Rutils\Logger.h" />
@@ -365,6 +366,7 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     </ClCompile>
     <ClCompile Include="FMOD_AudioProvider.cpp" />
     <ClCompile Include="InputSession.cpp" />
+    <ClCompile Include="PlayerInput.cpp" />
     <ClCompile Include="Rutils\DeltaTimer.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>

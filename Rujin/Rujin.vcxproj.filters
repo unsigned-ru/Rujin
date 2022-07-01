@@ -194,6 +194,9 @@
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="Rutils\DeltaTimer.h" />
+    <ClInclude Include="PlayerInput.h">
+      <Filter>Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -309,6 +312,9 @@
     </ClCompile>
     <ClCompile Include="Rutils\DeltaTimer.cpp">
       <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInput.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
