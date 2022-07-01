@@ -14,6 +14,9 @@ rujin::KeyboardAndMouseInputSession::KeyboardAndMouseInputSession()
 	m_pKeyboardState0 = new BYTE[256];
 	m_pKeyboardState1 = new BYTE[256];
 
+	ZeroMemory(m_pKeyboardState0, sizeof(BYTE) * 256);
+	ZeroMemory(m_pKeyboardState1, sizeof(BYTE) * 256);
+
 	m_pCurrKeyboardState = m_pKeyboardState1;
 	m_pOldKeyboardState = m_pKeyboardState0;
 }
@@ -46,22 +49,13 @@ bool rujin::KeyboardAndMouseInputSession::IsKeyboardKeyDown(int key, bool previo
 
 bool rujin::KeyboardAndMouseInputSession::UpdateStates()
 {
-	if (m_pCurrKeyboardState == m_pKeyboardState0)
-	{
-		m_pOldKeyboardState = m_pKeyboardState0;
-		m_pCurrKeyboardState = m_pKeyboardState1;
+	//swap buffers
+	BYTE* temp = m_pOldKeyboardState;
+	m_pOldKeyboardState = m_pCurrKeyboardState;
+	m_pCurrKeyboardState = temp;
 
-		if (!GetKeyboardState(m_pCurrKeyboardState))
-			return false; // kb disconnected or something went wrong.
-	}
-	else
-	{
-		m_pOldKeyboardState = m_pKeyboardState1;
-		m_pCurrKeyboardState = m_pKeyboardState0;
-
-		if (!GetKeyboardState(m_pCurrKeyboardState))
-			return false; // kb disconnected or something went wrong.
-	}
+	if (!GetKeyboardState(m_pCurrKeyboardState))
+		return false; // kb disconnected or something went wrong.
 
 	//Update mouse position
 	m_OldMousePosition = m_CurrMousePosition;

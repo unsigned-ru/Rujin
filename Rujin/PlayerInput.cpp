@@ -8,7 +8,11 @@ rujin::PlayerInput::PlayerInput(PlayerIndex playerIndex)
 
 void rujin::PlayerInput::Update()
 {
-	
+	if (!m_pInputSession)
+		return;
+
+	m_pInputSession->UpdateStates(); //TODO: handle bool (disconnects)
+
 	switch (m_pInputSession->GetInputDeviceType())
 	{
 		//check what input device we have

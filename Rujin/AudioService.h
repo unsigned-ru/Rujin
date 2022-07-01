@@ -5,7 +5,7 @@
 
 namespace rujin
 {
-	using sound_id = size_t;
+	using sound_id = int32_t;
 
 	class AudioService : public Service
 	{

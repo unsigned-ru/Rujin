@@ -32,9 +32,13 @@ namespace rujin
 			//glm::vec2& GetMousePosition() const;
 			//glm::vec2& GetMouseMovement() const;
 
-			PlayerIndex RegisterPlayer();
-			void AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds);
-			void AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds);
+			PlayerIndex RegisterPlayer() const;
+
+			void AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds) const;
+			void AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds) const;
+
+			bool IsInputActionTriggered(PlayerIndex player, uint32_t inputAction) const;
+			bool IsAxisActionTriggered(PlayerIndex player, uint32_t axisAction) const;
 
 		private:
 			class InputManagerXInputImpl;

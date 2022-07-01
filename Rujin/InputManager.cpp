@@ -40,39 +40,6 @@ namespace rujin::input
 			for (auto it = m_Players.begin(); it != m_Players.end(); ++it)
 			{
 				it->second.Update();
-			//	if (!pSession->UpdateStates())
-			//	{
-			//		//Tried to update device, but it lost connection.
-			//		//handle disconnect.
-
-			//		//add player index back into the pool
-			//		m_PlayerIndexQueue.push(pSession->GetPlayerIndex());
-
-			//		switch (pSession->GetInputDeviceType())
-			//		{
-			//			case InputDeviceType::KeyboardAndMouse:
-			//			{
-			//				if (dynamic_cast<KeyboardAndMouseInputSession*>(pSession))
-			//				{
-			//					//mark keyboard as inactive
-			//					m_pKeyboardSession = nullptr;
-			//				}
-			//				break;
-			//			}
-			//			case InputDeviceType::Gamepad:
-			//			{
-			//				if (GamepadInputSession* pGamepadSession = dynamic_cast<GamepadInputSession*>(pSession))
-			//				{
-			//					//mark keyboard as inactive
-			//					m_ConnectedGamepads[pGamepadSession->GetGamepadIndex()] = false;
-			//				}
-			//				break;
-			//			}
-			//		}
-
-			//		//remove session from list.
-			//		it = m_pInputSessions.erase(it);
-			//	}
 			}
 		}
 
@@ -82,12 +49,13 @@ namespace rujin::input
 			PlayerIndex playerIndex = m_PlayerIndexQueue.top();
 			m_PlayerIndexQueue.pop();
 
-			//Create player.
-			PlayerInput player = PlayerInput(playerIndex);
+			//Create player and add to map
+			m_Players.insert_or_assign(playerIndex, PlayerInput(playerIndex));
 
 			return playerIndex;
 		}
 
+		//TODO: add logging if not found
 		void AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds)
 		{
 			auto it = m_Players.find(player);
@@ -96,12 +64,35 @@ namespace rujin::input
 				it->second.AddInputAction(inputAction, keybinds);
 		}
 
+		//TODO: add logging if not found
 		void AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds)
 		{
 			auto it = m_Players.find(player);
 
 			if (it != m_Players.end())
 				it->second.AddAxisAction(axisAction, keybinds);
+		}
+		
+		//TODO: add logging if not found
+		bool IsInputActionTriggered(PlayerIndex player, uint32_t inputAction)
+		{
+			auto it = m_Players.find(player);
+
+			if (it != m_Players.end())
+				return it->second.IsInputActionTriggered(inputAction);
+
+			return false;
+		}
+
+		//TODO: add logging if not found
+		bool IsAxisActionTriggered(PlayerIndex player, uint32_t axisAction)
+		{
+			auto it = m_Players.find(player);
+
+			if (it != m_Players.end())
+				return it->second.IsAxisActionTriggered(axisAction);
+
+			return false;
 		}
 
 	private:
@@ -122,7 +113,7 @@ namespace rujin::input
 				if (!player.HasInputDevice())
 				{
 					//check if we have keyboard and mouse available.
-					if ((!m_pKeyboardSession) && GetKeyboardState(nullptr))
+					if (!m_pKeyboardSession) //TODO: this assumes you always have a keyboard and mouse. Make it detect wether you have or not.
 					{
 						//keyboard is available, create session and assign to player.
 						m_pKeyboardSession = new KeyboardAndMouseInputSession();
@@ -166,20 +157,29 @@ namespace rujin::input
 		m_pImpl->ProcessInput(deltaTime);
 	}
 
-
-	PlayerIndex rujin::input::InputManager::RegisterPlayer()
+	PlayerIndex rujin::input::InputManager::RegisterPlayer() const
 	{
 		return m_pImpl->RegisterPlayer();
 	}
 
-	void rujin::input::InputManager::AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds)
+	void rujin::input::InputManager::AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds) const
 	{
 		m_pImpl->AddInputAction(player, inputAction, keybinds);
 	}
 
-	void rujin::input::InputManager::AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds)
+	void rujin::input::InputManager::AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds) const
 	{
 		m_pImpl->AddAxisAction(player, axisAction, keybinds);
+	}
+
+	bool InputManager::IsInputActionTriggered(PlayerIndex player, uint32_t inputAction) const
+	{
+		return m_pImpl->IsInputActionTriggered(player, inputAction);
+	}
+
+	bool InputManager::IsAxisActionTriggered(PlayerIndex player, uint32_t axisAction) const
+	{
+		return m_pImpl->IsAxisActionTriggered(player, axisAction);
 	}
 
 #pragma endregion

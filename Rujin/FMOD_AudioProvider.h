@@ -75,7 +75,7 @@ namespace rujin
 
 		std::unordered_map<sound_id, ActiveAudio> m_ActiveAudio;
 
-		inline static size_t m_AudioInstanceCount{ 0 };
+		inline static uint16_t m_AudioInstanceCount{ 0 };
 	};
 
 

@@ -5,15 +5,13 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 
-#include "BurgerComponent.h"
+
 #include "DearImGuiComponent.h"
-#include "EnemyComponent.h"
 #include "FpsComponent.h"
-#include "PeterPepperComponent.h"
-#include "PlayerHUDComponent.h"
 #include "TextComponent.h"
 #include "TextRenderComponent.h"
 #include "TextureRenderComponent.h"
+#include "PlayerInputTestComponent.h"
 
 #include "SDL_AudioProvider.h"
 
@@ -29,6 +27,7 @@
 #include "FMOD_AudioProvider.h"
 #include "ServiceLocator.h"
 #include "Rutils/Logger.h"
+#include "InputActions.h"
 
 namespace rujin
 {
@@ -168,31 +167,40 @@ void rujin::Rujin::LoadGame() const
 		pScene->AddGameObject(go);
 	}
 
-	/* setup input commands */
-	//auto& pInput = input::InputManager::GetInstance();
+	auto& im = input::InputManager::GetInstance();
+	const PlayerIndex p1Index = im.RegisterPlayer();
 
-	//p1 commands
-	auto stop1{ std::make_unique<command::StopSound>() };
-	auto stop2{ std::make_unique<command::StopSound>() };
-	auto stop3{ std::make_unique<command::StopSound>() };
-	auto stop4{ std::make_unique<command::StopSound>() };
+	{
+		//create game object
+		auto go = std::make_unique<GameObject>("Player1");
 
-	auto pause{ std::make_unique<command::ToggleSoundPaused>() };
+		//add fps component
+		go->AddComponent(new PlayerInputTestComponent(p1Index));
 
-	/*pInput.RegisterCommand(input::ControllerButton::A, std::make_unique<command::PlaySound>("Audio/SFX/ahem.wav", stop1.get(), pause.get()));
-	pInput.RegisterCommand(input::ControllerButton::B, std::make_unique<command::PlaySound>("Audio/SFX/phone_ring.wav", stop2.get(), pause.get()));
-	pInput.RegisterCommand(input::ControllerButton::Y, std::make_unique<command::PlaySound>("Audio/SFX/rooster_song.wav", stop3.get(), pause.get()));
-	pInput.RegisterCommand(input::ControllerButton::X, std::make_unique<command::PlaySound>("Audio/SFX/message.wav", stop4.get(), pause.get()));
+		pScene->AddGameObject(go);
+	}
 
+	im.AddInputAction(p1Index, (uint32_t)InputAction::StartSound1, InputActionKeybinds(ButtonState::Released, 'X', GamepadButton::X));
+	im.AddInputAction(p1Index, (uint32_t)InputAction::StopSound1, InputActionKeybinds(ButtonState::Released, 'B', GamepadButton::B));
+	im.AddInputAction(p1Index, (uint32_t)InputAction::PauseSound1, InputActionKeybinds(ButtonState::Released, 'Y', GamepadButton::Y));
+	im.AddInputAction(p1Index, (uint32_t)InputAction::SwitchSoundSystem, InputActionKeybinds(ButtonState::Released, 'A', GamepadButton::A));
 
-	pInput.RegisterCommand(input::ControllerButton::DPAD_DOWN, std::move(stop1));
-	pInput.RegisterCommand(input::ControllerButton::DPAD_RIGHT, std::move(stop2));
-	pInput.RegisterCommand(input::ControllerButton::DPAD_UP, std::move(stop3));
-	pInput.RegisterCommand(input::ControllerButton::DPAD_LEFT, std::move(stop4));
+	const PlayerIndex p2Index = im.RegisterPlayer();
 
-	pInput.RegisterCommand(input::ControllerButton::START, std::move(pause));
-	pInput.RegisterCommand(input::ControllerButton::BACK, std::make_unique<command::SwitchAudioProvider>());*/
+	{
+		//create game object
+		auto go = std::make_unique<GameObject>("Player2");
 
+		//add fps component
+		go->AddComponent(new PlayerInputTestComponent(p2Index));
+
+		pScene->AddGameObject(go);
+	}
+
+	im.AddInputAction(p2Index, (uint32_t)InputAction::StartSound1, InputActionKeybinds(ButtonState::Released, 'x', GamepadButton::X));
+	im.AddInputAction(p2Index, (uint32_t)InputAction::StopSound1, InputActionKeybinds(ButtonState::Released, 'b', GamepadButton::B));
+	im.AddInputAction(p2Index, (uint32_t)InputAction::PauseSound1, InputActionKeybinds(ButtonState::Released, 'y', GamepadButton::Y));
+	im.AddInputAction(p2Index, (uint32_t)InputAction::SwitchSoundSystem, InputActionKeybinds(ButtonState::Released, 'a', GamepadButton::A));
 
 	/* Print instructions */
 	std::cout
