@@ -191,7 +191,7 @@ void rujin::Rujin::LoadGame() const
 	}
 
 	/* setup input commands */
-	auto& pInput = input::InputManager::GetInstance();
+	//auto& pInput = input::InputManager::GetInstance();
 
 	//p1 commands
 	auto stop1{ std::make_unique<command::StopSound>() };
@@ -201,7 +201,7 @@ void rujin::Rujin::LoadGame() const
 
 	auto pause{ std::make_unique<command::ToggleSoundPaused>() };
 
-	pInput.RegisterCommand(input::ControllerButton::A, std::make_unique<command::PlaySound>("Audio/SFX/ahem.wav", stop1.get(), pause.get()));
+	/*pInput.RegisterCommand(input::ControllerButton::A, std::make_unique<command::PlaySound>("Audio/SFX/ahem.wav", stop1.get(), pause.get()));
 	pInput.RegisterCommand(input::ControllerButton::B, std::make_unique<command::PlaySound>("Audio/SFX/phone_ring.wav", stop2.get(), pause.get()));
 	pInput.RegisterCommand(input::ControllerButton::Y, std::make_unique<command::PlaySound>("Audio/SFX/rooster_song.wav", stop3.get(), pause.get()));
 	pInput.RegisterCommand(input::ControllerButton::X, std::make_unique<command::PlaySound>("Audio/SFX/message.wav", stop4.get(), pause.get()));
@@ -213,7 +213,7 @@ void rujin::Rujin::LoadGame() const
 	pInput.RegisterCommand(input::ControllerButton::DPAD_LEFT, std::move(stop4));
 
 	pInput.RegisterCommand(input::ControllerButton::START, std::move(pause));
-	pInput.RegisterCommand(input::ControllerButton::BACK, std::make_unique<command::SwitchAudioProvider>());
+	pInput.RegisterCommand(input::ControllerButton::BACK, std::make_unique<command::SwitchAudioProvider>());*/
 
 
 	/* Print instructions */
@@ -317,7 +317,7 @@ void rujin::Rujin::Run()
 		SteamAPI_RunCallbacks();
 
 		/* input */
-		input.ProcessInput(); //TODO: don't do this every frame, but in a polling interval
+		input.ProcessInput(s_DeltaTime); //TODO: don't do this every frame, but in a polling interval
 
 		/* RunThread scene */
 		sceneManager.Update();

@@ -249,9 +249,12 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClInclude Include="EnemyComponent.h" />
     <ClInclude Include="FMOD_AudioProvider.h" />
     <ClInclude Include="FpsComponent.h" />
+    <ClInclude Include="InputStructs.h" />
     <ClInclude Include="Null_AudioProvider.h" />
     <ClInclude Include="PlayerHUDComponent.h" />
     <ClInclude Include="PeterPepperComponent.h" />
+    <ClInclude Include="InputSession.h" />
+    <ClInclude Include="Rutils\DeltaTimer.h" />
     <ClInclude Include="Rutils\General.h" />
     <ClInclude Include="Rutils\Logger.h" />
     <ClInclude Include="Rutils\Macros.h" />
@@ -361,6 +364,10 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
       <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
     </ClCompile>
     <ClCompile Include="FMOD_AudioProvider.cpp" />
+    <ClCompile Include="InputSession.cpp" />
+    <ClCompile Include="Rutils\DeltaTimer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Rutils\General.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>

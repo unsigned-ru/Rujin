@@ -48,6 +48,9 @@
     <Filter Include="Services\AudioService\FMOD">
       <UniqueIdentifier>{4087718d-6eb4-4a0b-9135-5564aff3b10d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{1aa79b7e-04f7-49ee-aba4-f0ca834a607f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RujinPCH.h" />
@@ -184,6 +187,13 @@
     <ClInclude Include="FMOD_AudioProvider.h">
       <Filter>Services\AudioService\FMOD</Filter>
     </ClInclude>
+    <ClInclude Include="InputSession.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="InputStructs.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Rutils\DeltaTimer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -293,6 +303,12 @@
     </ClCompile>
     <ClCompile Include="FMOD_AudioProvider.cpp">
       <Filter>Services\AudioService\FMOD</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSession.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Rutils\DeltaTimer.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

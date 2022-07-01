@@ -19,7 +19,6 @@ namespace rujin
 	//	- Smart pointers come with a cost, have to be careful with passing them around
 	//	  https://stackoverflow.com/questions/2502394/the-cost-of-passing-by-shared-ptr
 
-
 	class Texture2D;
 	class Font;
 	class AudioClip;

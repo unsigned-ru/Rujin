@@ -1,132 +1,161 @@
 #include "RujinPCH.h"
 #include "InputManager.h"
-
 #include "Commands.h"
+#include "InputSession.h"
+#include "Rutils/DeltaTimer.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <Xinput.h>
 #pragma comment(lib, "xinput.lib")
-#include <vector>
 
+#include <unordered_map>
+#include <queue>
+#include <numeric>
+#include <array>
 
 
 namespace rujin::input
 {
-	class InputManager::InputManagerImpl final
+	class InputManager::InputManagerXInputImpl final
 	{
 	public:
-		bool ProcessInput()
+		InputManager::InputManagerXInputImpl()
+			: m_DeviceScanTimer{s_DeviceScanDelay, true}
 		{
-			CopyMemory(&m_PreviousControllerState, &m_CurrentControllerState, sizeof(XINPUT_STATE));
-			ZeroMemory(&m_CurrentControllerState, sizeof(XINPUT_STATE));
-			XInputGetState(0, &m_CurrentControllerState);
+			//make sure all booleans default to false.
+			ZeroMemory(&m_ConnectedGamepads, sizeof(m_ConnectedGamepads));
 
-			auto buttonChanges = m_CurrentControllerState.Gamepad.wButtons ^ m_PreviousControllerState.Gamepad.wButtons;
-			m_ControllerButtonsPressedThisFrame = buttonChanges & m_CurrentControllerState.Gamepad.wButtons;
-			m_ControllerButtonsReleasedThisFrame = buttonChanges & (~m_CurrentControllerState.Gamepad.wButtons);
+			//Set up ioata data for player index queue.
+			std::array<unsigned char, s_MaxPlayerCount> tempArr{};
+			std::iota(tempArr.begin(), tempArr.end(), 0);
 
-			//check for registered commands
-			for (const KeybindData& keybind : m_KeybindCommands)
+			//create player index queue
+			m_PlayerIndexQueue = std::priority_queue<PlayerIndex, std::greater<PlayerIndex>>(tempArr.begin(), tempArr.end());
+
+			//Register devices
+			RegisterNewDevices();
+		}
+
+		void ProcessInput(float deltaTime)
+		{
+			//device scanning. (every 3 seconds)
+			if (m_DeviceScanTimer.Tick(deltaTime))
+				RegisterNewDevices();
+
+			//update connected devices
+			for (auto it = m_pInputSessions.begin(); it != m_pInputSessions.end(); ++it)
 			{
-				switch (keybind.triggerState)
+				InputSession* pSession = it->second;
+				if (!pSession->UpdateStates())
 				{
-				case ButtonState::Pressed:
-					if (IsPressedThisFrame(keybind.controllerButton))
-						keybind.pCommand->Execute();
-					break;
-				case ButtonState::Released:
-					if (IsReleasedThisFrame(keybind.controllerButton))
-						keybind.pCommand->Execute();
-					break;
-				case ButtonState::Down:
-					if (IsDown(keybind.controllerButton))
-						keybind.pCommand->Execute();
-					break;
-				case ButtonState::Up:
-					if (!IsDown(keybind.controllerButton))
-						keybind.pCommand->Execute();
-					break;
+					//Tried to update device, but it lost connection.
+					//handle disconnect.
+
+					//add player index back into the pool
+					m_PlayerIndexQueue.push(pSession->GetPlayerIndex());
+
+					switch (pSession->GetInputDeviceType())
+					{
+						case InputDeviceType::KeyboardAndMouse:
+						{
+							if (dynamic_cast<KeyboardAndMouseInputSession*>(pSession))
+							{
+								//mark keyboard as inactive
+								m_pKeyboardSession = nullptr;
+							}
+							break;
+						}
+						case InputDeviceType::Gamepad:
+						{
+							if (GamepadInputSession* pGamepadSession = dynamic_cast<GamepadInputSession*>(pSession))
+							{
+								//mark keyboard as inactive
+								m_ConnectedGamepads[pGamepadSession->GetGamepadIndex()] = false;
+							}
+							break;
+						}
+					}
+
+					//remove session from list.
+					it = m_pInputSessions.erase(it);
 				}
 			}
+		}
+		InputSession* GetPlayerInputSession(PlayerIndex playerIndex)
+		{
+			auto it = m_pInputSessions.find(playerIndex);
 
-			//TODO: maybe some exit condition that will return false
-			return true;
-		}
-		bool IsDown(ControllerButton button) const
-		{
-			return m_CurrentControllerState.Gamepad.wButtons & static_cast<WORD>(button);
-		}
-		bool IsPressedThisFrame(ControllerButton button) const
-		{
-			return m_ControllerButtonsPressedThisFrame & static_cast<WORD>(button);
-		}
-		bool IsReleasedThisFrame(ControllerButton button) const
-		{
-			return m_ControllerButtonsReleasedThisFrame & static_cast<WORD>(button);
-		}
-		void RegisterCommand(ControllerButton button, std::unique_ptr<command::IBase>&& command, ButtonState triggerState = ButtonState::Released)
-		{
-			m_KeybindCommands.push_back({ button, triggerState, command });
+			if (it != m_pInputSessions.end())
+				return it->second;
+			else 
+				return nullptr;
 		}
 
 	private:
-		std::vector<KeybindData> m_KeybindCommands{};
+		rutils::DeltaTimer m_DeviceScanTimer;
+		KeyboardAndMouseInputSession* m_pKeyboardSession = nullptr;
 
-		XINPUT_STATE m_CurrentControllerState{};
-		XINPUT_STATE m_PreviousControllerState{};
+		bool m_ConnectedGamepads[XUSER_MAX_COUNT];
+		std::priority_queue<PlayerIndex, std::greater<PlayerIndex>> m_PlayerIndexQueue;
 
-		WORD m_ControllerButtonsPressedThisFrame{};
-		WORD m_ControllerButtonsReleasedThisFrame{};
+		std::unordered_map<PlayerIndex, InputSession*> m_pInputSessions{};
+
+		void RegisterNewDevices()
+		{
+			if (m_PlayerIndexQueue.empty())
+			{
+				LOG_WARNING("New input device detected, but maximum allowed input devices exceeded.");
+				return;
+			}
+
+			if ((!m_pKeyboardSession) && GetKeyboardState(nullptr))
+			{
+				PlayerIndex playerIndex = m_PlayerIndexQueue.top();
+				auto* kbSession = new KeyboardAndMouseInputSession(playerIndex);
+				m_pInputSessions.insert(std::make_pair(playerIndex, kbSession));
+				m_PlayerIndexQueue.pop();
+				m_pKeyboardSession = kbSession;
+			}
+
+			for (DWORD i = 0; i < XUSER_MAX_COUNT; ++i)
+			{
+				if (m_PlayerIndexQueue.empty())
+				{
+					LOG_WARNING("New input device detected, but maximum allowed input devices exceeded.");
+					return;
+				}
+
+				//check if got connected
+				XINPUT_STATE state;
+				ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+				if (!m_ConnectedGamepads[i] && XInputGetState(i, &state) == ERROR_SUCCESS)
+				{
+					//create gamepad input session with correct ids.
+					PlayerIndex playerIndex = m_PlayerIndexQueue.top();
+					m_pInputSessions.insert(std::make_pair(playerIndex, new GamepadInputSession(m_PlayerIndexQueue.top(), i, state)));
+					m_PlayerIndexQueue.pop();
+					m_ConnectedGamepads[i] = true;
+				}
+			}
+		}
 	};
 
 	//ctor and dtor -- NEED to be declared AFTER the implementation class definition in .cpp
-	InputManager::InputManager() : m_pImpl(std::make_unique<InputManagerImpl>()) {}
+	InputManager::InputManager() : m_pImpl(std::make_unique<InputManagerXInputImpl>()) {}
 	InputManager::~InputManager() = default;
 
-
-	KeybindData::KeybindData(const ControllerButton controllerButton, const ButtonState triggerState, std::unique_ptr<command::IBase>& pCommand)
-		: controllerButton(controllerButton)
-		, triggerState(triggerState)
-		, pCommand(std::move(pCommand))
-	{}
-	KeybindData::~KeybindData() = default;
-	KeybindData::KeybindData(KeybindData && other) noexcept
-		: controllerButton(other.controllerButton)
-		, triggerState(other.triggerState)
-		, pCommand(std::move(other.pCommand))
+#pragma region pImpl_Propagation
+	void InputManager::ProcessInput(float deltaTime) const
 	{
-	}
-	KeybindData& KeybindData::operator=(KeybindData && other) noexcept
-	{
-		controllerButton = other.controllerButton;
-		triggerState = other.triggerState;
-		pCommand = std::move(other.pCommand);
-
-		return *this;
+		m_pImpl->ProcessInput(deltaTime);
 	}
 
-#pragma region pImpl_Propogation
-	bool InputManager::ProcessInput() const
+	InputSession* InputManager::GetPlayerInputSession(PlayerIndex playerIndex) const
 	{
-		return m_pImpl->ProcessInput();
-	}
-	bool InputManager::IsDown(ControllerButton button) const
-	{
-		return m_pImpl->IsDown(button);
-	}
-	bool InputManager::IsPressedThisFrame(ControllerButton button) const
-	{
-		return m_pImpl->IsPressedThisFrame(button);
-	}
-	bool InputManager::IsReleasedThisFrame(ControllerButton button) const
-	{
-		return m_pImpl->IsReleasedThisFrame(button);
+		return m_pImpl->GetPlayerInputSession(playerIndex);
 	}
 
-	void InputManager::RegisterCommand(ControllerButton button, std::unique_ptr<command::IBase>&& pCommand, ButtonState triggerState) const
-	{
-		m_pImpl->RegisterCommand(button, std::move(pCommand), triggerState);
-	}
 #pragma endregion
 }
