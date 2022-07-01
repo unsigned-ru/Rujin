@@ -16,7 +16,6 @@ namespace rujin
 		static float GetDeltaTime();
 	private:
 		void InitializeSDL();
-		void InitializeSteamworks();
 
 		static constexpr int s_MsPerFrame = 16; //16 for 60 fps, 33 for 30 
 		static constexpr float s_FixedTimestamp = 0.02f;

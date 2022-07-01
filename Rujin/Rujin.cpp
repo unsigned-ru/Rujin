@@ -22,17 +22,12 @@
 
 #include "Commands.h"
 
-#pragma warning(disable:4996) //disable _CRT_SECURE_NO_WARNINGS error
-#include <steam_api.h>
-#pragma warning(default:4996) //re-enable
-
 #include <fstream>
 #include <functional>
 #include <thread>
 
 #include "FMOD_AudioProvider.h"
 #include "ServiceLocator.h"
-#include "SteamAchievementSystem.h"
 #include "Rutils/Logger.h"
 
 namespace rujin
@@ -63,8 +58,6 @@ void rujin::Rujin::Initialize()
 
 	InitializeSDL();
 
-	InitializeSteamworks();
-
 	Renderer::GetInstance().Init(m_Window);
 }
 
@@ -92,21 +85,6 @@ void rujin::Rujin::InitializeSDL()
 	}
 
 	SDL_GetWindowSize(m_Window, &m_WindowSize.x, &m_WindowSize.y);
-}
-
-void rujin::Rujin::InitializeSteamworks()
-{
-	if (!SteamAPI_Init())
-	{
-		if (SteamAPI_RestartAppIfNecessary(SteamUtils()->GetAppID()))
-		{
-			throw std::exception("Steam needs to be running to play, restarting with steam...");
-		}
-		else
-			throw std::exception("Steam needs to be running to play, could not automatically start steam. Do you have it installed?");
-	}
-	else
-		std::cout << "Successfully initialized steam." << std::endl;
 }
 
 
@@ -252,8 +230,6 @@ void rujin::Rujin::Cleanup()
 {
 	Renderer::GetInstance().Destroy();
 
-	SteamAPI_Shutdown();
-
 	SDL_DestroyWindow(m_Window);
 	m_Window = nullptr;
 	SDL_Quit();
@@ -312,9 +288,6 @@ void rujin::Rujin::Run()
 		s_DeltaTime = chrono::duration<float>(currentTime - lastTime).count();
 		lastTime = currentTime;
 		lag += s_DeltaTime;
-
-		/* Dispatch all STEAM_API callbacks */
-		SteamAPI_RunCallbacks();
 
 		/* input */
 		input.ProcessInput(s_DeltaTime); //TODO: don't do this every frame, but in a polling interval
