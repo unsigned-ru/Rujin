@@ -25,6 +25,8 @@ int GetOpenGLDriverIndex()
 
 void rujin::Renderer::Init(SDL_Window * window)
 {
+	LOG_DEBUG("Initializing OpenGL & SDL Renderer...");
+
 	m_Window = window;
 	m_Renderer = SDL_CreateRenderer(window, GetOpenGLDriverIndex(), SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (m_Renderer == nullptr) 
@@ -32,11 +34,15 @@ void rujin::Renderer::Init(SDL_Window * window)
 		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
 	}
 
+	
 	//initialize ImGui
+	LOG_DEBUG("Hooking ImGUI...");
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui_ImplSDL2_InitForOpenGL(window, SDL_GL_GetCurrentContext());
 	ImGui_ImplOpenGL2_Init();
+
+	LOG_DEBUG("Renderer Initialized!");
 }
 
 void rujin::Renderer::Render() const

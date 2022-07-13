@@ -11,6 +11,7 @@
 
 void rujin::ResourceManager::Init(const std::string& dataPath)
 {
+	LOG_DEBUG("Initializing Resource Manager...");
 	m_DataPath = dataPath;
 
 	// load support for png and jpg, this takes a while!
@@ -30,6 +31,7 @@ void rujin::ResourceManager::Init(const std::string& dataPath)
 		throw std::runtime_error(std::string("Failed to load support for fonts: ") + SDL_GetError());
 	}
 
+	LOG_DEBUG("Resource Manager Initialized!");
 }
 
 std::shared_ptr<rujin::Texture2D> rujin::ResourceManager::LoadTexture(const std::string& file)

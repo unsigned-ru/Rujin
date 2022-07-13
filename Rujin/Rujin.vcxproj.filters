@@ -57,9 +57,6 @@
     <ClInclude Include="Component.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="DearImGuiComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="FpsComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -83,9 +80,6 @@
     </ClInclude>
     <ClInclude Include="Texture2D.h">
       <Filter>Data Types</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEvents.h">
-      <Filter>Events\ObserverPattern</Filter>
     </ClInclude>
     <ClInclude Include="Subject.h">
       <Filter>Events\ObserverPattern\Interface</Filter>
@@ -181,9 +175,6 @@
     <ClInclude Include="PlayerInput.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerInputTestComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="InputActions.h">
       <Filter>Input</Filter>
     </ClInclude>
@@ -193,18 +184,21 @@
     <ClInclude Include="GamepadInputSession.h">
       <Filter>Input</Filter>
     </ClInclude>
+    <ClInclude Include="IGame.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="StatefullObject.h">
+      <Filter>Game Loop</Filter>
+    </ClInclude>
+    <ClInclude Include="EventData.h">
+      <Filter>Events\ObserverPattern\Interface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Rujin.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Component.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="DearImGuiComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="FpsComponent.cpp">
@@ -227,9 +221,6 @@
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="IGameLoopObject.cpp">
-      <Filter>Game Loop</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Game Loop</Filter>
@@ -295,14 +286,14 @@
     <ClCompile Include="PlayerInput.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerInputTestComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="KeyboardAndMouseInputSession.cpp">
       <Filter>Input</Filter>
     </ClCompile>
     <ClCompile Include="GamepadInputSession.cpp">
       <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="StatefullObject.cpp">
+      <Filter>Game Loop</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

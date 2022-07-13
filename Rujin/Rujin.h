@@ -1,21 +1,26 @@
 #pragma once
+
+class IGame;
 struct SDL_Window;
 namespace rujin
 {
 	class Rujin
 	{
+		struct InitializationParameters
+		{
+			std::string resourcePath{"../Data/"};
+		};
+
 	public:
-		/**
-		 * \return returns false if initialization resulted in requested shutdown.
-		 */
 		void Initialize();
-		void LoadGame() const;
 		void Cleanup();
-		void Run();
+		void Run(IGame* pGame, const InitializationParameters& engineParams = {});
 
 		static float GetDeltaTime();
 	private:
 		void InitializeSDL();
+		static void PrintSDLVersion();
+
 
 		static constexpr int s_MsPerFrame = 16; //16 for 60 fps, 33 for 30 
 		static constexpr float s_FixedTimestamp = 0.02f;

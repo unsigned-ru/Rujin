@@ -3,7 +3,7 @@
 
 namespace rujin
 {
-	class Scene : public IGameLoopObject
+	class Scene final : public IGameLoopObject
 	{
 	public:
 		Scene() = delete;

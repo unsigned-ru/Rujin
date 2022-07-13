@@ -22,8 +22,6 @@ namespace rujin
 
 		virtual bool UpdateStates() override;
 
-		
-
 	private:
 		BYTE* m_pKeyboardState0{};
 		BYTE* m_pKeyboardState1{};
