@@ -18,8 +18,6 @@
 #include "Renderer.h"
 #include "Scene.h"
 
-#include "Commands.h"
-
 #include <fstream>
 #include <functional>
 #include <thread>
@@ -185,6 +183,29 @@ void rujin::Rujin::LoadGame() const
 	im.AddInputAction(p1Index, (uint32_t)InputAction::PauseSound1, InputActionKeybinds(ButtonState::Released, 'Y', GamepadButton::Y));
 	im.AddInputAction(p1Index, (uint32_t)InputAction::SwitchSoundSystem, InputActionKeybinds(ButtonState::Released, 'A', GamepadButton::A));
 
+
+	im.AddAxisAction
+	(
+		p1Index, 
+		(uint32_t)AxisAction::Volume,
+		AxisActionKeybinds
+		(
+			KeyboardAxisKeybinds('Z', 'S'),
+			GamepadAxisKeybinds(GamepadButton::RIGHT_TRIGGER, GamepadButton::LEFT_TRIGGER)
+		)
+	);
+	im.AddAxisAction
+	(
+		p1Index,
+		(uint32_t)AxisAction::LookRight,
+		AxisActionKeybinds
+		(
+			KeyboardAxisKeybinds(),
+			GamepadAxisKeybinds(GamepadButton::RIGHT_STICK_X),
+			MouseAxis::X
+		)
+	);
+
 	const PlayerIndex p2Index = im.RegisterPlayer();
 
 	{
@@ -201,6 +222,27 @@ void rujin::Rujin::LoadGame() const
 	im.AddInputAction(p2Index, (uint32_t)InputAction::StopSound1, InputActionKeybinds(ButtonState::Released, 'b', GamepadButton::B));
 	im.AddInputAction(p2Index, (uint32_t)InputAction::PauseSound1, InputActionKeybinds(ButtonState::Released, 'y', GamepadButton::Y));
 	im.AddInputAction(p2Index, (uint32_t)InputAction::SwitchSoundSystem, InputActionKeybinds(ButtonState::Released, 'a', GamepadButton::A));
+	im.AddAxisAction
+	(
+		p2Index,
+		(uint32_t)AxisAction::Volume,
+		AxisActionKeybinds
+		(
+			KeyboardAxisKeybinds('Z', 'S'),
+			GamepadAxisKeybinds(GamepadButton::RIGHT_TRIGGER, GamepadButton::LEFT_TRIGGER)
+		)
+	);
+	im.AddAxisAction
+	(
+		p2Index,
+		(uint32_t)AxisAction::LookRight,
+		AxisActionKeybinds
+		(
+			KeyboardAxisKeybinds(),
+			GamepadAxisKeybinds(GamepadButton::RIGHT_STICK_X),
+			MouseAxis::X
+		)
+	);
 
 	/* Print instructions */
 	std::cout

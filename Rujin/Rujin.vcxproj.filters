@@ -57,9 +57,6 @@
     <ClInclude Include="Component.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentTemplate.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="DearImGuiComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -190,6 +187,12 @@
     <ClInclude Include="InputActions.h">
       <Filter>Input</Filter>
     </ClInclude>
+    <ClInclude Include="KeyboardAndMouseInputSession.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="GamepadInputSession.h">
+      <Filter>Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -199,9 +202,6 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Component.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="ComponentTemplate.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="DearImGuiComponent.cpp">
@@ -297,6 +297,12 @@
     </ClCompile>
     <ClCompile Include="PlayerInputTestComponent.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardAndMouseInputSession.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="GamepadInputSession.cpp">
+      <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

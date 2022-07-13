@@ -8,3 +8,9 @@ enum class InputAction : uint32_t
 	PauseSound1,
 	SwitchSoundSystem
 };
+
+enum class AxisAction : uint32_t
+{
+	Volume,
+	LookRight
+};

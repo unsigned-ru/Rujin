@@ -1,4 +1,6 @@
 #pragma once
+#include <unordered_map>
+
 #include "InputStructs.h"
 #include "InputSession.h"
 
@@ -7,12 +9,16 @@ namespace rujin
 	class PlayerInput final
 	{
 	public:
-		PlayerInput(PlayerIndex playerIndex);
+		explicit PlayerInput(PlayerIndex playerIndex);
 
 		void Update();
 
-		bool IsInputActionTriggered(uint32_t inputAction);
-		bool IsAxisActionTriggered(uint32_t axisAction);
+		bool IsInputActionTriggered(uint32_t inputAction) const;
+		bool IsAxisActionTriggered(uint32_t axisAction, float* pIntensity = nullptr) const;
+
+		void SetLeftVibration(float intensity);
+		void SetRightVibration(float intensity);
+		void SetVibration(float intensity);
 
 		void AddInputAction(uint32_t inputAction, const InputActionKeybinds& keybinds);
 		void AddAxisAction(uint32_t axisAction, const AxisActionKeybinds& keybinds);
@@ -26,7 +32,7 @@ namespace rujin
 		PlayerIndex m_PlayerIndex;
 		InputSession* m_pInputSession = nullptr;
 
-		std::unordered_map<uint32_t, std::pair<InputActionKeybinds, bool>> m_InputActions{}; //IsTriggeredThisFrame value of pair
-		std::unordered_map<uint32_t, std::pair<AxisActionKeybinds, bool>> m_AxisActions{}; //IsTriggeredThisFrame value of pair
+		std::unordered_map<uint32_t, InputActionData> m_InputActions{};
+		std::unordered_map<uint32_t, AxisActionData> m_AxisActions{};
 	};
 }

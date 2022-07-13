@@ -2,6 +2,7 @@
 #include "FMOD_AudioProvider.h"
 
 #include <functional>
+#include <ranges>
 
 #include "ResourceManager.h"
 #include "Rutils/Macros.h"
@@ -43,16 +44,17 @@ rujin::FMOD_AudioProvider::FMOD_AudioProvider()
 
 rujin::FMOD_AudioProvider::~FMOD_AudioProvider()
 {
-	for (auto& pair : m_Sounds)
+	//release sounds
+	for (auto* pSound : m_Sounds | std::views::values)
 	{
-		pair.second->release();
+		pSound->release();
 	}
 
 	if (m_pStudio)
 	{
 #pragma warning(push)
 #pragma warning(disable : 26812)
-		//Releases core too.
+		//note: Releases core too.
 		m_pStudio->release();
 
 		m_pStudio = nullptr;
@@ -61,9 +63,9 @@ rujin::FMOD_AudioProvider::~FMOD_AudioProvider()
 	}
 
 	//release all callback data to avoid memory leaks
-	for (auto& pair : m_ActiveAudio)
+	for (const auto& activeAudio : m_ActiveAudio | std::views::values)
 	{
-		delete pair.second.pCallbackData;
+		delete activeAudio.pCallbackData;
 	}
 	m_ActiveAudio.clear();
 
@@ -91,7 +93,7 @@ void rujin::FMOD_AudioProvider::StopAudio(sound_id id)
 
 	HANDLE_FMOD_ERROR(it->second.pChannel->stop());
 
-	//todo: check whether we need to manually remove the entry from the ActiveSounds
+	//Note: no need to delete the active audio instance, FMOD callback is called on stop.
 }
 
 void rujin::FMOD_AudioProvider::SetAudioPaused(const sound_id id, bool isPaused)
@@ -173,18 +175,24 @@ rujin::sound_id rujin::FMOD_AudioProvider::PlayAudio(const std::string& filepath
 {
 	//find the sound
 	FMOD::Sound* sound{ nullptr };
-	const auto it = m_Sounds.find(filepath); //O(1) 
+	auto it = m_Sounds.find(filepath); //O(1) 
 
 	//if we do not have the sound, load in the sound first.
 	if (it == m_Sounds.end())
 	{
 		//Warn the user that this is the case, it's best to load the sounds on initialization.
 		LOG_WARNING_("Trying to play sound '{}' while it has not been loaded. Automatically loading sound... (Could drastically reduce performance)", filepath);
+		
 		//load in sound first.
 		LoadAudio(filepath);
+
+		it = m_Sounds.find(filepath);
+
+		if (it == m_Sounds.end())
+			LOG_ERROR_("Failed to play sound: '{}'. Could not find, or load in sound.");
 	}
-	else
-		sound = it->second;
+
+	sound = it->second;
 
 	FMOD::ChannelGroup* pGroup = nullptr;
 	switch (channel)
@@ -196,15 +204,28 @@ rujin::sound_id rujin::FMOD_AudioProvider::PlayAudio(const std::string& filepath
 	case AudioChannel::Music:
 		pGroup = m_pMusicChannel;
 		break;
-	
 	}
 
 	//play sound
 	FMOD::Channel* pChannel;
 	m_pCore->playSound(sound, pGroup, false, &pChannel);
 
+	sound_id soundId;
+	//get unique id for sound.
+	if(!m_SoundIdQueue.empty())
+	{
+		//we have a free id.
+		soundId = m_SoundIdQueue.top();
+		m_SoundIdQueue.pop();
+	}
+	else
+	{
+		//we need to generate and add the next id.
+		soundId = m_NextSoundId++;
+	}
+
 	//add channel to active audio with an unique_id
-	auto* userdata = new ON_FMOD_CHANNELCONTROL_CALLBACK_END_USERDATA{ this, m_AudioInstanceCount++ }; //will be de-allocated after callback.
+	auto* userdata = new ON_FMOD_CHANNELCONTROL_CALLBACK_END_USERDATA{ this, soundId }; //will be de-allocated after callback.
 	m_ActiveAudio.insert_or_assign(userdata->sound_id, ActiveAudio{ pChannel, userdata });
 
 	//register callback and userdata for event
@@ -218,20 +239,20 @@ FMOD_RESULT F_CALL rujin::ON_FMOD_CHANNELCONTROL_CALLBACK_END(FMOD_CHANNELCONTRO
 {
 	if (controltype == FMOD_CHANNELCONTROL_CHANNEL && callbacktype == FMOD_CHANNELCONTROL_CALLBACK_END)
 	{
-		auto* pChannel = (FMOD::Channel*)channelcontrol;
+		auto* pChannel = reinterpret_cast<FMOD::Channel*>(channelcontrol);
 
 		ON_FMOD_CHANNELCONTROL_CALLBACK_END_USERDATA* userdata;
 
-		//temp body.
-		{
-			void* pRaw;
-			HANDLE_FMOD_ERROR(pChannel->getUserData(&pRaw));
-			userdata = static_cast<ON_FMOD_CHANNELCONTROL_CALLBACK_END_USERDATA*>(pRaw);
-			ASSERT_NULL(userdata);
-		}
+		void* pRaw;
+		HANDLE_FMOD_ERROR(pChannel->getUserData(&pRaw));
+		userdata = static_cast<ON_FMOD_CHANNELCONTROL_CALLBACK_END_USERDATA*>(pRaw);
+		ASSERT_NULL(userdata);
 
 		// -- HANDLE SOUND ENDED --
-		userdata->pAudioProvider->m_ActiveAudio.erase(userdata->sound_id);
+#pragma warning(suppress : 6011) //We assert non-nullptr.
+		const sound_id soundId = userdata->sound_id;
+		userdata->pAudioProvider->m_ActiveAudio.erase(soundId); // erase from active audio
+		userdata->pAudioProvider->m_SoundIdQueue.push(soundId); // push the sound_id back in the queue, so we can reuse it.
 
 		delete userdata;
 	}

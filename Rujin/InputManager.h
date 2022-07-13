@@ -20,7 +20,7 @@ namespace rujin
 
 		public:
 			InputManager();
-			~InputManager();
+			~InputManager() override;
 
 			InputManager(InputManager&) = delete;
 			InputManager& operator=(InputManager&) = delete;
@@ -29,16 +29,19 @@ namespace rujin
 
 			void ProcessInput(float deltaTime) const;
 
-			//glm::vec2& GetMousePosition() const;
-			//glm::vec2& GetMouseMovement() const;
+			POINT GetMousePosition(bool previousFrame = false) const;
+			POINT GetMouseMovement() const;
 
 			PlayerIndex RegisterPlayer() const;
 
 			void AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds) const;
 			void AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds) const;
+			void SetLeftVibration(PlayerIndex player, float intensity);
+			void SetRightVibration(PlayerIndex player, float intensity);
+			void SetVibration(PlayerIndex player, float intensity);
 
 			bool IsInputActionTriggered(PlayerIndex player, uint32_t inputAction) const;
-			bool IsAxisActionTriggered(PlayerIndex player, uint32_t axisAction) const;
+			bool IsAxisActionTriggered(PlayerIndex player, uint32_t axisAction, float* pIntensity = nullptr) const;
 
 		private:
 			class InputManagerXInputImpl;

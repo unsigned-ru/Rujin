@@ -11,4 +11,6 @@ namespace rutils
 	int RandInt(const int min, const int max);
 	float RandFloatWithPreciscion(const float min, const float max, const int preciscion);
 	float RandFloat(const float min, const float max);
+
+	inline bool FloatEquals(float a, float b, float epsilon = FLT_EPSILON) { return fabs(a - b) < epsilon; }
 }

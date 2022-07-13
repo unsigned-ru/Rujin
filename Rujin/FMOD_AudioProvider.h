@@ -1,9 +1,11 @@
 #pragma once
 #include "AudioService.h"
 
+#include <unordered_map>
+
 #pragma warning(push)
 #pragma warning(disable: 4505 26812)
-#include <unordered_map>
+#include <queue>
 
 #include "fmod_studio.hpp" //Precompiled Header
 #include "fmod_errors.h"
@@ -54,28 +56,27 @@ namespace rujin
 		
 
 	private:
-		sound_id PlayAudio(const std::string& filepath, AudioChannel channel);
-
 		struct ActiveAudio
 		{
 			FMOD::Channel* pChannel;
 			ON_FMOD_CHANNELCONTROL_CALLBACK_END_USERDATA* pCallbackData;
 		};
 
+		sound_id PlayAudio(const std::string& filepath, AudioChannel channel);
 		friend FMOD_RESULT F_CALL ON_FMOD_CHANNELCONTROL_CALLBACK_END(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCONTROL_TYPE controltype, FMOD_CHANNELCONTROL_CALLBACK_TYPE callbacktype, void* param1, void* param2);
 
 		FMOD::Studio::System* m_pStudio = nullptr;
 		FMOD::System* m_pCore = nullptr;
 
-		FMOD::ChannelGroup* m_pSoundEffectChannel;
-		FMOD::ChannelGroup* m_pMusicChannel;
+		FMOD::ChannelGroup* m_pSoundEffectChannel = nullptr;
+		FMOD::ChannelGroup* m_pMusicChannel = nullptr;
 
-		std::unordered_map<std::string, FMOD::Sound*> m_Sounds;
+		std::unordered_map<std::string, FMOD::Sound*> m_Sounds{};
 
+		std::unordered_map<sound_id, ActiveAudio> m_ActiveAudio{};
 
-		std::unordered_map<sound_id, ActiveAudio> m_ActiveAudio;
-
-		inline static uint16_t m_AudioInstanceCount{ 0 };
+		std::priority_queue<sound_id, std::vector<sound_id>, std::greater<sound_id>> m_SoundIdQueue{};
+		sound_id m_NextSoundId{ 0 };
 	};
 
 

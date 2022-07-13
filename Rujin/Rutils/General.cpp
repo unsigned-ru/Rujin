@@ -16,6 +16,7 @@ tm rutils::GetDisplayTime(TimeLocale locale)
 		gmtime_s(&rv, &now);
 		break;
 	default:
+		assert(!"Unimplemented time locale requested.");
 		break;
 	}
 

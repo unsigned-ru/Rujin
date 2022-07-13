@@ -21,8 +21,8 @@ namespace rujin
 		TextComponent* GetText() const;
 
 	private:
-		TextComponent* m_pTextComponent;
-		TextureRenderComponent*  m_pTextureRenderComponent;
+		TextComponent* m_pTextComponent = nullptr;
+		TextureRenderComponent* m_pTextureRenderComponent = nullptr;
 	};
 }
 

@@ -22,14 +22,14 @@ namespace rujin
 		sound_id PlaySoundEffect(const std::string& filepath) override;
 		sound_id PlayMusic(const std::string&, bool) override { return 0; };
 
-		void StopAudio(const sound_id ) override{};
-		void SetAudioPaused(const sound_id , const bool ) override{};
+		void StopAudio(const sound_id) override {};
+		void SetAudioPaused(const sound_id, const bool) override {};
 
-		bool IsFinished(const sound_id ) override { return true; };
-		bool IsPaused(const sound_id ) override{ return true; };
+		bool IsFinished(const sound_id) override { return true; };
+		bool IsPaused(const sound_id) override { return true; };
 
-		void SetMusicVolume(float) override{};
-		void SetSoundEffectVolume(float) override{};
+		void SetMusicVolume(float) override {};
+		void SetSoundEffectVolume(float) override {};
 
 		float GetMusicVolume() const override { return 100; };
 		float GetSoundEffectVolume() const override { return 100; };
@@ -39,20 +39,23 @@ namespace rujin
 
 	private:
 		void RunThread();
+		void SwapQueueBuffers();
 
 		struct AudioRequest
 		{
-			const std::string& filepath;
+			const std::string filepath;
 		};
 
 
-		std::thread* m_pAudioThread;
-		std::atomic<bool> m_ExitThread;
+		std::thread* m_pAudioThread{ nullptr };
+		std::atomic<bool> m_ExitThread{ false };
+		
+		std::vector<AudioRequest> m_FillQueue{};
+		std::vector<AudioRequest> m_ThreadQueue{};
+		std::mutex m_QueueMutex{};
 
-		std::mutex m_QueueMutex;
-		std::vector<AudioRequest> m_AudioQueue;
 
-		std::unordered_map<std::string, Mix_Chunk*> m_Audio;
+		std::unordered_map<std::string, Mix_Chunk*> m_Audio{};
 
 		static constexpr uint16_t C_POLLING_RATE{ 50 }; // in milliseconds
 	};

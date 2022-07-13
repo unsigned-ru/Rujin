@@ -8,7 +8,9 @@
 #include "ServiceLocator.h"
 
 rujin::SDL_AudioProvider::SDL_AudioProvider()
-	: m_pAudioThread(new std::thread(&SDL_AudioProvider::RunThread, this))
+	: m_FillQueue{}
+	, m_ThreadQueue{}
+	, m_pAudioThread(new std::thread(&SDL_AudioProvider::RunThread, this))
 	, m_ExitThread(false)
 {
 	//Initialize SDL_mixer
@@ -16,8 +18,6 @@ rujin::SDL_AudioProvider::SDL_AudioProvider()
 	{
 		LOG_ERROR(std::string("SDL_Init mixer Error: ") + Mix_GetError());
 	}
-
-	m_pAudioThread->detach();
 }
 
 rujin::SDL_AudioProvider::~SDL_AudioProvider()
@@ -43,11 +43,8 @@ rujin::SDL_AudioProvider::~SDL_AudioProvider()
 
 rujin::sound_id rujin::SDL_AudioProvider::PlaySoundEffect(const std::string& filepath)
 {
-	//add to the queue
-	std::lock_guard guard(m_QueueMutex);
-
-	m_AudioQueue.push_back({ filepath });
-
+	std::lock_guard<std::mutex> lock(m_QueueMutex);
+	m_FillQueue.emplace_back(filepath);
 	return 0;
 }
 
@@ -92,32 +89,32 @@ void rujin::SDL_AudioProvider::RunThread()
 	while (!m_ExitThread)
 	{
 		auto start = std::chrono::high_resolution_clock::now();
-
-		m_QueueMutex.lock();
-		auto queue = m_AudioQueue;
-		m_AudioQueue.clear();
-		m_QueueMutex.unlock();
-
-
-		//play queued' sounds
-		for (const AudioRequest& req : queue)
+	
+		if (!m_FillQueue.empty())
 		{
-			//find requested loaded file
-			const auto it = m_Audio.find(req.filepath);
+			//swap fill and thread buffer, clear new fill buffer for new soundqueue's
+			SwapQueueBuffers();
 
-			if (it == m_Audio.end())
+			//play queued' sounds
+			for (const AudioRequest& req : m_ThreadQueue)
 			{
-				//we do not have the audio loaded in
-				//warn the user about loading audio post-initialization
-				//load in the audio
-				LOG_WARNING_("Loading in \"{}\" post-initialization. Can cause huge performance drops, concider loading in the file during initialization", req.filepath);
-				LoadAudio(req.filepath);
+				//find requested loaded file
+				const auto it = m_Audio.find(req.filepath);
+
+				if (it == m_Audio.end())
+				{
+					//we do not have the audio loaded in
+					//warn the user about loading audio post-initialization
+					//load in the audio
+					LOG_WARNING_("Loading in \"{}\" post-initialization. Can cause huge performance drops, concider loading in the file during initialization", req.filepath);
+					LoadAudio(req.filepath);
+				}
+
+				Mix_Chunk* pChunk = m_Audio.at(req.filepath);
+
+				//play sound
+				Mix_PlayChannel(-1, pChunk, 0);
 			}
-
-			Mix_Chunk* pChunk = m_Audio.at(req.filepath);
-
-			//play sound
-			Mix_PlayChannel(-1, pChunk, 0);
 		}
 
 		auto end = std::chrono::high_resolution_clock::now();
@@ -126,4 +123,14 @@ void rujin::SDL_AudioProvider::RunThread()
 		if (duration.count() < C_POLLING_RATE)
 			std::this_thread::sleep_for(duration); //sleep for the remaining duration
 	}
+}
+
+void rujin::SDL_AudioProvider::SwapQueueBuffers()
+{
+	//swap buffers
+	std::lock_guard<std::mutex> lock(m_QueueMutex);
+	std::swap(m_FillQueue, m_ThreadQueue);
+
+	//reset fill queue
+	m_FillQueue.clear();
 }

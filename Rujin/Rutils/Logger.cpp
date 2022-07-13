@@ -105,7 +105,7 @@ bool Logger::ProcessLog(LogLevel level, const LogString& fmt, fmt::format_args a
 	const std::string strLevel = m_LevelToStr[level];
 	const auto colorCode = m_LevelToConsoleStyle[level];
 
-	const auto full_log = fmt::format("[{} {}{}] > {} (line {}) :: {}\n\n", colorCode, strLevel, RST, filename, fmt.line, logMsg);
+	const auto full_log = fmt::format("[{}{}{}] > {} (line {}) :: {}\n\n", colorCode, strLevel, RST, filename, fmt.line, logMsg);
 
 	//Console Log
 	if (m_ConsoleLogger)
