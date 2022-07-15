@@ -10,8 +10,10 @@
 
 int main()
 {
-    rujin::Rujin engine{};
     Tron tron{};
-    engine.Run(&tron, {});
-    return 0;
+    rujin::Rujin engine{&tron};
+
+    engine.Run();
+
+	return 0;
 }

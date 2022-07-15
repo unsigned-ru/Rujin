@@ -3,6 +3,11 @@
 
 namespace rujin
 {
+	namespace settings
+	{
+		struct InitializationParameters;
+	}
+
 	class Texture2D;
 	/**
 	 * Simple RAII wrapper for the SDL renderer
@@ -13,7 +18,7 @@ namespace rujin
 		SDL_Window* m_Window{};
 		SDL_Color m_ClearColor{};	
 	public:
-		void Init(SDL_Window* window);
+		void Init(SDL_Window* window, settings::InitializationParameters& params);
 		void Render() const;
 		void Destroy();
 

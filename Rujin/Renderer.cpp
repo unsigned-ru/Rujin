@@ -2,6 +2,7 @@
 #include "Renderer.h"
 
 #include "imgui.h"
+#include "Rujin.h"
 #include "backends/imgui_impl_opengl2.h"
 #include "backends/imgui_impl_sdl.h"
 
@@ -23,17 +24,19 @@ int GetOpenGLDriverIndex()
 	return openglIndex;
 }
 
-void rujin::Renderer::Init(SDL_Window * window)
+void rujin::Renderer::Init(SDL_Window * window, rujin::settings::InitializationParameters& params)
 {
 	LOG_DEBUG("Initializing OpenGL & SDL Renderer...");
 
 	m_Window = window;
-	m_Renderer = SDL_CreateRenderer(window, GetOpenGLDriverIndex(), SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	m_Renderer = SDL_CreateRenderer(window, GetOpenGLDriverIndex(), SDL_RENDERER_ACCELERATED);
 	if (m_Renderer == nullptr) 
 	{
 		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
 	}
 
+	//Set VSync
+	SDL_GL_SetSwapInterval(static_cast<int>(params.vsyncMode));
 	
 	//initialize ImGui
 	LOG_DEBUG("Hooking ImGUI...");

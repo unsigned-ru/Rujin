@@ -13,13 +13,21 @@ float rujin::Rujin::s_DeltaTime{};
 
 using namespace std;
 
+rujin::Rujin::Rujin(IGame* pGame)
+{
+	//configure engine for selected game.
+	pGame->Configure(m_InitParams);
+
+	m_FixedUpdateTimestep = m_InitParams.fixedUpdateTimestep;
+}
+
 void rujin::Rujin::Initialize()
 {
 	Logger::Initialize(); //TODO: make a service perhaps.
 
 	InitializeSDL();
 
-	Renderer::GetInstance().Init(m_Window);
+	Renderer::GetInstance().Init(m_Window, m_InitParams);
 }
 
 void rujin::Rujin::InitializeSDL()
@@ -28,23 +36,19 @@ void rujin::Rujin::InitializeSDL()
 	PrintSDLVersion();
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
-	{
 		LOG_ERROR(std::string("SDL_Init Error: ") + SDL_GetError());
-	}
 
 	m_Window = SDL_CreateWindow(
-		"Programming 4 assignment",
+		m_InitParams.windowTitle.c_str(),
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		630,
-		480,
+		m_InitParams.windowSize.x,
+		m_InitParams.windowSize.y,
 		SDL_WINDOW_OPENGL
 	);
 
 	if (m_Window == nullptr)
-	{
-		LOG_ERROR(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
-	}
+		LOG_ERROR_("SDL_CreateWindow Error: {}", SDL_GetError());
 
 	SDL_GetWindowSize(m_Window, &m_WindowSize.x, &m_WindowSize.y);
 
@@ -53,8 +57,9 @@ void rujin::Rujin::InitializeSDL()
 
 void rujin::Rujin::PrintSDLVersion()
 {
-	SDL_version compiled{};
-	SDL_version linked{};
+	//gets reassigned, don't need to initialize
+	SDL_version compiled; 
+	SDL_version linked;
 
 	SDL_VERSION(&compiled);
 	SDL_GetVersion(&linked);
@@ -73,7 +78,7 @@ void rujin::Rujin::Cleanup()
 	Logger::Release();
 }
 
-void rujin::Rujin::Run(IGame* pGame, const InitializationParameters& params)
+void rujin::Rujin::Run()
 {
 	//if initialization fails, catch it, log, cleanup and exit.
 	try
@@ -88,10 +93,10 @@ void rujin::Rujin::Run(IGame* pGame, const InitializationParameters& params)
 	}
 
 	// tell the resource manager where he can find the game data
-	ResourceManager::GetInstance().Init(params.resourcePath);
+	ResourceManager::GetInstance().Init(m_InitParams.resourcePath);
 
 	LOG_DEBUG("Loading Game...");
-	pGame->Load();
+	m_pGame->Load();
 
 	const auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
@@ -136,10 +141,10 @@ void rujin::Rujin::Run(IGame* pGame, const InitializationParameters& params)
 		sceneManager.Update();
 
 		/* Fixed update(s) */
-		while (lag >= s_FixedTimestamp)
+		while (lag >= m_FixedUpdateTimestep)
 		{
 			sceneManager.FixedUpdate();
-			lag -= s_FixedTimestamp;
+			lag -= m_FixedUpdateTimestep;
 		}
 
 		/* render */
@@ -152,4 +157,9 @@ void rujin::Rujin::Run(IGame* pGame, const InitializationParameters& params)
 float rujin::Rujin::GetDeltaTime()
 {
 	return s_DeltaTime;
+}
+
+void rujin::Rujin::SetVSync(settings::VSyncMode vsyncMode)
+{
+	SDL_GL_SetSwapInterval(static_cast<int>(vsyncMode));
 }
