@@ -59,39 +59,39 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\glm.props" />
     <Import Project="..\sdl.props" />
-    <Import Project="FMOD.props" />
-    <Import Project="fmt.props" />
-    <Import Project="glm.props" />
-    <Import Project="ImGui.props" />
-    <Import Project="OpenGL.props" />
+    <Import Project="..\fmt.props" />
+    <Import Project="..\FMOD.props" />
+    <Import Project="..\OpenGL.props" />
+    <Import Project="..\physx.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\glm.props" />
     <Import Project="..\sdl.props" />
-    <Import Project="FMOD.props" />
-    <Import Project="fmt.props" />
-    <Import Project="glm.props" />
-    <Import Project="ImGui.props" />
-    <Import Project="OpenGL.props" />
+    <Import Project="..\fmt.props" />
+    <Import Project="..\FMOD.props" />
+    <Import Project="..\OpenGL.props" />
+    <Import Project="..\physx.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\glm.props" />
     <Import Project="..\sdl.props" />
-    <Import Project="FMOD.props" />
-    <Import Project="fmt.props" />
-    <Import Project="glm.props" />
-    <Import Project="ImGui.props" />
-    <Import Project="OpenGL.props" />
+    <Import Project="..\fmt.props" />
+    <Import Project="..\FMOD.props" />
+    <Import Project="..\OpenGL.props" />
+    <Import Project="..\physx.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\glm.props" />
     <Import Project="..\sdl.props" />
-    <Import Project="FMOD.props" />
-    <Import Project="fmt.props" />
-    <Import Project="glm.props" />
-    <Import Project="ImGui.props" />
-    <Import Project="OpenGL.props" />
+    <Import Project="..\fmt.props" />
+    <Import Project="..\FMOD.props" />
+    <Import Project="..\OpenGL.props" />
+    <Import Project="..\physx.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -100,7 +100,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Rujin;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Rujin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -117,7 +118,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Rujin;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Rujin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,7 +157,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Rujin;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Rujin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

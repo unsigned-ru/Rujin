@@ -2,6 +2,8 @@
 
 namespace rujin
 {
+	namespace settings { struct InitializationParameters; }
+
 	class IGame
 	{
 	public:
@@ -14,7 +16,7 @@ namespace rujin
 		IGame& operator=(const IGame&) = delete;
 
 		//Pre-launch configuration.
-		virtual void Configure(settings::InitializationParameters& params) {}
+		virtual void Configure(settings::InitializationParameters& params) = 0;
 
 		//Loading game.
 		virtual void Load() = 0;

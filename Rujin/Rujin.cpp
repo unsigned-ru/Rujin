@@ -14,6 +14,7 @@ float rujin::Rujin::s_DeltaTime{};
 using namespace std;
 
 rujin::Rujin::Rujin(IGame* pGame)
+	: m_pGame(pGame)
 {
 	//configure engine for selected game.
 	pGame->Configure(m_InitParams);

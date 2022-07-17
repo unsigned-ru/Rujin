@@ -171,7 +171,6 @@
     <ClInclude Include="InputStructs.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="Rutils\DeltaTimer.h" />
     <ClInclude Include="PlayerInput.h">
       <Filter>Input</Filter>
     </ClInclude>
@@ -192,6 +191,12 @@
     </ClInclude>
     <ClInclude Include="EventData.h">
       <Filter>Events\ObserverPattern\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysXManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Rutils\DeltaTimer.h">
+      <Filter>Rutils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -280,9 +285,6 @@
     <ClCompile Include="InputSession.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="Rutils\DeltaTimer.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerInput.cpp">
       <Filter>Input</Filter>
     </ClCompile>
@@ -294,6 +296,12 @@
     </ClCompile>
     <ClCompile Include="StatefullObject.cpp">
       <Filter>Game Loop</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Rutils\DeltaTimer.cpp">
+      <Filter>Rutils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

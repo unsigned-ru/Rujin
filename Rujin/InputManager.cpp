@@ -26,7 +26,7 @@ namespace rujin::input
 		{
 			//Set up iota data for player index queue.
 			std::array<unsigned char, s_MaxPlayerCount> tempArr{};
-			std::iota(tempArr.begin(), tempArr.end(), 0);
+			std::iota(tempArr.begin(), tempArr.end(), unsigned char(0));
 
 			//create player index queue
 			m_PlayerIndexQueue = std::priority_queue<PlayerIndex, std::vector<PlayerIndex>, std::greater<PlayerIndex>>(
