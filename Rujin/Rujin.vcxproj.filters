@@ -78,7 +78,7 @@
     <ClInclude Include="SceneManager.h">
       <Filter>Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Texture2D.h">
+    <ClInclude Include="Texture.h">
       <Filter>Data Types</Filter>
     </ClInclude>
     <ClInclude Include="Subject.h">
@@ -192,11 +192,17 @@
     <ClInclude Include="EventData.h">
       <Filter>Events\ObserverPattern\Interface</Filter>
     </ClInclude>
-    <ClInclude Include="PhysXManager.h">
-      <Filter>Managers</Filter>
-    </ClInclude>
     <ClInclude Include="Rutils\DeltaTimer.h">
       <Filter>Rutils</Filter>
+    </ClInclude>
+    <ClInclude Include="BitMaskOperators.h">
+      <Filter>Rutils</Filter>
+    </ClInclude>
+    <ClInclude Include="Structs.h">
+      <Filter>Data Types</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -236,7 +242,7 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>Game Loop</Filter>
     </ClCompile>
-    <ClCompile Include="Texture2D.cpp">
+    <ClCompile Include="Texture.cpp">
       <Filter>Data Types</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
@@ -297,11 +303,14 @@
     <ClCompile Include="StatefullObject.cpp">
       <Filter>Game Loop</Filter>
     </ClCompile>
-    <ClCompile Include="PhysXManager.cpp">
-      <Filter>Managers</Filter>
-    </ClCompile>
     <ClCompile Include="Rutils\DeltaTimer.cpp">
       <Filter>Rutils</Filter>
+    </ClCompile>
+    <ClCompile Include="Structs.cpp">
+      <Filter>Data Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Helpers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

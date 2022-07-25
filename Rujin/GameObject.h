@@ -4,6 +4,7 @@
 
 namespace rujin
 {
+	class Scene;
 	/**
 	 * \brief GameObject class given functionality by attaching components.
 	 * \note
@@ -27,7 +28,7 @@ namespace rujin
 		void Update() override;
 		void FixedUpdate() override;
 		void OnGui(SDL_Window* pWindow) override;
-		void Render() const override;
+		void Draw() const override;
 		void Destroy() override;
 
 		template<typename ComponentType, typename = std::enable_if<std::is_base_of_v<Component, ComponentType>>>
@@ -58,20 +59,25 @@ namespace rujin
 		void AddChild(std::unique_ptr<GameObject>& pChild);
 		void AttachTo(GameObject* pParent);
 
+		Scene* GetScene() const;
 		GameObject* GetParent() const;
+		GameObject* GetRootParent();
 		std::vector<std::unique_ptr<GameObject>>& GetChildren();
 		TransformComponent* GetTransform() const;
 		std::string GetName() const;
 
 	private:
+		friend class Scene;
 
 		void SetParent(GameObject* pParent);
+		void SetScene(Scene* pScene);
 
 		std::string m_Name{};
 
-		GameObject* m_pParent{ nullptr }; //Note owned by GameObject
-		std::vector<std::unique_ptr<GameObject>> m_Children{}; //owned by GameObject
-		std::vector<std::unique_ptr<Component>> m_Components{}; //owned by GameObject
+		GameObject* m_pParent{};
+		Scene* m_pScene{};
+		std::vector<std::unique_ptr<GameObject>> m_Children{};
+		std::vector<std::unique_ptr<Component>> m_Components{};
 
 		// all GO's have a transform so we can speed up access time by storing it explicitly
 		// gets destroyed by unique_ptr in m_Components going out of scope

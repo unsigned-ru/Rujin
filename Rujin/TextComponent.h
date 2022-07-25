@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 
-#include "Texture2D.h"
+#include "Texture.h"
 
 namespace rujin
 {
@@ -26,7 +26,7 @@ namespace rujin
 		void SetFont(const std::shared_ptr<Font>& font);
 		void SetColor(SDL_Color color);
 
-		std::shared_ptr<Texture2D> GenerateTexture();
+		std::shared_ptr<Texture> GenerateTexture();
 		bool IsDirty() const;
 
 	private:
@@ -35,6 +35,6 @@ namespace rujin
 		SDL_Color m_Color{255, 255 , 255, 255};
 
 		std::shared_ptr<Font> m_pFont;
-		std::weak_ptr<Texture2D> m_pLastGeneratedTexture;
+		std::weak_ptr<Texture> m_pLastGeneratedTexture;
 	};
 }

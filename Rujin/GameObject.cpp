@@ -68,16 +68,16 @@ void GameObject::OnGui(SDL_Window* pWindow)
 	}
 }
 
-void GameObject::Render() const
+void GameObject::Draw() const
 {
 	for (const auto& component : m_Components)
 	{
-		component->Render();
+		component->Draw();
 	}
 
 	for (const auto& child : m_Children)
 	{
-		child->Render();
+		child->Draw();
 	}
 }
 
@@ -135,9 +135,25 @@ void GameObject::AttachTo(GameObject* pParent)
 	SetParent(pParent);
 }
 
+Scene* GameObject::GetScene() const
+{
+	if (m_pParent && !m_pScene)
+		return m_pParent->GetScene();
+
+	return m_pScene;
+}
+
 GameObject* GameObject::GetParent() const
 {
 	return m_pParent;
+}
+
+GameObject* GameObject::GetRootParent()
+{
+	if (!m_pParent)
+		return this;
+
+	return m_pParent->GetRootParent();
 }
 
 std::vector<std::unique_ptr<GameObject>>& GameObject::GetChildren()
@@ -153,6 +169,11 @@ std::string GameObject::GetName() const
 void GameObject::SetParent(GameObject* pParent)
 {
 	m_pParent = pParent;
+}
+
+void GameObject::SetScene(Scene* pScene)
+{
+	m_pScene = pScene;
 }
 
 GameObject::GameObject(const std::string& name)

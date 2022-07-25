@@ -10,43 +10,42 @@ namespace rujin
 		class IBase;
 	};
 
-	namespace input
+	
+	class InputManager final : public Singleton<InputManager>
 	{
+		inline static constexpr float s_DeviceScanDelay{ 3.f };
+		inline static constexpr unsigned char s_MaxPlayerCount{ 4 };
 
-		class InputManager final : public Singleton<InputManager>
-		{
-			inline static constexpr float s_DeviceScanDelay{ 3.f };
-			inline static constexpr unsigned char s_MaxPlayerCount{ 4 };
+	public:
+		InputManager(InputManager&) = delete;
+		InputManager& operator=(InputManager&) = delete;
+		InputManager(InputManager&&) = delete;
+		InputManager& operator=(InputManager&&) = delete;
 
-		public:
-			InputManager();
-			~InputManager() override;
+		void ProcessInput(float deltaTime) const;
 
-			InputManager(InputManager&) = delete;
-			InputManager& operator=(InputManager&) = delete;
-			InputManager(InputManager&&) = delete;
-			InputManager& operator=(InputManager&&) = delete;
+		POINT GetMousePosition(bool previousFrame = false) const;
+		POINT GetMouseMovement() const;
 
-			void ProcessInput(float deltaTime) const;
+		PlayerIndex RegisterPlayer() const;
 
-			POINT GetMousePosition(bool previousFrame = false) const;
-			POINT GetMouseMovement() const;
+		void AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds) const;
+		void AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds) const;
+		void SetLeftVibration(PlayerIndex player, float intensity);
+		void SetRightVibration(PlayerIndex player, float intensity);
+		void SetVibration(PlayerIndex player, float intensity);
 
-			PlayerIndex RegisterPlayer() const;
+		bool IsInputActionTriggered(PlayerIndex player, uint32_t inputAction) const;
+		bool IsAxisActionTriggered(PlayerIndex player, uint32_t axisAction, float* pIntensity = nullptr) const;
 
-			void AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds) const;
-			void AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds) const;
-			void SetLeftVibration(PlayerIndex player, float intensity);
-			void SetRightVibration(PlayerIndex player, float intensity);
-			void SetVibration(PlayerIndex player, float intensity);
+	private:
+		friend class Singleton<InputManager>;
+		InputManager();
+		~InputManager() override;
 
-			bool IsInputActionTriggered(PlayerIndex player, uint32_t inputAction) const;
-			bool IsAxisActionTriggered(PlayerIndex player, uint32_t axisAction, float* pIntensity = nullptr) const;
+		void Initialize() override;
 
-		private:
-			class InputManagerXInputImpl;
-			std::unique_ptr<InputManagerXInputImpl> m_pImpl;
-		};
-
-	}
+		class InputManagerXInputImpl;
+		std::unique_ptr<InputManagerXInputImpl> m_pImpl;
+	};
 }

@@ -70,8 +70,8 @@ void Logger::Initialize()
 
 void Logger::Release()
 {
-	SafeDelete(m_ConsoleLogger);
-	SafeDelete(m_FileLogger);
+	SAFE_DELETE(m_ConsoleLogger);
+	SAFE_DELETE(m_FileLogger);
 }
 
 void Logger::ClearConsole()
@@ -81,14 +81,14 @@ void Logger::ClearConsole()
 
 void Logger::StartFileLogging(const std::string& fileName)
 {
-	SafeDelete(m_FileLogger);
+	SAFE_DELETE(m_FileLogger);
 
 	m_FileLogger = new FileLogger(fileName);
 }
 
 void Logger::StopFileLogging()
 {
-	SafeDelete(m_FileLogger);
+	SAFE_DELETE(m_FileLogger);
 }
 
 bool Logger::ProcessLog(LogLevel level, const LogString& fmt, fmt::format_args args)
@@ -105,7 +105,7 @@ bool Logger::ProcessLog(LogLevel level, const LogString& fmt, fmt::format_args a
 	const std::string strLevel = m_LevelToStr[level];
 	const auto colorCode = m_LevelToConsoleStyle[level];
 
-	const auto full_log = fmt::format("[{}{}{}] > {} (line {}) :: {}\n\n", colorCode, strLevel, RST, filename, fmt.line, logMsg);
+	const auto full_log = fmt::format("[{}{}{}] > {} (line {}) :: {}\n", colorCode, strLevel, RST, filename, fmt.line, logMsg);
 
 	//Console Log
 	if (m_ConsoleLogger)

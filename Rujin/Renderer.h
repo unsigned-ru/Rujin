@@ -3,31 +3,37 @@
 
 namespace rujin
 {
+	struct Rectf;
+	struct Transform;
+	struct WindowContext;
+
 	namespace settings
 	{
-		struct InitializationParameters;
+		struct InitParams;
 	}
 
-	class Texture2D;
-	/**
-	 * Simple RAII wrapper for the SDL renderer
-	 */
+	class Texture;
+
 	class Renderer final : public Singleton<Renderer>
 	{
-		SDL_Renderer* m_Renderer{};
-		SDL_Window* m_Window{};
-		SDL_Color m_ClearColor{};	
 	public:
-		void Init(SDL_Window* window, settings::InitializationParameters& params);
+		Renderer(const Renderer&) = delete;
+		Renderer(Renderer&&) noexcept = delete;
+		Renderer& operator=(const Renderer&) = delete;
+		Renderer& operator=(Renderer&&) noexcept = delete;
+
 		void Render() const;
-		void Destroy();
+		void RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot, const Rectf* srcRect = nullptr) const;
 
-		void RenderTexture(const Texture2D& texture, float x, float y) const;
-		void RenderTexture(const Texture2D& texture, float x, float y, float width, float height) const;
+	private:
+		friend class Singleton<Renderer>;
+		Renderer();
+		~Renderer() override;
 
-		SDL_Renderer* GetSDLRenderer() const;
-		const SDL_Color& GetBackgroundColor() const;
-		void SetBackgroundColor(const SDL_Color& color);
+		void Initialize() override;
+
+		WindowContext& m_WindowInfo;
+		SDL_GLContext m_pContext;
 	};
 }
 

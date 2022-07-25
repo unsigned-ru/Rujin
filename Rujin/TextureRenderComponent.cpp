@@ -6,28 +6,30 @@
 #include "TextureRenderComponent.h"
 #include "TransformComponent.h"
 
-rujin::TextureRenderComponent::TextureRenderComponent(const std::shared_ptr<Texture2D>& texture)
+rujin::TextureRenderComponent::TextureRenderComponent(const std::shared_ptr<Texture>& texture, const glm::vec2& pivot)
 	: m_pTexture(texture)
+	, m_Pivot(pivot)
 {
 }
 
 void rujin::TextureRenderComponent::LateStart()
 {
-	Component::LateStart();
-
 	assert(m_pTexture);
 }
 
-void rujin::TextureRenderComponent::Render() const
+void rujin::TextureRenderComponent::Draw() const
 {
-	Component::Render();
-
 	const auto transform = GameObject()->GetTransform();
 
-	Renderer::GetInstance().RenderTexture(*m_pTexture, transform->GetPosition().x, transform->GetPosition().y);
+	Renderer::Get()->RenderTexture(*m_pTexture, transform->GetTransform(), m_Pivot);
 }
 
-void rujin::TextureRenderComponent::SetTexture(const std::shared_ptr<Texture2D>& texture)
+void rujin::TextureRenderComponent::SetTexture(const std::shared_ptr<Texture>& texture)
 {
 	m_pTexture = texture;
+}
+
+void rujin::TextureRenderComponent::SetPivot(const glm::vec2& pivot)
+{
+	m_Pivot = pivot;
 }

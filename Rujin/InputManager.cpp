@@ -15,7 +15,7 @@
 #include "GamepadInputSession.h"
 #include "KeyboardAndMouseInputSession.h"
 
-namespace rujin::input
+namespace rujin
 {
 	class InputManager::InputManagerXInputImpl final
 	{
@@ -187,6 +187,7 @@ namespace rujin::input
 	//ctor and dtor -- NEED to be declared AFTER the implementation class definition in .cpp
 	InputManager::InputManager() : m_pImpl(std::make_unique<InputManagerXInputImpl>()) {}
 	InputManager::~InputManager() = default;
+	void InputManager::Initialize() {}
 
 #pragma region pImpl_Propagation
 	void InputManager::ProcessInput(float deltaTime) const
@@ -245,6 +246,5 @@ namespace rujin::input
 	{
 		return m_pImpl->IsAxisActionTriggered(player, axisAction, pIntensity);
 	}
-
 #pragma endregion
 }

@@ -4,7 +4,7 @@
 #include "TransformComponent.h"
 
 //recursive
-glm::vec3 rujin::TransformComponent::GetPosition() const
+rujin::Position rujin::TransformComponent::GetPosition() const
 {
 	if (const auto* pParent = m_pGameObject->GetParent())
 		return pParent->GetTransform()->GetPosition() + GetLocalPosition();
@@ -12,42 +12,28 @@ glm::vec3 rujin::TransformComponent::GetPosition() const
 	return GetLocalPosition();
 }
 
-void rujin::TransformComponent::SetPosition(const glm::vec2& posXY)
+void rujin::TransformComponent::SetPosition(const rujin::Position& pos)
 {
-	//localOffset for global = requestedGlobal - lastLocal
-	glm::vec3 lastLocal{};
-
-	if (const auto* pParent = m_pGameObject->GetParent())
-		lastLocal = pParent->GetTransform()->GetPosition();
-
-	const glm::vec3 posXYZ{ posXY.x, posXY.y, lastLocal.z };
-	m_localPosition = posXYZ - lastLocal;
+	//localOffset for global = newGlobal - global
+	m_LocalTransform.pos += pos - GetPosition();
 }
 
-void rujin::TransformComponent::SetPosition(const glm::vec3& posXYZ)
+rujin::Rotation rujin::TransformComponent::GetRotation() const
 {
-	glm::vec3 lastLocal{};
-	if (const auto* pParent = m_pGameObject->GetParent())
-		lastLocal = pParent->GetTransform()->GetPosition();
-
-	m_localPosition = posXYZ - lastLocal;
-}
-
-glm::quat rujin::TransformComponent::GetRotation() const
-{
-	if (const auto* pParent = m_pGameObject->GetParent())
-		return pParent->GetTransform()->GetRotation() * GetLocalRotation();
+	if (const auto* pParent = GameObject()->GetParent())
+		return fmod(pParent->GetTransform()->GetRotation() + GetLocalRotation(), 2.f * std::numbers::pi_v<float>);
 
 	return GetLocalRotation();
 }
 
-void rujin::TransformComponent::SetRotation(const glm::quat&)
+void rujin::TransformComponent::SetRotation(const Rotation rot)
 {
-	//TODO: implement
-	// calculate local rotation offset to achieve said global rotation.
+	//calculate difference between  wanted global rotation and current global rotation
+	//and add locally
+	m_LocalTransform.rot += rot - GetRotation();
 }
 
-glm::vec3 rujin::TransformComponent::GetScale() const
+rujin::Scale rujin::TransformComponent::GetScale() const
 {
 	if (const auto* pParent = m_pGameObject->GetParent())
 		return pParent->GetTransform()->GetScale() * GetLocalScale();
@@ -55,58 +41,52 @@ glm::vec3 rujin::TransformComponent::GetScale() const
 	return GetLocalScale();
 }
 
-void rujin::TransformComponent::SetScale(const glm::vec3&)
+void rujin::TransformComponent::SetScale(const Scale& scale)
 {
-	//TODO: implement.
+	m_LocalTransform.scale += scale - GetScale();
 }
 
-glm::vec3 rujin::TransformComponent::GetLocalPosition() const
+rujin::Transform rujin::TransformComponent::GetTransform() const
 {
-	return m_localPosition;
+	if (const auto* pParent = m_pGameObject->GetParent())
+	{
+		return pParent->GetTransform()->GetTransform() + GetLocalTransform();
+	}
+
+	return GetLocalTransform();
 }
 
-glm::vec3& rujin::TransformComponent::GetLocalPosition()
+const rujin::Position& rujin::TransformComponent::GetLocalPosition() const
 {
-	return m_localPosition;
+	return m_LocalTransform.pos;
 }
 
-void rujin::TransformComponent::SetLocalPosition(const glm::vec2& posXY)
+void rujin::TransformComponent::SetLocalPosition(const Position& pos)
 {
-	m_localPosition.x = posXY.x;
-	m_localPosition.y = posXY.y;
+	m_LocalTransform.pos = pos;
 }
 
-void rujin::TransformComponent::SetLocalPosition(const glm::vec3& posXYZ)
+rujin::Rotation rujin::TransformComponent::GetLocalRotation() const
 {
-	m_localPosition = posXYZ;
+	return m_LocalTransform.rot;
 }
 
-glm::quat rujin::TransformComponent::GetLocalRotation() const
+void rujin::TransformComponent::SetLocalRotation(const Rotation rot)
 {
-	return m_localRotation;
+	m_LocalTransform.rot = fmod(rot, std::numbers::pi_v<float> *2.f);
 }
 
-glm::quat& rujin::TransformComponent::GetLocalRotation()
+const rujin::Scale& rujin::TransformComponent::GetLocalScale() const
 {
-	return m_localRotation;
+	return m_LocalTransform.scale;
 }
 
-void rujin::TransformComponent::SetLocalRotation(const glm::quat& rot)
+void rujin::TransformComponent::SetLocalScale(const Scale& scale)
 {
-	m_localRotation = rot;
+	m_LocalTransform.scale = scale;
 }
 
-glm::vec3 rujin::TransformComponent::GetLocalScale() const
+const rujin::Transform& rujin::TransformComponent::GetLocalTransform() const
 {
-	return m_localScale;
-}
-
-glm::vec3& rujin::TransformComponent::GetLocalScale()
-{
-	return m_localScale;
-}
-
-void rujin::TransformComponent::SetLocalScale(const glm::vec3& scale)
-{
-	m_localScale = scale;
+	return m_LocalTransform;
 }

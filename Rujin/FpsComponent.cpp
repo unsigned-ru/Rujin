@@ -26,7 +26,7 @@ void rujin::FpsComponent::Update()
 	Component::Update();
 
 	//calculate FPS
-	m_FpsTimer += Rujin::GetDeltaTime();
+	m_FpsTimer += Rujin::Get()->GetDeltaTime();
 	++m_FpsCount;
 	if (m_FpsTimer >= m_UpdateInterval)
 	{

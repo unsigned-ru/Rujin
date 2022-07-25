@@ -15,6 +15,6 @@ public:
 	virtual void Update() {};
 	virtual void FixedUpdate() {};
 	virtual void OnGui(SDL_Window* /*pWindow*/) {};
-	virtual void Render() const {};
+	virtual void Draw() const {};
 	virtual void Destroy() {};
 };

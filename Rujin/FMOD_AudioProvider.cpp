@@ -130,7 +130,7 @@ void rujin::FMOD_AudioProvider::LoadAudio(const std::string& filepath)
 
 	//load in the sound
 	FMOD::Sound* sound;
-	HANDLE_FMOD_ERROR(m_pCore->createSound((ResourceManager::GetInstance().GetDataPath() + filepath).c_str(), FMOD_DEFAULT, nullptr, &sound));
+	HANDLE_FMOD_ERROR(m_pCore->createSound((ResourceManager::Get()->GetDataPath() + filepath).c_str(), FMOD_DEFAULT, nullptr, &sound));
 
 	m_Sounds.insert_or_assign(filepath, sound);
 }

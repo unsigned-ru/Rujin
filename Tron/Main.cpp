@@ -8,12 +8,14 @@
 #endif
 #endif
 
+using namespace rujin;
+
 int main()
 {
     Tron tron{};
-    rujin::Rujin engine{&tron};
+    Rujin* pEngine = Rujin::Create(&tron);
 
-    engine.Run();
+    pEngine->Run();
 
 	return 0;
 }

@@ -23,6 +23,9 @@
     <ClCompile Include="Tron.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="TronTestComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TronPCH.h">
@@ -33,6 +36,9 @@
     </ClInclude>
     <ClInclude Include="..\Rujin\GameEvents.h">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="TronTestComponent.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

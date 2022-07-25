@@ -25,7 +25,7 @@ enum class LogLevel : uint32_t
 #define LOG_ERROR_(fmt, ...)  Logger::LogError(Logger::LogString{fmt, __FILE__, __LINE__, true}, __VA_ARGS__)
 #pragma endregion
 
-class Logger : public rujin::Singleton<Logger>
+class Logger
 {
 	class BaseLogger
 	{
@@ -58,7 +58,6 @@ class Logger : public rujin::Singleton<Logger>
 		ConsoleLogger();
 	};
 
-
 public:
 	struct LogString
 	{
@@ -68,7 +67,7 @@ public:
 		bool format{false};
 	};
 
-	~Logger() override = default;
+	~Logger() = default;
 	Logger(const Logger& other) = delete;
 	Logger(Logger&& other) noexcept = delete;
 	Logger& operator=(const Logger& other) = delete;

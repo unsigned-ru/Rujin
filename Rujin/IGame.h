@@ -2,7 +2,9 @@
 
 namespace rujin
 {
-	namespace settings { struct InitializationParameters; }
+#pragma region Forward Declarations
+	namespace settings { struct InitParams; };
+#pragma endregion
 
 	class IGame
 	{
@@ -16,7 +18,7 @@ namespace rujin
 		IGame& operator=(const IGame&) = delete;
 
 		//Pre-launch configuration.
-		virtual void Configure(settings::InitializationParameters& params) = 0;
+		virtual void Configure(settings::InitParams& params) = 0;
 
 		//Loading game.
 		virtual void Load() = 0;

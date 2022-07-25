@@ -3,12 +3,18 @@
 
 namespace rujin
 {
+	class Camera;
+
+	namespace settings
+	{
+		struct InitParams;
+	}
+
 	class Scene;
 
 	class SceneManager final : public Singleton<SceneManager>
 	{
 	public:
-		~SceneManager() override;
 		SceneManager(const SceneManager& other) = delete;
 		SceneManager(SceneManager&& other) noexcept = delete;
 		SceneManager& operator=(const SceneManager& other) = delete;
@@ -19,15 +25,17 @@ namespace rujin
 		void Update();
 		void FixedUpdate();
 		void OnGui(SDL_Window* pWindow);
-		void Render() const;
+		void Draw() const;
 
-		Scene* CreateScene(const std::string& name);
+		Scene* CreateScene(const std::string& name, Camera* pCamera = nullptr);
 		Scene* GetScene(const std::string& name) const;
 		Scene* GetScene(const size_t idx = 0) const;
 
 	private:
 		friend class Singleton<SceneManager>;
 		SceneManager();
+		~SceneManager() override;
+		void Initialize() override;
 
 		std::vector<std::unique_ptr<Scene>> m_Scenes;
 	};

@@ -1,18 +1,34 @@
 #include "RujinPCH.h"
 #include "Scene.h"
 
+#include "Camera.h"
+#include "Rujin.h"
+
 using namespace rujin;
 
 unsigned int Scene::m_IdCounter = 0;
 
-Scene::Scene(const std::string& name)
+Scene::Scene(const std::string& name, Camera* pCamera)
 	: IGameLoopObject()
 	, m_Name(name)
 	, m_GameObjects()
 	, m_ActiveGameObjects()
 	, m_InactiveGameObjects()
-{}
+{
+	if (!pCamera)
+	{
+		m_pDefaultCamera = new Camera(Rujin::Get()->GetWindowContext().windowSize);
+		m_pActiveCamera = m_pDefaultCamera;
+	}
+	else
+		m_pActiveCamera = pCamera;
+}
 
+
+Scene::~Scene()
+{
+	Destroy();
+}
 
 void Scene::Start()
 {
@@ -54,20 +70,28 @@ void Scene::OnGui(SDL_Window* pWindow)
 	}
 }
 
-void Scene::Render() const
+void Scene::Draw() const
 {
+	glPushMatrix();
+
+	m_pActiveCamera->Project();
+
 	for (const auto& object : m_GameObjects)
 	{
-		object->Render();
+		object->Draw();
 	}
+
+	glPopMatrix();
 }
 
 void Scene::Destroy()
 {
+	delete m_pDefaultCamera;
 }
 
 void Scene::AddGameObject(std::unique_ptr<GameObject>& gameObject)
 {
+	gameObject->SetScene(this);
 	m_GameObjects.push_back(std::move(gameObject));
 }
 

@@ -1,9 +1,13 @@
 #include "RujinPCH.h"
 #include "SceneManager.h"
+
+#include "Camera.h"
+#include "Rujin.h"
 #include "Scene.h"
 
 rujin::SceneManager::SceneManager() = default;
 rujin::SceneManager::~SceneManager() = default;
+void rujin::SceneManager::Initialize() {}
 
 void rujin::SceneManager::Start()
 {
@@ -46,17 +50,17 @@ void rujin::SceneManager::OnGui(SDL_Window* pWindow)
 }
 
 
-void rujin::SceneManager::Render() const
+void rujin::SceneManager::Draw() const
 {
 	for (const auto& scene : m_Scenes)
 	{
-		scene->Render();
+		scene->Draw();
 	}
 }
 
-rujin::Scene* rujin::SceneManager::CreateScene(const std::string& name)
+rujin::Scene* rujin::SceneManager::CreateScene(const std::string& name, Camera* pCamera)
 {
-	auto* pScene = new rujin::Scene(name);
+	auto* pScene = new rujin::Scene(name, pCamera);
 	m_Scenes.push_back(std::unique_ptr<rujin::Scene>(pScene));
 	return pScene;
 }
