@@ -31,16 +31,13 @@ void Tron::Load()
 	LoadFonts(resourceManager);
 	LoadAudio(audioService);
 
-	//TODO: fix render order.
-
 	{
 		auto go = std::make_unique<GameObject>("TestObject2");
-		go->AddComponent(new TextureRenderComponent(resourceManager->LoadTexture("background.jpg"), {0.5f, 0.f}));
-		go->GetTransform()->SetPosition(Position{ 750 / 2, 0 });
+		go->AddComponent(new TextureRenderComponent(resourceManager->LoadTexture("Textures\Circuit.png"), {0.f, 0.f}));
 		pScene->AddGameObject(go);
 	}
 
-	{
+	/*{
 		auto go = std::make_unique<GameObject>("TestObject");
 		go->GetTransform()->SetPosition(Position{ 750 / 2, 100 });
 
@@ -51,15 +48,14 @@ void Tron::Load()
 		go->AddChild(go2);
 
 		pScene->AddGameObject(go);
-	}
+	}*/
 
 }
 
 void Tron::LoadTextures(rujin::ResourceManager* rm)
 {
 	//load required textures
-	rm->LoadTexture("background.jpg");
-	rm->LoadTexture("logo.png");
+	rm->LoadTexture("Textures\Circuit.png");
 }
 
 void Tron::LoadFonts(rujin::ResourceManager* rm)
