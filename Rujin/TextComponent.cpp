@@ -1,7 +1,7 @@
 #include "RujinPCH.h"
 
 #include "TextComponent.h"
-#include "Renderer.h"
+#include "MainRenderProvider.h"
 #include "Font.h"
 
 #include <SDL_ttf.h>
@@ -53,7 +53,7 @@ std::shared_ptr<rujin::Texture> rujin::TextComponent::GenerateTexture()
 	//if (!surf) 
 	//	throw std::runtime_error(std::string("Draw text failed: ") + SDL_GetError());
 
-	//const auto texture = SDL_CreateTextureFromSurface(Renderer::Get()->GetSDLRenderer(), surf);
+	//const auto texture = SDL_CreateTextureFromSurface(MainRenderProvider::Get()->GetSDLRenderer(), surf);
 
 	//if (!texture)
 	//	throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());

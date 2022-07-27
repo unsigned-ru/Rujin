@@ -14,6 +14,11 @@ namespace rujin
 		explicit InputSession(const InputDeviceType&& deviceType);
 		virtual ~InputSession() = default;
 
+		InputSession(const InputSession&) = delete;
+		InputSession(InputSession&&) noexcept = delete;
+		InputSession& operator=(const InputSession&) = delete;
+		InputSession& operator=(InputSession&&) noexcept = delete;
+
 		//returns false if input device disconnects.
 		virtual bool UpdateStates() = 0;
 

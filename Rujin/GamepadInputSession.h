@@ -1,45 +1,26 @@
-#pragma once
-#include <Xinput.h>
-#include <glm/vec2.hpp>
-
+﻿#pragma once
 #include "InputSession.h"
 #include "InputStructs.h"
 
 namespace rujin
 {
-	class GamepadInputSession final : public InputSession
+	class GamepadInputSession : public InputSession
 	{
 	public:
-		explicit GamepadInputSession(const GamepadIndex gamepadIndex, const XINPUT_STATE& state);
-		~GamepadInputSession() override = default;
+		GamepadInputSession() : InputSession(InputDeviceType::Gamepad) {}
 
-		GamepadInputSession(const GamepadInputSession&) = delete;
-		GamepadInputSession(GamepadInputSession&&) noexcept = delete;
+		bool UpdateStates() override = 0;
 
-		GamepadInputSession operator=(GamepadInputSession&&) noexcept = delete;
-		GamepadInputSession operator=(const GamepadInputSession&) = delete;
-		
+		virtual bool IsGamepadButtonDown(GamepadButton button, bool previousFrame = false) const = 0;
 
-		virtual bool UpdateStates() override;
+		virtual glm::vec2 GetLeftThumbstickPosition(bool previousFrame = false) const = 0;
+		virtual glm::vec2 GetRightThumbstickPosition(bool previousFrame = false) const = 0;
 
-		bool IsGamepadButtonDown(GamepadButton button, bool previousFrame = false) const;
+		virtual float GetLeftTriggerPressure(bool previousFrame = false) const = 0;
+		virtual float GetRightTriggerPressure(bool previousFrame = false) const = 0;
 
-		glm::vec2 GetLeftThumbstickPosition(bool previousFrame = false) const;
-		glm::vec2 GetRightThumbstickPosition(bool previousFrame = false) const;
-
-		float GetLeftTriggerPressure(bool previousFrame = false) const;
-		float GetRightTriggerPressure(bool previousFrame = false) const;
-
-		void SetVibration(float vibration);
-		void SetLeftVibration(float leftVibration);
-		void SetRightVibration(float rightVibration);
-
-		GamepadIndex GetGamepadIndex() const { return m_GamepadIndex; };
-
-	private:
-		XINPUT_STATE m_OldGamepadState{};
-		XINPUT_STATE m_CurrGamepadState{};
-
-		GamepadIndex m_GamepadIndex;
+		virtual void SetVibration(float vibration) = 0;
+		virtual void SetLeftVibration(float leftVibration) = 0;
+		virtual void SetRightVibration(float rightVibration) = 0;
 	};
 }

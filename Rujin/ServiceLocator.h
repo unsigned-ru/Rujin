@@ -36,7 +36,8 @@ namespace rujin
 			if (it != s_Services.end())
 				return *static_cast<ServiceType*>(it->second.get());
 
-			throw std::runtime_error("Tried to get unregistered service: " + std::string(typeid(ServiceType).name()));
+			LOG_ERROR_("Tried to get unregistered service: {}", typeid(ServiceType).name());
+			throw;
 		}
 
 		static void ClearServices()

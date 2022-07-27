@@ -35,6 +35,11 @@ namespace rujin
 		FMOD_AudioProvider();
 		~FMOD_AudioProvider() override;
 
+		FMOD_AudioProvider(const FMOD_AudioProvider&) = delete;
+		FMOD_AudioProvider(FMOD_AudioProvider&&) noexcept = delete;
+		FMOD_AudioProvider& operator=(const FMOD_AudioProvider&) = delete;
+		FMOD_AudioProvider& operator=(FMOD_AudioProvider&&) noexcept = delete;
+
 		sound_id PlaySoundEffect(const std::string& filepath) override;
 		sound_id PlayMusic(const std::string& filepath, bool loop = true) override;
 		
@@ -52,8 +57,6 @@ namespace rujin
 
 		float GetMusicVolume() const override;
 		float GetSoundEffectVolume() const override;
-
-		
 
 	private:
 		struct ActiveAudio

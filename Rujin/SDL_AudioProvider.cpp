@@ -4,7 +4,7 @@
 #include <functional>
 #include <thread>
 
-#include "ResourceManager.h"
+#include "ResourceProvider.h"
 #include "ServiceLocator.h"
 
 rujin::SDL_AudioProvider::SDL_AudioProvider()
@@ -57,7 +57,7 @@ void rujin::SDL_AudioProvider::LoadAudio(const std::string& filepath)
 		return; //the audio is already loaded
 
 	//we haven't loaded the audio yet, load the audio with SDL
-	Mix_Chunk* pAudio = Mix_LoadWAV((ResourceManager::Get()->GetDataPath() + filepath).c_str());
+	Mix_Chunk* pAudio = Mix_LoadWAV((ServiceLocator::GetService<ResourceService>().GetDataPath() + filepath).c_str());
 
 	if (!pAudio)
 		LOG_ERROR_("Failed to load audio file: \"{}\" (only .wav files are supported)");

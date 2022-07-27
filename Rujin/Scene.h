@@ -29,7 +29,7 @@ namespace rujin
 		void SetActiveCamera(Camera* pCamera) { m_pActiveCamera = pCamera; }
 
 	private:
-		friend class SceneManager;
+		friend class SceneProvider;
 		explicit Scene(const std::string& name, Camera* pCamera);
 
 		const std::string m_Name;

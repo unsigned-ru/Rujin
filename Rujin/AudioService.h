@@ -10,7 +10,13 @@ namespace rujin
 	class AudioService : public Service
 	{
 	public:
-		virtual ~AudioService() override = default;
+		AudioService() = default;
+		~AudioService() override = default;
+
+		AudioService(const AudioService&) = delete;
+		AudioService(AudioService&&) noexcept = delete;
+		AudioService& operator=(const AudioService&) = delete;
+		AudioService& operator=(AudioService&&) noexcept = delete;
 
 		virtual void LoadAudio(const std::string& filepath) = 0;
 		virtual void UnloadAudio(const std::string& filepath) = 0;

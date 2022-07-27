@@ -7,9 +7,6 @@
     <Filter Include="Helpers">
       <UniqueIdentifier>{2a03d4ed-e2e1-48ec-91b5-e853657cd1ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Managers">
-      <UniqueIdentifier>{2ff3a82f-58cc-47e0-a4ad-a4abbd4fee88}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Data Types">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -51,6 +48,27 @@
     <Filter Include="Input">
       <UniqueIdentifier>{1aa79b7e-04f7-49ee-aba4-f0ca834a607f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Services\InputService">
+      <UniqueIdentifier>{fc4f315c-013d-4e79-889a-bffbdc1cf6d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\InputService\xinput">
+      <UniqueIdentifier>{5f1dbe6c-e400-43dd-b275-18eb2ae6af60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\Interfaces">
+      <UniqueIdentifier>{ee83cb10-9184-4d01-810c-263806e77d3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\XInput">
+      <UniqueIdentifier>{c4675234-c4f6-49c5-bb67-a4e35271c349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\ResourceService">
+      <UniqueIdentifier>{18669165-2a89-4824-be6d-12b666e1e5c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\SceneService">
+      <UniqueIdentifier>{20036d5a-e7c6-48fd-a67d-48cd5f58ba55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Services\RenderService">
+      <UniqueIdentifier>{dcffcf5f-0d99-4199-9894-341bf4defb08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RujinPCH.h" />
@@ -69,15 +87,6 @@
     <ClInclude Include="TransformComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>Managers</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Data Types</Filter>
     </ClInclude>
@@ -94,9 +103,6 @@
       <Filter>Game Loop</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Game Loop</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
       <Filter>Game Loop</Filter>
     </ClInclude>
     <ClInclude Include="Singleton.h">
@@ -165,22 +171,10 @@
     <ClInclude Include="FMOD_AudioProvider.h">
       <Filter>Services\AudioService\FMOD</Filter>
     </ClInclude>
-    <ClInclude Include="InputSession.h">
-      <Filter>Input</Filter>
-    </ClInclude>
     <ClInclude Include="InputStructs.h">
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="PlayerInput.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="InputActions.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyboardAndMouseInputSession.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="GamepadInputSession.h">
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="IGame.h">
@@ -204,6 +198,48 @@
     <ClInclude Include="Camera.h">
       <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="InputService.h">
+      <Filter>Services\InputService</Filter>
+    </ClInclude>
+    <ClInclude Include="XInputProvider.h">
+      <Filter>Services\InputService\xinput</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseInputProvider.h">
+      <Filter>Services\InputService</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSession.h">
+      <Filter>Input\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="XInputGamepadSession.h">
+      <Filter>Input\XInput</Filter>
+    </ClInclude>
+    <ClInclude Include="XInputKeyboardAndMouseSession.h">
+      <Filter>Input\XInput</Filter>
+    </ClInclude>
+    <ClInclude Include="GamepadInputSession.h">
+      <Filter>Input\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardAndMouseInputSession.h">
+      <Filter>Input\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceProvider.h">
+      <Filter>Services\ResourceService</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceService.h">
+      <Filter>Services\ResourceService</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneService.h">
+      <Filter>Services\SceneService</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneProvider.h">
+      <Filter>Services\SceneService</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderService.h">
+      <Filter>Services\RenderService</Filter>
+    </ClInclude>
+    <ClInclude Include="MainRenderProvider.h">
+      <Filter>Services\RenderService</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Rujin.cpp">
@@ -224,23 +260,11 @@
     <ClCompile Include="TransformComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
-      <Filter>Managers</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>Game Loop</Filter>
     </ClCompile>
     <ClCompile Include="Font.cpp">
       <Filter>Data Types</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Game Loop</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Data Types</Filter>
@@ -288,16 +312,7 @@
     <ClCompile Include="FMOD_AudioProvider.cpp">
       <Filter>Services\AudioService\FMOD</Filter>
     </ClCompile>
-    <ClCompile Include="InputSession.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerInput.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="KeyboardAndMouseInputSession.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="GamepadInputSession.cpp">
       <Filter>Input</Filter>
     </ClCompile>
     <ClCompile Include="StatefullObject.cpp">
@@ -311,6 +326,33 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="XInputProvider.cpp">
+      <Filter>Services\InputService\xinput</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseInputProvider.cpp">
+      <Filter>Services\InputService</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSession.cpp">
+      <Filter>Input\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="XInputGamepadSession.cpp">
+      <Filter>Input\XInput</Filter>
+    </ClCompile>
+    <ClCompile Include="XInputKeyboardAndMouseSession.cpp">
+      <Filter>Input\XInput</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardAndMouseInputSession.cpp">
+      <Filter>Input\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceProvider.cpp">
+      <Filter>Services\ResourceService</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneProvider.cpp">
+      <Filter>Services\SceneService</Filter>
+    </ClCompile>
+    <ClCompile Include="MainRenderProvider.cpp">
+      <Filter>Services\RenderService</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

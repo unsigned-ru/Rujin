@@ -1,5 +1,4 @@
 #pragma once
-
 #include <functional>
 #include <mutex>
 
@@ -18,6 +17,11 @@ namespace rujin
 	public:
 		SDL_AudioProvider();
 		~SDL_AudioProvider() override;
+
+		SDL_AudioProvider(const SDL_AudioProvider&) = delete;
+		SDL_AudioProvider(SDL_AudioProvider&&) noexcept = delete;
+		SDL_AudioProvider& operator=(const SDL_AudioProvider&) = delete;
+		SDL_AudioProvider& operator=(SDL_AudioProvider&&) noexcept = delete;
 
 		sound_id PlaySoundEffect(const std::string& filepath) override;
 		sound_id PlayMusic(const std::string&, bool) override { return 0; };
@@ -41,11 +45,7 @@ namespace rujin
 		void RunThread();
 		void SwapQueueBuffers();
 
-		struct AudioRequest
-		{
-			const std::string filepath;
-		};
-
+		struct AudioRequest { const std::string filepath; };
 
 		std::thread* m_pAudioThread{ nullptr };
 		std::atomic<bool> m_ExitThread{ false };

@@ -1,8 +1,8 @@
-// dear imgui: Renderer Backend for OpenGL2 (legacy OpenGL, fixed pipeline)
+// dear imgui: MainRenderer Backend for OpenGL2 (legacy OpenGL, fixed pipeline)
 // This needs to be used along with a Platform Backend (e.g. GLFW, SDL, Win32, custom..)
 
 // Implemented features:
-//  [X] Renderer: User texture binding. Use 'GLuint' OpenGL texture identifier as void*/ImTextureID. Read the FAQ about ImTextureID!
+//  [X] MainRenderer: User texture binding. Use 'GLuint' OpenGL texture identifier as void*/ImTextureID. Read the FAQ about ImTextureID!
 
 // You can use unmodified imgui_impl_* files in your project. See examples/ folder for examples of using this. 
 // Prefer including the entire imgui/ repository into your project (either as a copy or as a submodule), and only build the backends you need.

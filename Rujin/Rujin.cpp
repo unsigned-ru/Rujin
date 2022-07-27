@@ -3,11 +3,14 @@
 
 #include <chrono>
 
+#include "MainRenderProvider.h"
+#include "ResourceProvider.h"
+#include "SceneProvider.h"
+#include "ServiceLocator.h"
+#include "FMOD_AudioProvider.h"
+#include "XInputProvider.h"
+
 #include "IGame.h"
-#include "InputManager.h"
-#include "Renderer.h"
-#include "ResourceManager.h"
-#include "SceneManager.h"
 
 rujin::Rujin::Rujin(IGame* pGame)
 	: m_pGame(pGame)
@@ -20,11 +23,6 @@ rujin::Rujin::Rujin(IGame* pGame)
 
 rujin::Rujin::~Rujin()
 {
-	SceneManager::Destroy();
-	ResourceManager::Destroy();
-	InputManager::Destroy();
-	Renderer::Destroy();
-
 	SDL_DestroyWindow(m_WindowContext.pWindow);
 	m_WindowContext.pWindow = nullptr;
 	SDL_Quit();
@@ -37,11 +35,12 @@ void rujin::Rujin::Initialize()
 	Logger::Initialize();
 	InitializeSDL();
 
-	//Create singletons & initialize
-	Renderer::Create();
-	InputManager::Create();
-	ResourceManager::Create();
-	SceneManager::Create();
+	//initialize default services
+	ServiceLocator::RegisterService<RenderService, MainRenderProvider>();
+	ServiceLocator::RegisterService<InputService, XInputProvider>();
+	ServiceLocator::RegisterService<ResourceService, ResourceProvider>();
+	ServiceLocator::RegisterService<AudioService, FMOD_AudioProvider>();
+	ServiceLocator::RegisterService<SceneService, SceneProvider>();
 }
 
 void rujin::Rujin::InitializeSDL()
@@ -89,14 +88,15 @@ void rujin::Rujin::Run()
 	LOG_DEBUG("Loading Game...");
 	m_pGame->Load();
 
-	const auto* const renderer = Renderer::Get();
-	auto* sceneManager = SceneManager::Get();
-	const auto* const input = InputManager::Get();
+	const RenderService& renderer = ServiceLocator::GetService<RenderService>();
+	SceneService& sceneService = ServiceLocator::GetService<SceneService>();
+	InputService& input = ServiceLocator::GetService<InputService>();
+
 	LOG_DEBUG("Loading Complete.");
 
 	LOG_DEBUG("Starting Game...");
-	sceneManager->Start();
-	sceneManager->LateStart();
+	sceneService.Start();
+	sceneService.LateStart();
 	LOG_DEBUG("Game Started.");
 
 	bool doContinue = true;
@@ -127,20 +127,20 @@ void rujin::Rujin::Run()
 		lag += m_DeltaTime;
 
 		/* input */
-		input->ProcessInput(m_DeltaTime);
+		input.ProcessInput(m_DeltaTime);
 
 		/* Update scene */
-		sceneManager->Update();
+		sceneService.Update();
 
 		/* Fixed update(s) */
 		while (lag >= m_FixedUpdateTimestep)
 		{
-			sceneManager->FixedUpdate();
+			sceneService.FixedUpdate();
 			lag -= m_FixedUpdateTimestep;
 		}
 
 		/* render */
-		renderer->Render();
+		renderer.Render();
 	}
 }
 

@@ -3,8 +3,8 @@
 
 #include <ranges>
 
-#include "GamepadInputSession.h"
-#include "KeyboardAndMouseInputSession.h"
+#include "XInputGamepadSession.h"
+#include "XInputKeyboardAndMouseSession.h"
 #include "Rutils/General.h"
 
 rujin::PlayerInput::PlayerInput(const PlayerIndex playerIndex)
@@ -35,7 +35,7 @@ void rujin::PlayerInput::Update()
 		case InputDeviceType::KeyboardAndMouse:
 		{
 			//Input device is Keyboard and Mouse,
-			const auto* pSession = static_cast<KeyboardAndMouseInputSession*>(m_pInputSession);
+			const auto* pSession = static_cast<XInputKeyboardAndMouseSession*>(m_pInputSession);
 
 			//loop over input action keybinds
 			for (auto& [keybinds, actionState] : m_InputActions | std::views::values)
@@ -106,7 +106,7 @@ void rujin::PlayerInput::Update()
 		case InputDeviceType::Gamepad:
 		{
 			//check if gamepad keybind is triggered 
-			const auto* pSession = static_cast<GamepadInputSession*>(m_pInputSession);
+			const auto* pSession = static_cast<XInputGamepadSession*>(m_pInputSession);
 			
 			for (auto& [keybinds, actionState] : m_InputActions | std::views::values)
 			{
@@ -240,7 +240,7 @@ void rujin::PlayerInput::SetLeftVibration(const float intensity)
 	case InputDeviceType::KeyboardAndMouse: 
 		break;
 	case InputDeviceType::Gamepad:
-		reinterpret_cast<GamepadInputSession*>(m_pInputSession)->SetLeftVibration(intensity);
+		reinterpret_cast<XInputGamepadSession*>(m_pInputSession)->SetLeftVibration(intensity);
 		break;
 	}
 }
@@ -253,7 +253,7 @@ void rujin::PlayerInput::SetRightVibration(float intensity)
 	case InputDeviceType::KeyboardAndMouse:
 		break;
 	case InputDeviceType::Gamepad:
-		reinterpret_cast<GamepadInputSession*>(m_pInputSession)->SetRightVibration(intensity);
+		reinterpret_cast<XInputGamepadSession*>(m_pInputSession)->SetRightVibration(intensity);
 		break;
 	}
 }
@@ -266,7 +266,7 @@ void rujin::PlayerInput::SetVibration(float intensity)
 	case InputDeviceType::KeyboardAndMouse:
 		break;
 	case InputDeviceType::Gamepad:
-		reinterpret_cast<GamepadInputSession*>(m_pInputSession)->SetVibration(intensity);
+		reinterpret_cast<XInputGamepadSession*>(m_pInputSession)->SetVibration(intensity);
 		break;
 	}
 }

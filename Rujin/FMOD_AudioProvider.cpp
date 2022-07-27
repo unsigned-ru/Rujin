@@ -4,7 +4,8 @@
 #include <functional>
 #include <ranges>
 
-#include "ResourceManager.h"
+#include "ResourceService.h"
+#include "ServiceLocator.h"
 #include "Rutils/Macros.h"
 
 #define LOG_FMOD_ERROR(result) LOG_ERROR_("FMOD Error! {} {}", result, FMOD_ErrorString(result))
@@ -130,7 +131,7 @@ void rujin::FMOD_AudioProvider::LoadAudio(const std::string& filepath)
 
 	//load in the sound
 	FMOD::Sound* sound;
-	HANDLE_FMOD_ERROR(m_pCore->createSound((ResourceManager::Get()->GetDataPath() + filepath).c_str(), FMOD_DEFAULT, nullptr, &sound));
+	HANDLE_FMOD_ERROR(m_pCore->createSound((ServiceLocator::GetService<ResourceService>().GetDataPath() + filepath).c_str(), FMOD_DEFAULT, nullptr, &sound));
 
 	m_Sounds.insert_or_assign(filepath, sound);
 }

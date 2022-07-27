@@ -1,26 +1,25 @@
 ﻿#pragma once
 #include "IGame.h"
+#include "ResourceService.h"
 
 #pragma region Forward Declarations
 namespace rujin
 {
+	class ResourceService;
 	class AudioService;
-	class ResourceManager;
-
-	namespace settings { struct InitParams; }
 }
+
 #pragma endregion
+
 
 class Tron final : public rujin::IGame
 {
 public:
-	void Configure(rujin::settings::InitParams& params) override;
+	void Configure(settings::InitParams& params) override;
 	void Load() override;
 
 private:
-	void LoadTextures(rujin::ResourceManager* rm);
-	void LoadFonts(rujin::ResourceManager* rm);
-	void LoadAudio(rujin::AudioService& as);
-
-	void CreateTestObject();
+	void LoadTextures(ResourceService& rs);
+	void LoadFonts(ResourceService& rs);
+	void LoadAudio(AudioService& as);
 };
