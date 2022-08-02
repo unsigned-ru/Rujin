@@ -82,6 +82,8 @@ void Scene::Draw() const
 		object->Draw();
 	}
 
+	m_CollisionQuadTree->DrawDebug();
+
 	glPopMatrix();
 }
 

@@ -29,6 +29,9 @@
     <ClCompile Include="TronPlayerComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionTestComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TronPCH.h">
@@ -47,6 +50,9 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="InputEvents.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionTestComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

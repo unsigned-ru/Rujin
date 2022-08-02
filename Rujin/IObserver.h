@@ -19,6 +19,9 @@ namespace rujin::event
 	protected:
 		friend class Subject;
 		virtual void OnNotify(const uint32_t identifier, const event::Data* pEventData) = 0;
+
+	private:
+		bool m_PendingRemove{ false };
 	};
 }
 

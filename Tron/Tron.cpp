@@ -6,6 +6,7 @@
 #include "BoxCollider.h"
 #include "BoxColliderComponent.h"
 #include "Camera.h"
+#include "CollisionTestComponent.h"
 #include "FMOD_AudioProvider.h"
 #include "GameObject.h"
 #include "InputService.h"
@@ -102,7 +103,6 @@ void Tron::Load()
 
 		pScene->AddGameObject(go);
 	}
-
 }
 
 void Tron::LoadTextures(ResourceService& rs)

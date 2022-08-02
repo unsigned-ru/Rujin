@@ -186,3 +186,59 @@ void rujin::MainRenderProvider::RenderTexture(const Texture& texture, const Tran
 
 	glPopMatrix(); //remove transformations
 }
+
+#pragma region Primitive Drawing
+void rujin::MainRenderProvider::SetColor(const glm::vec4& color)
+{
+	glColor4f(color.r, color.g, color.b, color.a);
+}
+
+void rujin::MainRenderProvider::DrawPoint(const glm::vec2& p, float pointSize)
+{
+	glPointSize(pointSize);
+	glBegin(GL_POINTS);
+	{
+		glVertex2f(p.x, p.y);
+	}
+	glEnd();
+}
+
+void rujin::MainRenderProvider::DrawLine(const glm::vec2& p1, const glm::vec2& p2, float lineWidth)
+{
+	glLineWidth(lineWidth);
+	glBegin(GL_LINES);
+	{
+		glVertex2f(p1.x, p1.y);
+		glVertex2f(p2.x, p2.y);
+	}
+	glEnd();
+}
+
+void rujin::MainRenderProvider::DrawRect(const Rectf& rect, float lineWidth)
+{
+	glLineWidth(lineWidth);
+	glBegin(GL_LINE_LOOP);
+	{
+		const auto vertices = rect.GetVertices();
+		glVertex2f(vertices.bottomLeft.x, vertices.bottomLeft.y);
+		glVertex2f(vertices.bottomRight.x, vertices.bottomRight.y);
+		glVertex2f(vertices.topRight.x, vertices.topRight.y);
+		glVertex2f(vertices.topLeft.x, vertices.topLeft.y);
+	}
+	glEnd();
+}
+
+void rujin::MainRenderProvider::FillRect(const Rectf& rect)
+{
+	glBegin(GL_POLYGON);
+	{
+		const auto vertices = rect.GetVertices();
+		glVertex2f(vertices.bottomLeft.x, vertices.bottomLeft.y);
+		glVertex2f(vertices.bottomRight.x, vertices.bottomRight.y);
+		glVertex2f(vertices.topRight.x, vertices.topRight.y);
+		glVertex2f(vertices.topLeft.x, vertices.topLeft.y);
+	}
+	glEnd();
+}
+
+#pragma endregion

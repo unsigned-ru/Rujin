@@ -23,6 +23,8 @@ namespace rujin
 		// Returns the bounds of this node.
 		const Rectf& GetBounds() const;
 
+		void DrawDebug() const;
+
 	private:
 		void Search(const Rectf& area, std::vector<const Collider*>& overlappingColliders);
 

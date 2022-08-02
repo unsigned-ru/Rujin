@@ -7,8 +7,11 @@
 #include "Component.h"
 #include "EventData.h"
 #include "GameObject.h"
+#include "RenderService.h"
+#include "ServiceLocator.h"
+#include "Rutils/General.h"
 
-rujin::CollisionQuadTree::CollisionQuadTree(const Rectf& bounds) : CollisionQuadTree(25, 5, 0, bounds, nullptr) {}
+rujin::CollisionQuadTree::CollisionQuadTree(const Rectf& bounds) : CollisionQuadTree(40, 5, 0, bounds, nullptr) {}
 
 rujin::CollisionQuadTree::CollisionQuadTree
 (
@@ -150,6 +153,24 @@ const rujin::Rectf& rujin::CollisionQuadTree::GetBounds() const
 	return m_Bounds;
 }
 
+void rujin::CollisionQuadTree::DrawDebug() const
+{
+	if(m_Children[0])
+	{
+		RenderService& rs = ServiceLocator::GetService<RenderService>();
+
+		//if we have children, draw their rects, and tell the children to also draw their rects.
+		for (uint8_t i = 0; i < 4; ++i)
+		{
+			//set random debug color
+			rs.SetColor({1.f, 0.f, 0.f, 1.f});
+			rs.DrawRect(m_Children[i]->GetBounds());
+			m_Children[i]->DrawDebug();
+			rs.SetColor({ 1.f, 1.f, 1.f, 1.f });
+		}
+	}
+}
+
 void rujin::CollisionQuadTree::Search(const Rectf& area, std::vector<const Collider*>& overlappingColliders)
 {
 	//add all objects in this node to the vector.
@@ -163,7 +184,6 @@ void rujin::CollisionQuadTree::Search(const Rectf& area, std::vector<const Colli
 
 		if (idx == s_ThisTree) //if it doesn't entirely fit in a child...
 		{
-
 			for (size_t i = 0; i < 4; ++i) //search in all children...
 			{
 				//that overlap the search area

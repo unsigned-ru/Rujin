@@ -22,6 +22,31 @@ namespace rujin
 
 		virtual void Render() const = 0;
 		virtual void RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot, const Rectf* srcRect = nullptr) const = 0;
+
+#pragma region Primitive Drawing
+
+		virtual void SetColor(const glm::vec4& color) = 0;
+
+		virtual void DrawPoint(const glm::vec2& p, float pointSize = 1.0f) = 0;
+
+		virtual void DrawLine(const glm::vec2& p1, const glm::vec2& p2, float lineWidth = 1.0f) = 0;
+
+		virtual void DrawRect(const Rectf& rect, float lineWidth = 1.0f) = 0;
+		virtual void FillRect(const Rectf& rect) = 0;
+
+		//virtual void DrawEllipse(const Ellipsef& ellipse, float lineWidth = 1.0f) = 0;
+		//virtual void FillEllipse(const Ellipsef& ellipse) = 0;
+
+		//virtual void DrawArc(const Point2f& center, float radX, float radY, float fromAngle, float tillAngle, float lineWidth = 1.0f) = 0;
+		//virtual void FillArc(const Point2f& center, float radX, float radY, float fromAngle, float tillAngle) = 0;
+
+		//virtual void DrawPolygon(const std::vector<Point2f>& vertices, bool closed = true, float lineWidth = 1.0f) = 0;
+		//virtual void DrawPolygon(const Point2f* pVertices, size_t nrVertices, bool closed = true, float lineWidth = 1.0f) = 0;
+
+		//virtual void FillPolygon(const std::vector<Point2f>& vertices) = 0;
+		//virtual void FillPolygon(const Point2f* pVertices, size_t nrVertices) = 0;
+#pragma endregion
+
 	};
 }
 
