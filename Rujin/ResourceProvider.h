@@ -1,8 +1,10 @@
-#pragma once
+#ifndef RESOURCE_PROVIDER_H
+#define RESOURCE_PROVIDER_H
+
+
 #include <unordered_map>
 
 #include "ResourceService.h"
-#include "Service.h"
 
 namespace rujin
 {
@@ -49,3 +51,6 @@ namespace rujin
 		std::unordered_map<std::string, std::weak_ptr<Texture>> m_TextureDict;
 	};
 }
+
+
+#endif // Include Guard: RESOURCE_PROVIDER_H

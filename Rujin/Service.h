@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SERVICE_H
+#define SERVICE_H
+
 
 namespace rujin
 {
@@ -14,3 +16,6 @@ namespace rujin
 		Service& operator=(Service&&) noexcept = delete;
 	};
 }
+
+
+#endif // Include Guard: SERVICE_H

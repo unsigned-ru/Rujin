@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TEXT_RENDER_COMPONENT_H
+#define TEXT_RENDER_COMPONENT_H
 #include "Component.h"
 
 namespace rujin
@@ -26,3 +27,4 @@ namespace rujin
 	};
 }
 
+#endif

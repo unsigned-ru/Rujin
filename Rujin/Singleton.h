@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SINGLETON_H
+#define SINGLETON_H
 
 namespace rujin
 {
@@ -46,3 +47,6 @@ namespace rujin
 		virtual void Initialize() = 0;
 	};
 }
+
+
+#endif // Include Guard: SINGLETON_H

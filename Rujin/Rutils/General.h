@@ -1,5 +1,6 @@
-#pragma once
-#include <string>
+#ifndef GENERAL_H
+#define GENERAL_H
+
 
 #define FILENAME (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
@@ -14,3 +15,6 @@ namespace rutils
 
 	inline bool FloatEquals(float a, float b, float epsilon = FLT_EPSILON) { return fabs(a - b) < epsilon; }
 }
+
+
+#endif // Include Guard: GENERAL_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TEXTURE_RENDER_COMPONENT_H
+#define TEXTURE_RENDER_COMPONENT_H
 #include "Component.h"
 
 namespace rujin
@@ -25,3 +26,4 @@ namespace rujin
 	};
 }
 
+#endif

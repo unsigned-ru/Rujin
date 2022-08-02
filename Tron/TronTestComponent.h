@@ -1,4 +1,7 @@
-#pragma once
+#ifndef TRON_TEST_COMPONENT_H
+#define TRON_TEST_COMPONENT_H
+
+
 #include <Component.h>
 
 class TronTestComponent final : public rujin::Component
@@ -27,3 +30,4 @@ private:
 	float m_ParentPos[2];
 };
 
+#endif // Include Guard: TRON_TEST_COMPONENT_H

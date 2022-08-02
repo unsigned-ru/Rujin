@@ -3,6 +3,8 @@
 
 #include <SDL_image.h>
 
+#include "BoxCollider.h"
+#include "BoxColliderComponent.h"
 #include "Camera.h"
 #include "FMOD_AudioProvider.h"
 #include "GameObject.h"
@@ -13,6 +15,7 @@
 #include "SceneProvider.h"
 #include "ServiceLocator.h"
 #include "TextureRenderComponent.h"
+#include "TronPlayerComponent.h"
 #include "TronTestComponent.h"
 
 using namespace rujin;
@@ -33,7 +36,8 @@ void Tron::Load()
 	LoadFonts(resourceService);
 	LoadAudio(audioService);
 
-	Scene* pScene = sceneService.CreateScene("Tron Demo Scene");
+	const auto& windowSize = Rujin::Get()->GetWindowContext().windowSize;
+	Scene* pScene = sceneService.CreateScene("Tron Demo Scene", Rectf{0, 0, static_cast<float>(windowSize.x), static_cast<float>(windowSize.y)});
 
 	{
 		auto go = std::make_unique<GameObject>("TestObject2");
@@ -73,6 +77,7 @@ void Tron::Load()
 
 				//Render floor texture
 				go->AddComponent(new TextureRenderComponent(resourceService.LoadTexture("Textures/Floor.png"), { 0.f, 0.f }));
+				go->AddComponent(new BoxColliderComponent({ 25, 25 }));
 
 				//calc position
 				const Position pos{ gridStart.x + x * cellSize, gridStart.y + y * cellSize };
@@ -83,6 +88,21 @@ void Tron::Load()
 		}
 	}
 	SDL_FreeSurface(pLevelTex);
+
+	{
+		auto go = std::make_unique<GameObject>("PlayerTest");
+
+		//Render floor texture
+		go->AddComponent(new TextureRenderComponent(resourceService.LoadTexture("Textures/Tank.png"), { 0.f, 0.f }));
+		go->AddComponent(new BoxColliderComponent({ 50, 50 }, false));
+		go->AddComponent<TronPlayerComponent>();
+
+		//calc position
+		go->GetTransform()->SetPosition({50, 700});
+
+		pScene->AddGameObject(go);
+	}
+
 }
 
 void Tron::LoadTextures(ResourceService& rs)

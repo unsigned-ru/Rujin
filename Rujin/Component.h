@@ -1,8 +1,10 @@
-#pragma once
+#ifndef COMPONENT_H
+#define COMPONENT_H
 #include "IGameLoopObject.h"
 
 namespace rujin
 {
+	struct CollisionResult;
 	class GameObject;
 
 	class Component : public IGameLoopObject
@@ -18,13 +20,14 @@ namespace rujin
 		// Get the GameObject this component is attached to.
 		GameObject* GameObject() const;
 
-	protected:
 		// does not own GameObject.
 		rujin::GameObject* m_pGameObject;
 
 	private:
 		friend class GameObject;
+		virtual void OnOverlap(const CollisionResult& /*collision*/) {};
 	};
 
 }
 
+#endif

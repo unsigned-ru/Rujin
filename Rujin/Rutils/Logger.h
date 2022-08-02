@@ -1,7 +1,7 @@
-#pragma once
-#include <map>
-#include "../Singleton.h"
+#ifndef LOGGER_H
+#define LOGGER_H
 
+#include <map>
 
 enum class LogLevel : uint32_t
 {
@@ -130,3 +130,5 @@ bool Logger::LogError(const LogString& fmt, Args&&... args)
 {
 	return ProcessLog(LogLevel::Error, fmt, fmt::make_format_args(args...));
 }
+
+#endif // Include Guard: LOGGER_H

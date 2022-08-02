@@ -1,5 +1,7 @@
-﻿#pragma once
-#include "IGameLoopObject.h"
+﻿#ifndef CAMERA_H
+#define CAMERA_H
+
+
 #include "TransformComponent.h"
 
 namespace rujin
@@ -24,3 +26,6 @@ namespace rujin
 	};
 
 }
+
+
+#endif // Include Guard: CAMERA_H

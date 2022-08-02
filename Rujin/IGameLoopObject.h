@@ -1,4 +1,6 @@
-#pragma once
+#ifndef IGAMELOOPOBJECT_H
+#define IGAMELOOPOBJECT_H
+
 
 class IGameLoopObject
 {
@@ -18,3 +20,6 @@ public:
 	virtual void Draw() const {};
 	virtual void Destroy() {};
 };
+
+
+#endif // Include Guard: IGAMELOOPOBJECT_H

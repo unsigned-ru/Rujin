@@ -57,9 +57,9 @@ void rujin::SceneProvider::Draw() const
 	}
 }
 
-rujin::Scene* rujin::SceneProvider::CreateScene(const std::string& name, Camera* pCamera)
+rujin::Scene* rujin::SceneProvider::CreateScene(const std::string& name, const Rectf& collisionTreeBounds, Camera* pCamera)
 {
-	auto* pScene = new Scene(name, pCamera);
+	auto* pScene = new Scene(name, collisionTreeBounds, pCamera);
 	m_Scenes.push_back(std::unique_ptr<rujin::Scene>(pScene));
 	return pScene;
 }

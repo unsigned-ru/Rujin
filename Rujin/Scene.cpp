@@ -2,16 +2,18 @@
 #include "Scene.h"
 
 #include "Camera.h"
+#include "CollisionQuadTree.h"
 #include "Rujin.h"
 
 using namespace rujin;
 
 unsigned int Scene::m_IdCounter = 0;
 
-Scene::Scene(const std::string& name, Camera* pCamera)
+Scene::Scene(const std::string& name, const Rectf& collisionTreeBounds, Camera* pCamera)
 	: IGameLoopObject()
 	, m_Name(name)
 	, m_GameObjects()
+	, m_CollisionQuadTree(std::make_unique<CollisionQuadTree>(collisionTreeBounds))
 	, m_ActiveGameObjects()
 	, m_InactiveGameObjects()
 {
@@ -23,7 +25,6 @@ Scene::Scene(const std::string& name, Camera* pCamera)
 	else
 		m_pActiveCamera = pCamera;
 }
-
 
 Scene::~Scene()
 {
@@ -95,3 +96,7 @@ void Scene::AddGameObject(std::unique_ptr<GameObject>& gameObject)
 	m_GameObjects.push_back(std::move(gameObject));
 }
 
+CollisionQuadTree* Scene::GetCollisionQuadTree() const
+{
+	return m_CollisionQuadTree.get();
+}

@@ -1,9 +1,12 @@
-#pragma once
+#ifndef NULL_AUDIO_PROVIDER_H
+#define NULL_AUDIO_PROVIDER_H
+
 #include "AudioService.h"
-#include <memory>
 
 namespace rujin
 {
+	class AudioClip;
+
 	class Null_AudioProvider final : public AudioService
 	{
 	public:
@@ -20,3 +23,6 @@ namespace rujin
 		void StopAllSounds() override {}
 	};
 }
+
+
+#endif // Include Guard: NULL_AUDIO_PROVIDER_H

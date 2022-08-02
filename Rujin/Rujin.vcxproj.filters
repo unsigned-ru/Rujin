@@ -69,6 +69,9 @@
     <Filter Include="Services\RenderService">
       <UniqueIdentifier>{dcffcf5f-0d99-4199-9894-341bf4defb08}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{6eed073a-9cc5-47bd-874c-4e5f7b30e937}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RujinPCH.h" />
@@ -189,9 +192,6 @@
     <ClInclude Include="Rutils\DeltaTimer.h">
       <Filter>Rutils</Filter>
     </ClInclude>
-    <ClInclude Include="BitMaskOperators.h">
-      <Filter>Rutils</Filter>
-    </ClInclude>
     <ClInclude Include="Structs.h">
       <Filter>Data Types</Filter>
     </ClInclude>
@@ -239,6 +239,24 @@
     </ClInclude>
     <ClInclude Include="MainRenderProvider.h">
       <Filter>Services\RenderService</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionQuadTree.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionFunctions.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxColliderComponent.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -353,6 +371,24 @@
     </ClCompile>
     <ClCompile Include="MainRenderProvider.cpp">
       <Filter>Services\RenderService</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionQuadTree.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionFunctions.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxColliderComponent.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

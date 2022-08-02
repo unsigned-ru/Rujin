@@ -2,7 +2,7 @@
 #include "XInputKeyboardAndMouseSession.h"
 
 rujin::XInputKeyboardAndMouseSession::XInputKeyboardAndMouseSession()
-	: InputSession(InputDeviceType::KeyboardAndMouse)
+	: KeyboardAndMouseInputSession()
 {
 	m_pKeyboardState0 = new BYTE[256];
 	m_pKeyboardState1 = new BYTE[256];

@@ -94,6 +94,14 @@ void GameObject::Destroy()
 	}
 }
 
+void GameObject::BroadcastOverlap(const CollisionResult& collision)
+{
+	for (const auto& component : m_Components)
+	{
+		component->OnOverlap(collision);
+	}
+}
+
 TransformComponent* GameObject::GetTransform() const
 {
 	return m_pTransformComp;
@@ -119,7 +127,7 @@ void GameObject::AttachTo(GameObject* pParent)
 	assert(m_pParent);
 
 	//1. Ensure i am one of my parent's children
-	auto& children = m_pParent->GetChildren();
+	auto& children = m_pParent->m_Children;
 	const auto it = std::ranges::find_if(children, [this](const auto& pChild) { return pChild.get() == this; });
 
 	assert(it != children.end()); //I am not a child of my current parent. You did something terribly wrong if this triggers.
@@ -156,9 +164,14 @@ GameObject* GameObject::GetRootParent()
 	return m_pParent->GetRootParent();
 }
 
-std::vector<std::unique_ptr<GameObject>>& GameObject::GetChildren()
+const std::vector<std::unique_ptr<GameObject>>& GameObject::GetChildren() const 
 {
 	return m_Children;
+}
+
+const std::vector<std::unique_ptr<Component>>& GameObject::GetComponents() const
+{
+	return m_Components;
 }
 
 std::string GameObject::GetName() const

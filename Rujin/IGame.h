@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#ifndef IGAME_H
+#define IGAME_H
 
 namespace rujin
 {
@@ -24,3 +25,4 @@ namespace rujin
 		virtual void Load() = 0;
 	};
 }
+#endif

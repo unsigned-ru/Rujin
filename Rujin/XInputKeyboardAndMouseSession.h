@@ -1,9 +1,11 @@
-#pragma once
-#include "InputSession.h"
+#ifndef XINPUT_KEYBOARD_AND_MOUSE_SESSION_H
+#define XINPUT_KEYBOARD_AND_MOUSE_SESSION_H
+
+#include "KeyboardAndMouseInputSession.h"
 
 namespace rujin
 {
-	class XInputKeyboardAndMouseSession final : public InputSession
+	class XInputKeyboardAndMouseSession final : public KeyboardAndMouseInputSession
 	{
 	public:
 		XInputKeyboardAndMouseSession();
@@ -14,13 +16,13 @@ namespace rujin
 		XInputKeyboardAndMouseSession operator=(const XInputKeyboardAndMouseSession&) = delete;
 		XInputKeyboardAndMouseSession operator=(XInputKeyboardAndMouseSession&&) noexcept = delete;
 
-		bool IsMouseButtonDown(int button, bool previousFrame = false) const;
-		bool IsKeyboardKeyDown(int key, bool previousFrame = false) const;
+		bool IsMouseButtonDown(int button, bool previousFrame = false) const override;
+		bool IsKeyboardKeyDown(int key, bool previousFrame = false) const override;
 
-		POINT GetMousePosition(bool previousFrame = false) const;
-		POINT GetMouseMovement() const;
+		POINT GetMousePosition(bool previousFrame = false) const override;
+		POINT GetMouseMovement() const override;
 
-		virtual bool UpdateStates() override;
+		bool UpdateStates() override;
 
 	private:
 		BYTE* m_pKeyboardState0{};
@@ -35,3 +37,6 @@ namespace rujin
 		POINT m_MouseMovement{};
 	};
 }
+
+
+#endif // Include Guard: XINPUT_KEYBOARD_AND_MOUSE_SESSION_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TEXT_COMPONENT_H
+#define TEXT_COMPONENT_H
 #include "Component.h"
 
 #include "Texture.h"
@@ -38,3 +39,4 @@ namespace rujin
 		std::weak_ptr<Texture> m_pLastGeneratedTexture;
 	};
 }
+#endif

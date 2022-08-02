@@ -1,4 +1,6 @@
-#pragma once
+#ifndef XINPUT_GAMEPAD_SESSION_H
+#define XINPUT_GAMEPAD_SESSION_H
+
 #pragma comment(lib, "xinput.lib")
 #include <Xinput.h>
 #include <glm/vec2.hpp>
@@ -43,3 +45,6 @@ namespace rujin
 		GamepadIndex m_GamepadIndex;
 	};
 }
+
+
+#endif // Include Guard: XINPUT_GAMEPAD_SESSION_H

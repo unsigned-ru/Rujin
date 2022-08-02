@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RUJIN_H
+#define RUJIN_H
 #include "Singleton.h"
 #include "Structs.h"
 
@@ -59,3 +60,5 @@ namespace rujin
 		IGame* m_pGame = nullptr;
 	};
 }
+
+#endif

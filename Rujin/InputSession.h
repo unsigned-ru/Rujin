@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INPUT_SESSION_H
+#define INPUT_SESSION_H
 
 namespace rujin
 {
@@ -28,3 +29,6 @@ namespace rujin
 		InputDeviceType m_InputDeviceType;
 	};
 }
+
+
+#endif // Include Guard: INPUT_SESSION_H

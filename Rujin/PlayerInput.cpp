@@ -1,11 +1,11 @@
 #include "RujinPCH.h"
 #include "PlayerInput.h"
 
-#include <ranges>
-
 #include "XInputGamepadSession.h"
 #include "XInputKeyboardAndMouseSession.h"
 #include "Rutils/General.h"
+
+#include <ranges>
 
 rujin::PlayerInput::PlayerInput(const PlayerIndex playerIndex)
 	: m_PlayerIndex{ playerIndex }

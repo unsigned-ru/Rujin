@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿#ifndef STRUCTS_H
+#define STRUCTS_H
+#include <array>
 
 namespace rujin
 {
@@ -32,6 +34,32 @@ namespace rujin
 		{
 		}
 
+		struct Vertices
+		{
+			Vertices(const std::array<glm::vec2, 4>&& vertices)
+				: vertices(std::move(vertices))
+			{}
+
+			glm::vec2& topLeft = vertices[0];
+			glm::vec2& bottomLeft = vertices[1];
+			glm::vec2& bottomRight = vertices[2];
+			glm::vec2& topRight = vertices[3];
+
+			std::array<glm::vec2, 4> vertices;
+		};
+
+		Vertices GetVertices() const
+		{
+			return Vertices(
+				{
+					glm::vec2{left, bottom + height},
+					glm::vec2{left, bottom},
+					glm::vec2{left + width, bottom},
+					glm::vec2{left + width, bottom + height}
+				}
+			);
+		}
+
 		float left{};
 		float bottom{};
 		float width{};
@@ -58,4 +86,14 @@ namespace rujin
 			return rv;
 		}
 	};
+
+
+	class Collider;
+	struct CollisionResult
+	{
+		bool isColliding = false;
+		const Collider* other = nullptr;
+	};
 }
+
+#endif

@@ -211,12 +211,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TronPCH.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="TronPlayerComponent.cpp" />
     <ClCompile Include="TronTestComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Rujin\GameEvents.h" />
+    <ClInclude Include="InputEvents.h" />
     <ClInclude Include="Tron.h" />
     <ClInclude Include="TronPCH.h" />
+    <ClInclude Include="TronPlayerComponent.h" />
     <ClInclude Include="TronTestComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

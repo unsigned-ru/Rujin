@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GAMEOBJECT_H
+#define GAMEOBJECT_H
+
 #include "IGameLoopObject.h"
 #include "TransformComponent.h"
 
@@ -31,6 +33,8 @@ namespace rujin
 		void Draw() const override;
 		void Destroy() override;
 
+		void BroadcastOverlap(const CollisionResult& collision);
+
 		template<typename ComponentType, typename = std::enable_if<std::is_base_of_v<Component, ComponentType>>>
 		ComponentType* AddComponent(ComponentType* component)
 		{
@@ -62,13 +66,14 @@ namespace rujin
 		Scene* GetScene() const;
 		GameObject* GetParent() const;
 		GameObject* GetRootParent();
-		std::vector<std::unique_ptr<GameObject>>& GetChildren();
+		const std::vector<std::unique_ptr<GameObject>>& GetChildren() const;
+		const std::vector<std::unique_ptr<Component>>& GetComponents() const;
 		TransformComponent* GetTransform() const;
 		std::string GetName() const;
 
 	private:
 		friend class Scene;
-
+		
 		void SetParent(GameObject* pParent);
 		void SetScene(Scene* pScene);
 
@@ -84,3 +89,6 @@ namespace rujin
 		TransformComponent* m_pTransformComp; 
 	};
 }
+
+
+#endif // Include Guard: GAMEOBJECT_H

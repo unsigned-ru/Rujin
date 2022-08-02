@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿#ifndef RESOURCE_SERVICE_H
+#define RESOURCE_SERVICE_H
+
 #include "Service.h"
 
 #include <memory>
@@ -30,3 +32,6 @@ namespace rujin
 	};
 
 }
+
+
+#endif // Include Guard: RESOURCE_SERVICE_H

@@ -1,5 +1,7 @@
-#pragma once
-#include <unordered_map>
+#ifndef INPUT_SERVICE_H
+#define INPUT_SERVICE_H
+
+
 #include <Xinput.h>
 
 #include "InputStructs.h"
@@ -35,3 +37,6 @@ namespace rujin
 		virtual bool IsAxisActionTriggered(PlayerIndex player, uint32_t axisAction, float* pIntensity = nullptr) const = 0;
 	};
 }
+
+
+#endif // Include Guard: INPUT_SERVICE_H

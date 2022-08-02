@@ -1,4 +1,7 @@
-#pragma once
+#ifndef PLAYER_INPUT_H
+#define PLAYER_INPUT_H
+
+
 #include <unordered_map>
 
 #include "InputStructs.h"
@@ -36,3 +39,5 @@ namespace rujin
 		std::unordered_map<uint32_t, AxisActionData> m_AxisActions{};
 	};
 }
+
+#endif // Include Guard: PLAYER_INPUT_H

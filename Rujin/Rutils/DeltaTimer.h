@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DELTA_TIMER_H
+#define DELTA_TIMER_H
 
 namespace rutils
 {
@@ -31,3 +32,6 @@ namespace rutils
 	};
 }
 
+
+
+#endif // Include Guard: DELTA_TIMER_H

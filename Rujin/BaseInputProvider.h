@@ -1,5 +1,7 @@
-﻿#pragma once
+﻿#ifndef BASE_INPUT_PROVIDER_H
+#define BASE_INPUT_PROVIDER_H
 #include <queue>
+#include <unordered_map>
 
 #include "InputService.h"
 #include "XInputKeyboardAndMouseSession.h"
@@ -53,3 +55,6 @@ namespace rujin
 	};
 
 }
+
+
+#endif // Include Guard: BASE_INPUT_PROVIDER_H

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef XINPUT_PROVIDER_H
+#define XINPUT_PROVIDER_H
+
+
 #include "BaseInputProvider.h"
 #include "InputService.h"
 
@@ -22,3 +25,6 @@ namespace rujin
 		GamepadAvailability m_AvailableGamepads[XUSER_MAX_COUNT]{};
 	};
 }
+
+
+#endif // Include Guard: XINPUT_PROVIDER_H

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FONT_H
+#define FONT_H
 
 struct _TTF_Font;
 namespace rujin
@@ -22,3 +23,4 @@ namespace rujin
 		uint32_t m_Size;
 	};
 }
+#endif

@@ -1,23 +1,17 @@
-#pragma once
+#ifndef FMOD_AUDIO_PROVIDER_H
+#define FMOD_AUDIO_PROVIDER_H
+
 #include "AudioService.h"
 
 #include <unordered_map>
-
-#pragma warning(push)
-#pragma warning(disable: 4505 26812)
 #include <queue>
-
 #include "fmod_studio.hpp" //Precompiled Header
-#include "fmod_errors.h"
-#pragma warning(pop)
 
 #if defined(DEBUG) || defined(_DEBUG)
 #pragma comment(lib, "fmodL_vc.lib")
 #else
 #pragma comment(lib, "fmod_vc.lib")
 #endif
-#pragma endregion
-
 
 namespace rujin
 {
@@ -92,3 +86,6 @@ namespace rujin
 
 	FMOD_RESULT F_CALL ON_FMOD_CHANNELCONTROL_CALLBACK_END(FMOD_CHANNELCONTROL* channelcontrol, FMOD_CHANNELCONTROL_TYPE controltype, FMOD_CHANNELCONTROL_CALLBACK_TYPE callbacktype, void* param1, void* param2);
 }
+
+
+#endif // Include Guard: FMOD_AUDIO_PROVIDER_H

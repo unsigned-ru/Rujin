@@ -1,6 +1,7 @@
-#pragma once
+#ifndef SCENE_PROVIDER_H
+#define SCENE_PROVIDER_H
+
 #include "SceneService.h"
-#include "Singleton.h"
 
 namespace rujin
 {
@@ -31,7 +32,7 @@ namespace rujin
 		void OnGui(SDL_Window* pWindow) override;
 		void Draw() const override;
 
-		Scene* CreateScene(const std::string& name, Camera* pCamera = nullptr) override;
+		Scene* CreateScene(const std::string& name, const Rectf& collisionTreeBounds = Rectf{0, 0, 1000, 1000}, Camera* pCamera = nullptr) override;
 		Scene* GetScene(const std::string& name) const override;
 		Scene* GetScene(const size_t idx = 0) const override;
 
@@ -39,3 +40,6 @@ namespace rujin
 		std::vector<std::unique_ptr<Scene>> m_Scenes;
 	};
 }
+
+
+#endif // Include Guard: SCENE_PROVIDER_H

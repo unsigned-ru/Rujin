@@ -1,9 +1,9 @@
-#pragma once
+#ifndef IOBSERVER_H
+#define IOBSERVER_H
 
 namespace rujin::event
 {
 	struct Data;
-	enum class Identifier;
 
 	class IObserver
 	{
@@ -18,8 +18,13 @@ namespace rujin::event
 
 	protected:
 		friend class Subject;
-		virtual void OnNotify(const event::Identifier identifier, const event::Data* pEventData) = 0;
+		virtual void OnNotify(const uint32_t identifier, const event::Data* pEventData) = 0;
 	};
 }
+
+
+#endif // Include Guard: IOBSERVER_H
+
+
 
 

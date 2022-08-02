@@ -1,6 +1,8 @@
-#pragma once
+#ifndef MAIN_RENDER_PROVIDER_H
+#define MAIN_RENDER_PROVIDER_H
+
 #include "RenderService.h"
-#include "Singleton.h"
+
 namespace rujin
 {
 	struct Rectf;
@@ -33,3 +35,6 @@ namespace rujin
 	};
 }
 
+
+
+#endif // Include Guard: MAIN_RENDER_PROVIDER_H

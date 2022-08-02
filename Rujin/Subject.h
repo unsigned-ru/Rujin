@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SUBJECT_H
+#define SUBJECT_H
+
 #include "IObserver.h"
 #include <vector>
 
@@ -13,6 +15,12 @@ namespace rujin::event
 				AddObserver(pObserver);
 		}
 		virtual ~Subject() = 0;
+
+		Subject(const Subject&) = delete;
+		Subject(Subject&&) noexcept = delete;
+		Subject& operator=(const Subject&) = delete;
+		Subject& operator=(Subject&&) noexcept = delete;
+
 
 		void AddObserver(IObserver* pObserver)
 		{
@@ -34,7 +42,7 @@ namespace rujin::event
 		}
 
 	protected:
-		void Notify(const Identifier identifier, const Data* pData) const
+		void Notify(const uint32_t identifier, const Data* pData) const
 		{
 			for (auto* pObserver : m_Observers)
 				pObserver->OnNotify(identifier, pData);
@@ -47,3 +55,6 @@ namespace rujin::event
 
 	inline Subject::~Subject() = default;
 }
+
+
+#endif // Include Guard: SUBJECT_H

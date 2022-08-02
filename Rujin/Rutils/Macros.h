@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MACROS_H
+#define MACROS_H
+
 
 #pragma region Error Checking
 #define ASSERT_IF(isTrue)\
@@ -29,8 +31,9 @@
 		pInterface = nullptr;\
 	}
 
-
-
 #endif
 
 #define STREAM_STRING(text) static_cast<std::stringstream&&>(std::stringstream{} << (text)).str()
+
+
+#endif // Include Guard: MACROS_H

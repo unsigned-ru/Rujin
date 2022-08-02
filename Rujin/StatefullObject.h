@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿#ifndef STATEFULL_OBJECT_H
+#define STATEFULL_OBJECT_H
+
 
 class StatefullObject
 {
@@ -24,3 +26,6 @@ protected:
 
 	bool m_IsEnabled = true;
 };
+
+
+#endif // Include Guard: STATEFULL_OBJECT_H

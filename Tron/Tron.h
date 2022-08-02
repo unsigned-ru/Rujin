@@ -1,6 +1,7 @@
-﻿#pragma once
+﻿#ifndef TRON_H
+#define TRON_H
+
 #include "IGame.h"
-#include "ResourceService.h"
 
 #pragma region Forward Declarations
 namespace rujin
@@ -23,3 +24,6 @@ private:
 	void LoadFonts(ResourceService& rs);
 	void LoadAudio(AudioService& as);
 };
+
+
+#endif // Include Guard: TRON_H

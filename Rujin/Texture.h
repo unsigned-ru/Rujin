@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TEXTURE_H
+#define TEXTURE_H
 struct SDL_Texture;
 namespace rujin
 {
@@ -26,3 +27,5 @@ namespace rujin
 		glm::ivec2 m_Size{};
 	};
 }
+
+#endif

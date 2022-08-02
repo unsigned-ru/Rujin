@@ -1,4 +1,7 @@
-#pragma once
+#ifndef SDL_AUDIO_PROVIDER_H
+#define SDL_AUDIO_PROVIDER_H
+
+
 #include <functional>
 #include <mutex>
 
@@ -61,3 +64,6 @@ namespace rujin
 	};
 }
 
+
+
+#endif // Include Guard: SDL_AUDIO_PROVIDER_H

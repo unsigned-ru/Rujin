@@ -1,4 +1,6 @@
-#pragma once
+#ifndef AUDIO_SERVICE_H
+#define AUDIO_SERVICE_H
+
 #include "Service.h"
 
 #include <cstdint>
@@ -37,3 +39,6 @@ namespace rujin
 		virtual float GetSoundEffectVolume() const = 0;
 	};
 }
+
+
+#endif // Include Guard: AUDIO_SERVICE_H

@@ -1,5 +1,5 @@
-#pragma once
-#include <memory>
+#ifndef INPUTSTRUCTS_H
+#define INPUTSTRUCTS_H
 
 namespace rujin
 {
@@ -65,8 +65,8 @@ namespace rujin
 	{
 		InputActionKeybinds(ButtonState triggerState = ButtonState::Pressed, KeyboardAndMouseButton kbOrMouseButton = -1, GamepadButton gpButton = GamepadButton::None)
 			: triggerState{ triggerState }
-			, kbOrMouseButton{ kbOrMouseButton }
-			, gpButton{ gpButton }
+			  , kbOrMouseButton{ kbOrMouseButton }
+			  , gpButton{ gpButton }
 		{}
 
 		ButtonState triggerState = ButtonState::Pressed;
@@ -95,7 +95,7 @@ namespace rujin
 	{
 		explicit KeyboardAxisKeybinds(KeyboardAndMouseButton positive = -1, KeyboardAndMouseButton negative = -1)
 			: positive{positive}
-			, negative{negative}
+			  , negative{negative}
 		{}
 
 		KeyboardAndMouseButton positive = -1;
@@ -111,7 +111,7 @@ namespace rujin
 	{
 		explicit GamepadAxisKeybinds(GamepadButton positive = GamepadButton::None, GamepadButton negative = GamepadButton::None)
 			: positive{ positive }
-			, negative{ negative }
+			  , negative{ negative }
 		{}
 
 		GamepadButton positive = GamepadButton::None;
@@ -134,8 +134,8 @@ namespace rujin
 			, MouseAxis mouseAxis = MouseAxis::None
 		)
 			: kbKeybinds{ kbKeybinds }
-			, gpKeybinds{ gpKeybinds }
-			, mouseAxis{mouseAxis}
+			  , gpKeybinds{ gpKeybinds }
+			  , mouseAxis{mouseAxis}
 		{}
 
 		KeyboardAxisKeybinds kbKeybinds = KeyboardAxisKeybinds::None();
@@ -161,3 +161,6 @@ namespace rujin
 		AxisActionState state;
 	};
 }
+
+
+#endif // Include Guard: INPUTSTRUCTS_H

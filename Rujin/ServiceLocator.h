@@ -1,4 +1,7 @@
-#pragma once
+#ifndef SERVICE_LOCATOR_H
+#define SERVICE_LOCATOR_H
+
+
 #include "Service.h"
 
 #include <memory>
@@ -49,3 +52,5 @@ namespace rujin
 		inline static std::unordered_map<size_t, std::unique_ptr<Service>> s_Services{};
 	};
 }
+
+#endif // Include Guard: SERVICE_LOCATOR_H

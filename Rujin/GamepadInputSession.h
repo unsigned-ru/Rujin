@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿#ifndef GAMEPAD_INPUT_SESSION_H
+#define GAMEPAD_INPUT_SESSION_H
+
+
 #include "InputSession.h"
 #include "InputStructs.h"
 
@@ -24,3 +27,6 @@ namespace rujin
 		virtual void SetRightVibration(float rightVibration) = 0;
 	};
 }
+
+
+#endif // Include Guard: GAMEPAD_INPUT_SESSION_H

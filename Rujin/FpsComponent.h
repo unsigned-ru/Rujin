@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FPS_COMPONENT_H
+#define FPS_COMPONENT_H
 #include "Component.h"
 
 namespace rujin
@@ -14,6 +15,7 @@ namespace rujin
 		void Start() override;
 		void Update() override;
 
+
 	private:
 		TextComponent* m_pTextComponent;
 
@@ -22,7 +24,7 @@ namespace rujin
 		uint32_t m_FpsCount{0};
 
 		uint32_t m_Fps{};
-
 	};
 }
 
+#endif

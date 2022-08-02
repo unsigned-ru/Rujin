@@ -1,4 +1,6 @@
-#pragma once
+#ifndef RENDER_SERVICE_H
+#define RENDER_SERVICE_H
+
 #include "Service.h"
 
 namespace rujin
@@ -22,3 +24,6 @@ namespace rujin
 		virtual void RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot, const Rectf* srcRect = nullptr) const = 0;
 	};
 }
+
+
+#endif // Include Guard: RENDER_SERVICE_H

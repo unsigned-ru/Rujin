@@ -6,7 +6,9 @@
 
 #include "ResourceService.h"
 #include "ServiceLocator.h"
+#include "fmod_errors.h"
 #include "Rutils/Macros.h"
+
 
 #define LOG_FMOD_ERROR(result) LOG_ERROR_("FMOD Error! {} {}", result, FMOD_ErrorString(result))
 #define HANDLE_FMOD_ERROR(result) {auto fmod_result = result; if ((fmod_result) != FMOD_OK) LOG_FMOD_ERROR(fmod_result);}
