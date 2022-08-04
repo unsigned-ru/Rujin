@@ -27,10 +27,24 @@ namespace rujin
 		//in this tree and child trees.
 		void HandleCollision(CollisionQuadTree* pRoot = nullptr);
 
+		/**
+		 * \brief Returns the first hit collider
+		 * \param p1 Start point of line.
+		 * \param p2 End point of line.
+		 * \param pIntesection [OUT] The point where the collider and ray intersected.
+		 * \param ppHitCollider [OUT] The collider that was hit.
+		 * \return true if any collider was hit, false if none was hit.
+		 */
+		bool Raycast(const glm::vec2& p1, const glm::vec2& p2, glm::vec2* pIntesection, const Collider** ppHitCollider);
+
 		void DrawDebug() const;
 
 	private:
+		//returns all colliders from the cells that overlap the area.
 		void Search(const Rectf& area, std::vector<const Collider*>& overlappingColliders);
+
+		//returns all colliders from the cells that the line intersects.
+		void Search(const glm::vec2& p1, const glm::vec2& p2, std::vector<const Collider*>& overlappingColliders);
 
 		// Returns the index for the node that will contain 		
 		// the object. -1 is returned if it is this node.

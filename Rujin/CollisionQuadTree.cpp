@@ -194,6 +194,51 @@ void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 			m_Children[i]->HandleCollision(pRoot);
 }
 
+bool rujin::CollisionQuadTree::Raycast(const glm::vec2& p1, const glm::vec2& p2, glm::vec2* pIntesection, const Collider** ppHitCollider)
+{
+	std::vector<const Collider*> possibleIntersections{};
+
+	//get all colliders inside of intersecting cells.
+	Search(p1, p2, possibleIntersections);
+
+	//sort them by distance to the starting point.
+	std::ranges::sort
+	(
+		possibleIntersections, 
+		[&p1](const Collider* c1, const Collider* c2)
+		{
+			return distance2(p1, c1->GetComponent()->GameObject()->GetTransform()->GetPosition()) < distance2(p1, c2->GetComponent()->GameObject()->GetTransform()->GetPosition());
+		}
+	);
+
+	
+	//now that we have sorted them by distance, check for intersections and return on first interstection!
+	for (const Collider* pPossibleCollider : possibleIntersections)
+	{
+		if (const BoxCollider* pPossibleBoxCollider = dynamic_cast<const BoxCollider*>(pPossibleCollider); pPossibleBoxCollider)
+		{
+			float nearT{};
+			if (collision::IsIntersecting(p1, p2, pPossibleBoxCollider->GetRect(), &nearT))
+			{
+				if (pIntesection)
+					//calculate intersection point.
+					(*pIntesection) = p1 + (p2 - p1) * nearT;
+
+				if (ppHitCollider)
+					*ppHitCollider = pPossibleBoxCollider;
+
+				return true;
+			}
+		}
+		else
+			LOG_WARNING("Unimplemented Collider detected. Did you forget to implement?");
+		
+	}
+
+	return false;
+
+}
+
 void rujin::CollisionQuadTree::DrawDebug() const
 {
 	if(m_Children[0])
@@ -238,6 +283,25 @@ void rujin::CollisionQuadTree::Search(const Rectf& area, std::vector<const Colli
 
 			//search that node!
 			m_Children[idx]->Search(area, overlappingColliders);
+		}
+	}
+}
+
+void rujin::CollisionQuadTree::Search(const glm::vec2& p1, const glm::vec2& p2, std::vector<const Collider*>& overlappingColliders)
+{
+	//add all objects in this node to the vector.
+	overlappingColliders.insert(overlappingColliders.end(), m_Colliders.begin(), m_Colliders.end());
+
+	if (m_Children[0]) //if we have child nodes...
+	{
+		for (uint8_t i = 0; i < 4; ++i)
+		{
+			//if the line intersects the child bounding box.
+			if (collision::IsIntersecting(p1, p2, m_Children[i]->GetBounds()))
+			{
+				//search in the child.
+				m_Children[i]->Search(p1, p2, overlappingColliders);
+			}
 		}
 	}
 

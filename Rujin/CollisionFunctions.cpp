@@ -32,3 +32,27 @@ bool rujin::collision::IsOverlapping(const Rectf& a, const Rectf& b)
 		v1.bottomRight.x	>	v2.topLeft.x		&&
 		v1.bottomRight.y	<	v2.topLeft.y;
 }
+
+bool rujin::collision::IsIntersecting(const glm::vec2& p1, const glm::vec2& p2, const Rectf& r, float* pNearT, float* pFarT)
+{
+	// 4 floats to convert rect space to line space
+	const float x1{ (r.left - p1.x) / (p2.x - p1.x) };
+	const float x2{ (r.left + r.width - p1.x) / (p2.x - p1.x) };
+	const float y1{ (r.bottom - p1.y) / (p2.y - p1.y) };
+	const float y2{ (r.bottom + r.height - p1.y) / (p2.y - p1.y) };
+
+	using std::max; using std::min;
+	const float tNear{ max(min(x1,x2),min(y1,y2)) };
+	const float tFar{ min(max(x1,x2), max(y1,y2)) };
+
+	if (tNear > tFar)
+		return false;
+	
+
+	if (pNearT)
+		*pNearT = tNear;
+	if (pFarT) 
+		*pFarT = tFar;
+
+	return true;
+}
