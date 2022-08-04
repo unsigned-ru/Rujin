@@ -18,14 +18,20 @@ namespace rujin
 		ColliderComponent& operator=(const ColliderComponent&) = delete;
 		ColliderComponent& operator=(ColliderComponent&&) noexcept = delete;
 
-		virtual Collider* GetCollider() const = 0;
-
 		void Start() override;
-
+		void Draw() const override;
 		void OnOverlap(const CollisionResult&) override;
+		void EnableDebugDrawing(bool enable = true);
+
+		virtual Collider* GetCollider() const = 0;
 
 	protected:
 		bool m_AutoResolve;
+
+	private:
+		virtual void DrawDebug() const = 0;
+
+		bool m_DrawDebug = false;
 	};
 
 }

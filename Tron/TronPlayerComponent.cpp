@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "InputEvents.h"
 #include "InputService.h"
+#include "RenderService.h"
 #include "ServiceLocator.h"
 
 
@@ -39,4 +40,13 @@ void TronPlayerComponent::FixedUpdate()
 		pTransform->AddLocalPosition({ inputIntensity * m_MoveSpeed * deltaTime, 0 });
 	else if (input.IsAxisActionTriggered(0, static_cast<uint32_t>(AxisAction::MoveUp), &inputIntensity))
 		pTransform->AddLocalPosition({ 0,  inputIntensity * m_MoveSpeed * deltaTime });
+}
+
+void TronPlayerComponent::Draw() const
+{
+	RenderService& rs = ServiceLocator::GetService<RenderService>();
+
+	rs.SetColor({ 0.f, 1.f, 0.f, 1.f });
+	rs.DrawPoint(GameObject()->GetTransform()->GetPosition(), 3.f);
+	rs.SetColor();
 }

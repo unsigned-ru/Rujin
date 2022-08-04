@@ -18,6 +18,7 @@ namespace rujin
 		BoxColliderComponent& operator=(BoxColliderComponent&&) noexcept = delete;
 
 		Collider* GetCollider() const override;
+		void DrawDebug() const override;
 
 	private:
 		BoxCollider* m_pCollider;

@@ -10,6 +10,7 @@ public:
 	TronPlayerComponent();
 
 	void FixedUpdate() override;
+	void Draw() const override;
 
 private:
 

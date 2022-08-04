@@ -201,7 +201,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CollisionTestComponent.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Tron.cpp" />
     <ClCompile Include="TronPCH.cpp">
@@ -217,7 +216,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Rujin\GameEvents.h" />
-    <ClInclude Include="CollisionTestComponent.h" />
     <ClInclude Include="InputEvents.h" />
     <ClInclude Include="Tron.h" />
     <ClInclude Include="TronPCH.h" />

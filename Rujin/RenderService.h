@@ -25,7 +25,7 @@ namespace rujin
 
 #pragma region Primitive Drawing
 
-		virtual void SetColor(const glm::vec4& color) = 0;
+		virtual void SetColor(const glm::vec4& color = {1.f, 1.f, 1.f, 1.f}) = 0;
 
 		virtual void DrawPoint(const glm::vec2& p, float pointSize = 1.0f) = 0;
 
