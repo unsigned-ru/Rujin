@@ -15,7 +15,8 @@ void rujin::ColliderComponent::Start()
 	m_pGameObject->GetScene()->GetCollisionQuadTree()->Insert(GetCollider());
 }
 
-void rujin::ColliderComponent::FixedUpdate()
+void rujin::ColliderComponent::OnOverlap(const CollisionResult& result)
 {
-	HandleCollision();
+	if (m_AutoResolve)
+		GetCollider()->ResolveOverlap(result);
 }

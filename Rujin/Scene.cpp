@@ -13,7 +13,7 @@ Scene::Scene(const std::string& name, const Rectf& collisionTreeBounds, Camera* 
 	: IGameLoopObject()
 	, m_Name(name)
 	, m_GameObjects()
-	, m_CollisionQuadTree(std::make_unique<CollisionQuadTree>(collisionTreeBounds))
+	, m_pCollisionQuadTree(std::make_unique<CollisionQuadTree>(collisionTreeBounds))
 	, m_ActiveGameObjects()
 	, m_InactiveGameObjects()
 {
@@ -33,41 +33,43 @@ Scene::~Scene()
 
 void Scene::Start()
 {
-	for (const auto& object : m_GameObjects)
+	for (const auto& pObject : m_GameObjects)
 	{
-		object->Start();
+		pObject->Start();
 	}
 }
 
 void Scene::LateStart()
 {
-	for (const auto& object : m_GameObjects)
+	for (const auto& pObject : m_GameObjects)
 	{
-		object->LateStart();
+		pObject->LateStart();
 	}
 }
 
 void Scene::Update()
 {
-	for (const auto& object : m_GameObjects)
+	for (const auto& pObject : m_GameObjects)
 	{
-		object->Update();
+		pObject->Update();
 	}
 }
 
 void rujin::Scene::FixedUpdate()
 {
-	for (const auto& object : m_GameObjects)
+	for (const auto& pObject : m_GameObjects)
 	{
-		object->FixedUpdate();
+		pObject->FixedUpdate();
 	}
+
+	m_pCollisionQuadTree->HandleCollision(m_pCollisionQuadTree.get());
 }
 
 void Scene::OnGui(SDL_Window* pWindow)
 {
-	for (const auto& object : m_GameObjects)
+	for (const auto& pObject : m_GameObjects)
 	{
-		object->OnGui(pWindow);
+		pObject->OnGui(pWindow);
 	}
 }
 
@@ -77,12 +79,12 @@ void Scene::Draw() const
 
 	m_pActiveCamera->Project();
 
-	for (const auto& object : m_GameObjects)
+	for (const auto& pObject : m_GameObjects)
 	{
-		object->Draw();
+		pObject->Draw();
 	}
 
-	m_CollisionQuadTree->DrawDebug();
+	m_pCollisionQuadTree->DrawDebug();
 
 	glPopMatrix();
 }
@@ -100,5 +102,5 @@ void Scene::AddGameObject(std::unique_ptr<GameObject>& gameObject)
 
 CollisionQuadTree* Scene::GetCollisionQuadTree() const
 {
-	return m_CollisionQuadTree.get();
+	return m_pCollisionQuadTree.get();
 }

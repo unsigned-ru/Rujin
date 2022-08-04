@@ -86,27 +86,27 @@ void rujin::BoxCollider::ResolveOverlap(const CollisionResult& result)
 			if(xDiff > 0) // colliding on our left
 			{
 				// We add a positive x value to move the object to the right.
-				resolve = b.left + b.width - b.left;
+				resolve = b.left + b.width - a.left;
 			}
 			else //colliding on our right.
 			{
 				// We add a negative x value to move the object to the left.
-				resolve = -(a.left + a.width - b.left);
+				resolve = b.left - (a.left + a.width);
 			}
 
 			pTransform->AddLocalPosition({ resolve, 0 });
 		}
 		else //longest axis is Y
 		{
-			if (yDiff > 0) // colliding on our top
+			if (yDiff > 0) // colliding on our bottom
 			{
 				// We add a negative y value to move the object towards the bottom.
-				resolve = -(a.bottom + a.height - b.bottom);
+				resolve = b.bottom + b.height - a.bottom;
 			}
 			else //colliding on our bottom.
 			{
 				// We add a positive y value to move the object towards the top.
-				resolve = a.bottom + a.height - b.bottom;
+				resolve = b.bottom - (a.bottom + a.height);
 			}
 
 			pTransform->AddLocalPosition({ 0, resolve });

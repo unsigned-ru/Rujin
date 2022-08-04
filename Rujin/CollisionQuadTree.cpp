@@ -11,7 +11,7 @@
 #include "ServiceLocator.h"
 #include "Rutils/General.h"
 
-rujin::CollisionQuadTree::CollisionQuadTree(const Rectf& bounds) : CollisionQuadTree(40, 5, 0, bounds, nullptr) {}
+rujin::CollisionQuadTree::CollisionQuadTree(const Rectf& bounds) : CollisionQuadTree(5, 5, 0, bounds, nullptr) {}
 
 rujin::CollisionQuadTree::CollisionQuadTree
 (
@@ -153,6 +153,47 @@ const rujin::Rectf& rujin::CollisionQuadTree::GetBounds() const
 	return m_Bounds;
 }
 
+void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
+{
+	if (!pRoot)
+		pRoot = GetRoot();
+
+	for (Collider* pCollider : m_Colliders)
+	{
+		if (pCollider->IsStatic())
+			continue;
+
+		if (BoxCollider* pBoxCollider = dynamic_cast<BoxCollider*>(pCollider); pBoxCollider)
+		{
+			Rectf colliderBounds = pBoxCollider->GetRect();
+
+			const std::vector<const Collider*> possibleOverlaps = pRoot->Search(colliderBounds);
+
+			//check for overlaps
+			for (const Collider* pPossibleOverlapCollider : possibleOverlaps)
+			{
+				//avoid checking collisions with self.
+				if (pCollider == pPossibleOverlapCollider)
+					continue;
+
+				const CollisionResult result = pBoxCollider->IsOverlapping(pPossibleOverlapCollider);
+
+				if (result.isColliding)
+					pBoxCollider->GetComponent()->GameObject()->BroadcastOverlap(result);
+			}
+
+		}
+		else
+			LOG_WARNING("Unimplemented Collider detected. Did you forget to implement?");
+	}
+
+	//if we have children
+	if (m_Children[0])
+		//recursion! handle children tree collision.
+		for (uint8_t i = 0u; i < 4u; ++i)
+			m_Children[i]->HandleCollision(pRoot);
+}
+
 void rujin::CollisionQuadTree::DrawDebug() const
 {
 	if(m_Children[0])
@@ -290,13 +331,20 @@ void rujin::CollisionQuadTree::OnNotify(const uint32_t identifier, const event::
 			Remove(pCollider);
 
 			//find root (parent) tree.
-			CollisionQuadTree* pRoot = this;
-
-			while (pRoot->m_pParent)
-				pRoot = pRoot->m_pParent;
+			CollisionQuadTree* pRoot = GetRoot();
 
 			//insert it again in the root (parent) tree!
 			pRoot->Insert(pCollider);
 		}
 	}
+}
+
+rujin::CollisionQuadTree* rujin::CollisionQuadTree::GetRoot()
+{
+	CollisionQuadTree* pRoot = this;
+
+	while (pRoot->m_pParent)
+		pRoot = pRoot->m_pParent;
+
+	return pRoot;
 }

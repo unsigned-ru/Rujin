@@ -37,6 +37,7 @@ namespace rujin
 		WindowContext& GetWindowContext() { return m_WindowContext;  }
 		const settings::InitParams& GetInitParams() const { return m_InitParams; }
 		float GetDeltaTime() const { return m_DeltaTime; }
+		float GetFixedUpdateDeltaTime() const { return m_FixedUpdateTimestep; }
 		float GetTotalTime() const { return m_TotalTime; }
 
 		void SetVSync(VSyncMode vsyncMode);

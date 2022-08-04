@@ -40,7 +40,7 @@ namespace rujin
 		static uint32_t m_IdCounter;
 
 		std::vector<std::unique_ptr<GameObject>> m_GameObjects;
-		std::unique_ptr<CollisionQuadTree> m_CollisionQuadTree;
+		std::unique_ptr<CollisionQuadTree> m_pCollisionQuadTree;
 		std::vector<std::weak_ptr<GameObject>> m_ActiveGameObjects;
 		std::vector<std::weak_ptr<GameObject>> m_InactiveGameObjects;
 

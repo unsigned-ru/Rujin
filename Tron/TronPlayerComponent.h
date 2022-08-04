@@ -9,11 +9,9 @@ class TronPlayerComponent : public rujin::Component
 public:
 	TronPlayerComponent();
 
-	void Update() override;
+	void FixedUpdate() override;
 
 private:
-	void OnOverlap(const CollisionResult& collision) override;
-
 
 	float m_MoveSpeed{200.f};
 	PlayerIndex m_PlayerIdx;

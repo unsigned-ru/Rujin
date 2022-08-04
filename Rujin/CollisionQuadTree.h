@@ -23,6 +23,10 @@ namespace rujin
 		// Returns the bounds of this node.
 		const Rectf& GetBounds() const;
 
+		//Handles collision checking for all registered colliders
+		//in this tree and child trees.
+		void HandleCollision(CollisionQuadTree* pRoot = nullptr);
+
 		void DrawDebug() const;
 
 	private:
@@ -36,6 +40,8 @@ namespace rujin
 		void Split();
 
 		void OnNotify(const uint32_t identifier, const event::Data* pEventData) override;
+
+		CollisionQuadTree* GetRoot();
 
 	private:
 		std::unique_ptr<CollisionQuadTree> m_Children[4];

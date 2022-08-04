@@ -27,21 +27,16 @@ TronPlayerComponent::TronPlayerComponent()
 	);
 }
 
-void TronPlayerComponent::Update()
+void TronPlayerComponent::FixedUpdate()
 {
 	const InputService& input = ServiceLocator::GetService<InputService>();
 
 	float inputIntensity;
-	const float deltaTime = Rujin::Get()->GetDeltaTime();
+	const float deltaTime = Rujin::Get()->GetFixedUpdateDeltaTime();
 	
 	TransformComponent* pTransform = m_pGameObject->GetTransform();
 	if (input.IsAxisActionTriggered(0, static_cast<uint32_t>(AxisAction::MoveRight), &inputIntensity))
 		pTransform->AddLocalPosition({ inputIntensity * m_MoveSpeed * deltaTime, 0 });
 	else if (input.IsAxisActionTriggered(0, static_cast<uint32_t>(AxisAction::MoveUp), &inputIntensity))
 		pTransform->AddLocalPosition({ 0,  inputIntensity * m_MoveSpeed * deltaTime });
-}
-
-void TronPlayerComponent::OnOverlap(const CollisionResult& /*collision*/)
-{
-	LOG_DEBUG("Overlapping!");
 }

@@ -19,8 +19,6 @@ namespace rujin
 
 		Collider* GetCollider() const override;
 
-		void HandleCollision() override;
-
 	private:
 		BoxCollider* m_pCollider;
 	};

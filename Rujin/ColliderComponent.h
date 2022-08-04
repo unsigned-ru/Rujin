@@ -21,9 +21,8 @@ namespace rujin
 		virtual Collider* GetCollider() const = 0;
 
 		void Start() override;
-		void FixedUpdate() override;
 
-		virtual void HandleCollision() = 0;
+		void OnOverlap(const CollisionResult&) override;
 
 	protected:
 		bool m_AutoResolve;
