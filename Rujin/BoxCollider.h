@@ -7,7 +7,7 @@ namespace rujin
 	class BoxCollider final : public Collider
 	{
 	public:
-		explicit BoxCollider(Component* pComponent, const glm::vec2& size, bool isStatic = true, const glm::vec2& pivot = {0.5f, 0.5f});
+		explicit BoxCollider(ColliderComponent* pComponent, const glm::vec2& size, bool isStatic = true, const glm::vec2& pivot = {0.5f, 0.5f});
 		~BoxCollider() override = default;
 
 		BoxCollider(const BoxCollider&) = delete;

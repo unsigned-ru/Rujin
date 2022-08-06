@@ -258,6 +258,9 @@
     <ClInclude Include="BoxColliderComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="Rutils\StandardColors.h">
+      <Filter>Rutils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Rujin.cpp">

@@ -18,7 +18,8 @@ TronTestComponent::TronTestComponent(PlayerIndex playerIndex)
 	: m_PlayerIndex(playerIndex)
 {
 	InputService& input = ServiceLocator::GetService<InputService>();
-	input.AddInputAction(m_PlayerIndex, static_cast<uint32_t>(InputAction::LeftClick), { ButtonState::Released, VK_LBUTTON });
+	input.AddInputAction(m_PlayerIndex, static_cast<uint32_t>(InputAction::LeftClick), { ButtonState::Down, VK_LBUTTON });
+	input.AddInputAction(m_PlayerIndex, static_cast<uint32_t>(InputAction::RightClick), { ButtonState::Down, VK_RBUTTON });
 }
 
 void TronTestComponent::Start()
@@ -37,12 +38,17 @@ void TronTestComponent::Update()
 		m_RayStart = input.GetMousePosition();
 	}
 
-	m_RaycastHit = GameObject()->GetScene()->GetCollisionQuadTree()->Raycast(m_RayStart, { input.GetMousePosition().x, input.GetMousePosition().y });
+	if (input.IsInputActionTriggered(m_PlayerIndex, static_cast<uint32_t>(InputAction::RightClick)))
+	{
+		//set end point
+		m_RayEnd = input.GetMousePosition();
+	}
+
+	m_RaycastHit = GameObject()->GetScene()->GetCollisionQuadTree()->Raycast(m_RayStart, m_RayEnd);
 }
 
 void TronTestComponent::Draw() const
 {
-	const InputService& input = ServiceLocator::GetService<InputService>();
 	RenderService& renderer = ServiceLocator::GetService<RenderService>();
 
 	if (m_RaycastHit) 
@@ -50,7 +56,7 @@ void TronTestComponent::Draw() const
 	else
 		renderer.SetColor({ 1.f, 0.f, 0.f, 1.f });
 
-	renderer.DrawLine(m_RayStart, { input.GetMousePosition().x, input.GetMousePosition().y }, 3.f);
+	renderer.DrawLine(m_RayStart, m_RayEnd, 3.f);
 }
 
 void TronTestComponent::OnGui(SDL_Window* /*sdlWindow*/)

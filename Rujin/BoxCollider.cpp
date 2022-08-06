@@ -1,11 +1,11 @@
 ﻿#include "RujinPCH.h"
 #include "BoxCollider.h"
 
-#include "Component.h"
+#include "ColliderComponent.h"
 #include "GameObject.h"
 #include "CollisionFunctions.h"
 
-rujin::BoxCollider::BoxCollider(Component* pComponent, const glm::vec2& size, const bool isStatic, const glm::vec2& pivot)
+rujin::BoxCollider::BoxCollider(ColliderComponent* pComponent, const glm::vec2& size, const bool isStatic, const glm::vec2& pivot)
 	: Collider(pComponent, isStatic, pivot)
 	, m_Size(size)
 {

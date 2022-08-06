@@ -4,6 +4,7 @@
 
 namespace rujin
 {
+	class RenderService;
 	class BoxCollider;
 
 	class BoxColliderComponent final : public ColliderComponent
@@ -18,7 +19,10 @@ namespace rujin
 		BoxColliderComponent& operator=(BoxColliderComponent&&) noexcept = delete;
 
 		Collider* GetCollider() const override;
-		void DrawDebug() const override;
+
+#ifdef _DEBUG
+		void DrawDebug(const RenderService& renderer) const override;
+#endif
 
 	private:
 		BoxCollider* m_pCollider;

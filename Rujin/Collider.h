@@ -5,12 +5,12 @@
 
 namespace rujin
 {
-	class Component;
+	class ColliderComponent;
 
 	class Collider
 	{
 	public:
-		explicit Collider(Component* pComponent, bool isStatic, const glm::vec2& pivot);
+		explicit Collider(ColliderComponent* pComponent, bool isStatic, const glm::vec2& pivot);
 		virtual ~Collider() = default;
 
 		Collider(const Collider&) = delete;
@@ -26,10 +26,10 @@ namespace rujin
 
 		bool IsStatic() const;
 
-		Component* GetComponent() const;
+		ColliderComponent* GetComponent() const;
 
 	protected:
-		Component* m_pComponent;
+		ColliderComponent* m_pComponent;
 		glm::vec2 m_Pivot;
 		bool m_IsStatic;
 	};

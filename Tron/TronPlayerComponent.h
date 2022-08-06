@@ -26,7 +26,9 @@ private:
 	BoxColliderComponent* m_pBoxCollider = nullptr;
 
 	float m_MoveSpeed{ 200.f };
-	float m_WallCheckOffset{ 1.f };
+
+	inline static float s_WallCheckOffset{ 1.f };
+	inline static float s_WallCheckLengthReduction{ 4.f };
 
 	PlayerIndex m_PlayerIdx;
 

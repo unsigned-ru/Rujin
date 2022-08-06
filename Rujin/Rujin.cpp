@@ -23,6 +23,8 @@ rujin::Rujin::Rujin(IGame* pGame)
 
 rujin::Rujin::~Rujin()
 {
+	ServiceLocator::ClearServices();
+
 	SDL_DestroyWindow(m_WindowContext.pWindow);
 	m_WindowContext.pWindow = nullptr;
 	SDL_Quit();
@@ -142,6 +144,8 @@ void rujin::Rujin::Run()
 		/* render */
 		renderer.Render();
 	}
+
+	Destroy();
 }
 
 void rujin::Rujin::SetVSync(VSyncMode vsyncMode)

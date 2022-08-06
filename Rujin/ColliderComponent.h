@@ -5,6 +5,7 @@
 
 namespace rujin
 {
+	class RenderService;
 	class Collider;
 
 	class ColliderComponent : public Component
@@ -21,7 +22,11 @@ namespace rujin
 		void Start() override;
 		void Draw() const override;
 		void OnOverlap(const CollisionResult&) override;
+
+#ifdef _DEBUG
 		void EnableDebugDrawing(bool enable = true);
+		void SetDebugDrawingColor(const glm::vec4& color);
+#endif
 
 		virtual Collider* GetCollider() const = 0;
 
@@ -29,9 +34,12 @@ namespace rujin
 		bool m_AutoResolve;
 
 	private:
-		virtual void DrawDebug() const = 0;
+#ifdef _DEBUG
+		virtual void DrawDebug(const RenderService& renderer) const = 0;
 
 		bool m_DrawDebug = false;
+		glm::vec4 m_DebugDrawingColor = { 1.f, 1.f, 0.f, 1.f };
+#endif
 	};
 
 }

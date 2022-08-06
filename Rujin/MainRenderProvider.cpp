@@ -188,12 +188,12 @@ void rujin::MainRenderProvider::RenderTexture(const Texture& texture, const Tran
 }
 
 #pragma region Primitive Drawing
-void rujin::MainRenderProvider::SetColor(const glm::vec4& color)
+void rujin::MainRenderProvider::SetColor(const glm::vec4& color) const
 {
 	glColor4f(color.r, color.g, color.b, color.a);
 }
 
-void rujin::MainRenderProvider::DrawPoint(const glm::vec2& p, float pointSize)
+void rujin::MainRenderProvider::DrawPoint(const glm::vec2& p, float pointSize) const
 {
 	glPointSize(pointSize);
 	glBegin(GL_POINTS);
@@ -203,7 +203,7 @@ void rujin::MainRenderProvider::DrawPoint(const glm::vec2& p, float pointSize)
 	glEnd();
 }
 
-void rujin::MainRenderProvider::DrawLine(const glm::vec2& p1, const glm::vec2& p2, float lineWidth)
+void rujin::MainRenderProvider::DrawLine(const glm::vec2& p1, const glm::vec2& p2, float lineWidth) const
 {
 	glLineWidth(lineWidth);
 	glBegin(GL_LINES);
@@ -214,7 +214,7 @@ void rujin::MainRenderProvider::DrawLine(const glm::vec2& p1, const glm::vec2& p
 	glEnd();
 }
 
-void rujin::MainRenderProvider::DrawRect(const Rectf& rect, float lineWidth)
+void rujin::MainRenderProvider::DrawRect(const Rectf& rect, float lineWidth) const
 {
 	glLineWidth(lineWidth);
 	glBegin(GL_LINE_LOOP);
@@ -228,7 +228,7 @@ void rujin::MainRenderProvider::DrawRect(const Rectf& rect, float lineWidth)
 	glEnd();
 }
 
-void rujin::MainRenderProvider::FillRect(const Rectf& rect)
+void rujin::MainRenderProvider::FillRect(const Rectf& rect) const
 {
 	glBegin(GL_POLYGON);
 	{

@@ -31,14 +31,14 @@ namespace rujin
 		void RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot, const Rectf* srcRect = nullptr) const override;
 
 #pragma region Primitive Drawing
-		void SetColor(const glm::vec4& color) override;
+		void SetColor(const glm::vec4& color) const override;
 
-		void DrawPoint(const glm::vec2& p, float pointSize = 1.0f) override;
+		void DrawPoint(const glm::vec2& p, float pointSize = 1.0f) const override;
 
-		void DrawLine(const glm::vec2& p1, const glm::vec2& p2, float lineWidth = 1.0f) override;
+		void DrawLine(const glm::vec2& p1, const glm::vec2& p2, float lineWidth = 1.0f) const override;
 
-		void DrawRect(const Rectf& rect, float lineWidth = 1.0f) override;
-		void FillRect(const Rectf& rect) override;
+		void DrawRect(const Rectf& rect, float lineWidth = 1.0f) const override;
+		void FillRect(const Rectf& rect) const override;
 
 		//void DrawEllipse(const Ellipsef& ellipse, float lineWidth = 1.0f) override;
 		//void FillEllipse(const Ellipsef& ellipse) override;

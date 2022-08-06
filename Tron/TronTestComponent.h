@@ -25,6 +25,7 @@ private:
 	PlayerIndex m_PlayerIndex;
 	bool m_RaycastHit = false;
 	glm::vec2 m_RayStart{0.f, 0.f};
+	glm::vec2 m_RayEnd{0.f, 0.f};
 };
 
 #endif // Include Guard: TRON_TEST_COMPONENT_H

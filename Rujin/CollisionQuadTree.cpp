@@ -220,8 +220,20 @@ bool rujin::CollisionQuadTree::Raycast(const glm::vec2& p1, const glm::vec2& p2,
 			if (std::ranges::find(ignore, pPossibleCollider) != ignore.end())
 				continue; //ignore the colliders in the ignore vector.
 
+			const Rectf colliderRect = pPossibleBoxCollider->GetRect();
 			float nearT{};
-			if (collision::IsIntersecting(p1, p2, pPossibleBoxCollider->GetRect(), &nearT))
+
+			// if both points are inside of collider...
+			if (collision::IsInside(p1, colliderRect) && collision::IsInside(p2, colliderRect))
+			{
+				if (ppHitCollider)
+					*ppHitCollider = pPossibleBoxCollider;
+
+				return true;
+			}
+
+			//if we intersect
+			if (collision::IsIntersecting(p1, p2, true, colliderRect, &nearT))
 			{
 				if (pIntesection)
 					//calculate intersection point.
@@ -297,8 +309,12 @@ void rujin::CollisionQuadTree::Search(const glm::vec2& p1, const glm::vec2& p2, 
 	{
 		for (uint8_t i = 0; i < 4; ++i)
 		{
-			//if the line intersects the child bounding box.
-			if (collision::IsIntersecting(p1, p2, m_Children[i]->GetBounds()))
+			//if both points are inside...
+			//or
+			//the line intersects the...
+			//...child bounding box.
+			const Rectf& childBounds = m_Children[i]->GetBounds();
+			if ((collision::IsInside(p1, childBounds) && collision::IsInside(p2, childBounds)) || collision::IsIntersecting(p1, p2, true, childBounds))
 			{
 				//search in the child.
 				m_Children[i]->Search(p1, p2, overlappingColliders);

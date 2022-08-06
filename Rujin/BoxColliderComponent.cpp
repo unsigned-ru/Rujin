@@ -14,18 +14,19 @@ rujin::BoxColliderComponent::BoxColliderComponent(const glm::vec2& size, const b
 {
 }
 
-rujin::BoxColliderComponent::~BoxColliderComponent() = default;
+rujin::BoxColliderComponent::~BoxColliderComponent()
+{
+	delete m_pCollider;
+};
 
 rujin::Collider* rujin::BoxColliderComponent::GetCollider() const
 {
 	return m_pCollider;
 }
 
-void rujin::BoxColliderComponent::DrawDebug() const
+#ifdef _DEBUG
+void rujin::BoxColliderComponent::DrawDebug(const RenderService& renderer) const
 {
-	RenderService& rs = ServiceLocator::GetService<RenderService>();
-	rs.SetColor({ 1.f, 1.f, 0.f, 1.f });
-	rs.DrawRect(m_pCollider->GetRect(), 4.f);
-	rs.SetColor({1.f, 1.f, 1.f, 1.f});
+	renderer.DrawRect(m_pCollider->GetRect(), 2.f);
 }
-
+#endif

@@ -18,7 +18,10 @@ rujin::BaseInputProvider::BaseInputProvider()
 	m_PlayerIndexQueue = std::priority_queue<PlayerIndex, std::vector<PlayerIndex>, std::greater<PlayerIndex>>(tempArr.begin(), tempArr.end());
 }
 
-rujin::BaseInputProvider::~BaseInputProvider() = default;
+rujin::BaseInputProvider::~BaseInputProvider()
+{
+	delete m_pKeyboardSession;
+};
 
 void rujin::BaseInputProvider::ProcessInput(float deltaTime)
 {

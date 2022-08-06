@@ -250,6 +250,7 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClInclude Include="RenderService.h" />
     <ClInclude Include="SceneService.h" />
     <ClInclude Include="ResourceService.h" />
+    <ClInclude Include="Rutils\StandardColors.h" />
     <ClInclude Include="XInputGamepadSession.h" />
     <ClInclude Include="IGame.h" />
     <ClInclude Include="InputStructs.h" />

@@ -25,14 +25,14 @@ namespace rujin
 
 #pragma region Primitive Drawing
 
-		virtual void SetColor(const glm::vec4& color = {1.f, 1.f, 1.f, 1.f}) = 0;
+		virtual void SetColor(const glm::vec4& color = {1.f, 1.f, 1.f, 1.f}) const = 0;
 
-		virtual void DrawPoint(const glm::vec2& p, float pointSize = 1.0f) = 0;
+		virtual void DrawPoint(const glm::vec2& p, float pointSize = 1.0f) const = 0;
 
-		virtual void DrawLine(const glm::vec2& p1, const glm::vec2& p2, float lineWidth = 1.0f) = 0;
+		virtual void DrawLine(const glm::vec2& p1, const glm::vec2& p2, float lineWidth = 1.0f) const = 0;
 
-		virtual void DrawRect(const Rectf& rect, float lineWidth = 1.0f) = 0;
-		virtual void FillRect(const Rectf& rect) = 0;
+		virtual void DrawRect(const Rectf& rect, float lineWidth = 1.0f) const = 0;
+		virtual void FillRect(const Rectf& rect) const = 0;
 
 		//virtual void DrawEllipse(const Ellipsef& ellipse, float lineWidth = 1.0f) = 0;
 		//virtual void FillEllipse(const Ellipsef& ellipse) = 0;

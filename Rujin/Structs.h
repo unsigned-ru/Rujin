@@ -67,6 +67,9 @@ namespace rujin
 		float height{};
 	};
 
+	inline bool operator>(const glm::vec2& p1, const glm::vec2& p2) { return p1.x > p2.x && p1.y > p2.y; }
+	inline bool operator<(const glm::vec2& p1, const glm::vec2& p2) { return p1.x < p2.x && p1.y < p2.y; }
+
 	using Position = glm::vec2;
 	using Rotation = float;
 	using Scale = glm::vec2;
