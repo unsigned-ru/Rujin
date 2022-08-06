@@ -3,11 +3,12 @@
 
 
 #include <Component.h>
+#include "InputStructs.h"
 
 class TronTestComponent final : public rujin::Component
 {
 public:
-	explicit TronTestComponent() = default;
+	explicit TronTestComponent(PlayerIndex playerIndex);
 	~TronTestComponent() override = default;
 
 	TronTestComponent(const TronTestComponent&) = delete;
@@ -21,7 +22,9 @@ public:
 	void OnGui(SDL_Window*) override;
 
 private:
+	PlayerIndex m_PlayerIndex;
 	bool m_RaycastHit = false;
+	glm::vec2 m_RayStart{0.f, 0.f};
 };
 
 #endif // Include Guard: TRON_TEST_COMPONENT_H

@@ -5,7 +5,7 @@
 
 enum class InputAction : uint32_t
 {
-	
+	LeftClick
 };
 
 enum class AxisAction : uint32_t

@@ -111,12 +111,11 @@ void Tron::Load()
 	//	pScene->AddGameObject(go);
 	//}
 
-	ServiceLocator::GetService<InputService>().RegisterPlayer();
 
 	{
 		auto go = std::make_unique<GameObject>("Cube");
 		go->AddComponent(new BoxColliderComponent({ 200, 200 }, false))->EnableDebugDrawing();
-		go->AddComponent<TronTestComponent>();
+		go->AddComponent(new TronTestComponent(ServiceLocator::GetService<InputService>().RegisterPlayer()));
 		go->GetTransform()->SetPosition({ 400, 400 });
 		pScene->AddGameObject(go);
 	}
