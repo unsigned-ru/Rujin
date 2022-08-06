@@ -47,7 +47,10 @@ bool rujin::collision::IsIntersecting(const glm::vec2& p1, const glm::vec2& p2, 
 
 	if (tNear > tFar)
 		return false;
-	
+
+	if (tNear > 1.f)
+		return false;
+
 
 	if (pNearT)
 		*pNearT = tNear;

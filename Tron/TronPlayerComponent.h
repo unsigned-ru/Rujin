@@ -4,18 +4,33 @@
 #include "InputStructs.h"
 
 
+namespace rujin
+{
+	class CollisionQuadTree;
+	class InputService;
+	class BoxColliderComponent;
+}
+
 class TronPlayerComponent : public rujin::Component
 {
 public:
 	TronPlayerComponent();
 
+	void Start() override;
 	void FixedUpdate() override;
 	void Draw() const override;
 
 private:
+	void HandleMovement(const InputService& input, CollisionQuadTree* pCollisionTree);
 
-	float m_MoveSpeed{200.f};
+	BoxColliderComponent* m_pBoxCollider = nullptr;
+
+	float m_MoveSpeed{ 200.f };
+	float m_WallCheckOffset{ 1.f };
+
 	PlayerIndex m_PlayerIdx;
+
+	Direction m_FacingDirection{ Direction::UP };
 };
 
 

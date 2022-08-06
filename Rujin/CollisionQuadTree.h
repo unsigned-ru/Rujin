@@ -35,7 +35,7 @@ namespace rujin
 		 * \param ppHitCollider [OUT] The collider that was hit.
 		 * \return true if any collider was hit, false if none was hit.
 		 */
-		bool Raycast(const glm::vec2& p1, const glm::vec2& p2, glm::vec2* pIntesection, const Collider** ppHitCollider);
+		bool Raycast(const glm::vec2& p1, const glm::vec2& p2, const std::vector<const Collider*>& ignore = {}, glm::vec2* pIntesection = nullptr, const Collider** ppHitCollider = nullptr);
 
 		void DrawDebug() const;
 

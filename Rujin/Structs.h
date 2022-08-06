@@ -5,6 +5,7 @@
 namespace rujin
 {
 	enum class VSyncMode : int { ON = 1, OFF = 0, ADAPTIVE = -1 };
+	enum class Direction {LEFT, UP, RIGHT, DOWN};
 
 	struct WindowContext
 	{

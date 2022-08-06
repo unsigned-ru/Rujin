@@ -194,7 +194,7 @@ void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 			m_Children[i]->HandleCollision(pRoot);
 }
 
-bool rujin::CollisionQuadTree::Raycast(const glm::vec2& p1, const glm::vec2& p2, glm::vec2* pIntesection, const Collider** ppHitCollider)
+bool rujin::CollisionQuadTree::Raycast(const glm::vec2& p1, const glm::vec2& p2, const std::vector<const Collider*>& ignore, glm::vec2* pIntesection, const Collider** ppHitCollider)
 {
 	std::vector<const Collider*> possibleIntersections{};
 
@@ -217,6 +217,9 @@ bool rujin::CollisionQuadTree::Raycast(const glm::vec2& p1, const glm::vec2& p2,
 	{
 		if (const BoxCollider* pPossibleBoxCollider = dynamic_cast<const BoxCollider*>(pPossibleCollider); pPossibleBoxCollider)
 		{
+			if (std::ranges::find(ignore, pPossibleCollider) != ignore.end())
+				continue; //ignore the colliders in the ignore vector.
+
 			float nearT{};
 			if (collision::IsIntersecting(p1, p2, pPossibleBoxCollider->GetRect(), &nearT))
 			{
@@ -232,11 +235,9 @@ bool rujin::CollisionQuadTree::Raycast(const glm::vec2& p1, const glm::vec2& p2,
 		}
 		else
 			LOG_WARNING("Unimplemented Collider detected. Did you forget to implement?");
-		
 	}
 
 	return false;
-
 }
 
 void rujin::CollisionQuadTree::DrawDebug() const

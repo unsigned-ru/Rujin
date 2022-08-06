@@ -17,17 +17,11 @@ public:
 
 	void Start() override;
 	void Update() override;
+	void Draw() const override;
 	void OnGui(SDL_Window*) override;
 
 private:
-	bool m_ShouldRotate{false};
-	float m_RotationSpeed{ glm::radians(45.f)};
-
-	bool m_ShouldMove{ false };
-	float m_Frequency{ 1.f };
-	float m_Distance{ 100.f };
-
-	float m_ParentPos[2];
+	bool m_RaycastHit = false;
 };
 
 #endif // Include Guard: TRON_TEST_COMPONENT_H
