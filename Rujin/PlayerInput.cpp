@@ -87,7 +87,7 @@ void rujin::PlayerInput::Update()
 				if (keybinds.mouseAxis != MouseAxis::None)
 				{
 					//TODO: fix mouse sensitivity
-					const POINT mouseMovement = pSession->GetMouseMovement();
+					const glm::ivec2 mouseMovement = pSession->GetMouseMovement();
 
 					if (keybinds.mouseAxis == MouseAxis::X && mouseMovement.x != 0)
 					{

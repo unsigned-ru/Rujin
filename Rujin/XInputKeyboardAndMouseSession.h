@@ -19,8 +19,8 @@ namespace rujin
 		bool IsMouseButtonDown(int button, bool previousFrame = false) const override;
 		bool IsKeyboardKeyDown(int key, bool previousFrame = false) const override;
 
-		POINT GetMousePosition(bool previousFrame = false) const override;
-		POINT GetMouseMovement() const override;
+		glm::ivec2 GetMousePosition(bool previousFrame = false) const override;
+		glm::ivec2 GetMouseMovement() const override;
 
 		bool UpdateStates() override;
 
@@ -32,9 +32,9 @@ namespace rujin
 		BYTE* m_pCurrKeyboardState{};
 		BYTE* m_pOldKeyboardState{};
 
-		POINT m_OldMousePosition{};
-		POINT m_CurrMousePosition{};
-		POINT m_MouseMovement{};
+		glm::ivec2 m_OldMousePosition{};
+		glm::ivec2 m_CurrMousePosition{};
+		glm::ivec2 m_MouseMovement{};
 	};
 }
 

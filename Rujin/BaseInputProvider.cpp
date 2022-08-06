@@ -103,20 +103,20 @@ bool rujin::BaseInputProvider::IsAxisActionTriggered(PlayerIndex player, const u
 	return false;
 }
 
-POINT rujin::BaseInputProvider::GetMouseMovement() const
+glm::ivec2 rujin::BaseInputProvider::GetMouseMovement() const
 {
 	if (m_pKeyboardSession)
 		return m_pKeyboardSession->GetMouseMovement();
 
 	LOG_WARNING_("Tried to get mouse position, but no keyboard and mouse input session was detected.");
-	return POINT();
+	return glm::ivec2();
 }
 
-POINT rujin::BaseInputProvider::GetMousePosition(const bool previousFrame) const
+glm::ivec2 rujin::BaseInputProvider::GetMousePosition(const bool previousFrame) const
 {
 	if (m_pKeyboardSession)
 		return m_pKeyboardSession->GetMousePosition(previousFrame);
 
 	LOG_WARNING_("Tried to get mouse position, but no keyboard and mouse input session was detected.");
-	return POINT();
+	return glm::ivec2();
 }

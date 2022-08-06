@@ -40,8 +40,8 @@ namespace rujin
 		bool IsInputActionTriggered(PlayerIndex player, uint32_t inputAction) const override;
 		bool IsAxisActionTriggered(PlayerIndex player, uint32_t axisAction, float* pIntensity) const override;
 
-		POINT GetMouseMovement() const override;
-		POINT GetMousePosition(bool previousFrame) const override;
+		glm::ivec2 GetMouseMovement() const override;
+		glm::ivec2 GetMousePosition(bool previousFrame) const override;
 
 	protected:
 		virtual void RegisterNewDevices() = 0;

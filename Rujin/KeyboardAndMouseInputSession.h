@@ -13,8 +13,8 @@ namespace rujin
 		virtual bool IsMouseButtonDown(int button, bool previousFrame = false) const = 0;
 		virtual bool IsKeyboardKeyDown(int key, bool previousFrame = false) const = 0;
 
-		virtual POINT GetMousePosition(bool previousFrame = false) const = 0;
-		virtual POINT GetMouseMovement() const = 0;
+		virtual glm::ivec2 GetMousePosition(bool previousFrame = false) const = 0;
+		virtual glm::ivec2 GetMouseMovement() const = 0;
 
 		virtual bool UpdateStates() override = 0;
 	};

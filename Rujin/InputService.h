@@ -22,8 +22,8 @@ namespace rujin
 
 		virtual void ProcessInput(float deltaTime) = 0;
 
-		virtual POINT GetMousePosition(bool previousFrame = false) const = 0;
-		virtual POINT GetMouseMovement() const = 0;
+		virtual glm::ivec2 GetMousePosition(bool previousFrame = false) const = 0;
+		virtual glm::ivec2 GetMouseMovement() const = 0;
 
 		virtual PlayerIndex RegisterPlayer() = 0;
 

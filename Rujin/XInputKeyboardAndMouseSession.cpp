@@ -1,6 +1,8 @@
 ﻿#include "RujinPCH.h"
 #include "XInputKeyboardAndMouseSession.h"
 
+#include "Rujin.h"
+
 rujin::XInputKeyboardAndMouseSession::XInputKeyboardAndMouseSession()
 	: KeyboardAndMouseInputSession()
 {
@@ -43,12 +45,12 @@ bool rujin::XInputKeyboardAndMouseSession::IsKeyboardKeyDown(const int key, cons
 	return (pState[key] & 0xF0) != 0;
 }
 
-POINT rujin::XInputKeyboardAndMouseSession::GetMousePosition(const bool previousFrame) const
+glm::ivec2 rujin::XInputKeyboardAndMouseSession::GetMousePosition(const bool previousFrame) const
 {
 	return previousFrame ? m_OldMousePosition : m_CurrMousePosition;
 }
 
-POINT rujin::XInputKeyboardAndMouseSession::GetMouseMovement() const
+glm::ivec2 rujin::XInputKeyboardAndMouseSession::GetMouseMovement() const
 {
 	return m_MouseMovement;
 }
@@ -65,10 +67,12 @@ bool rujin::XInputKeyboardAndMouseSession::UpdateStates()
 
 	//Update mouse position
 	m_OldMousePosition = m_CurrMousePosition;
-	GetCursorPos(&m_CurrMousePosition);
 
-	m_MouseMovement.x = m_CurrMousePosition.x - m_OldMousePosition.x;
-	m_MouseMovement.y = m_CurrMousePosition.y - m_OldMousePosition.y;
+	SDL_GetMouseState(&m_CurrMousePosition.x, &m_CurrMousePosition.y);
+	m_CurrMousePosition.y = Rujin::Get()->GetWindowContext().windowSize.y - m_CurrMousePosition.y;
+	
+
+	m_MouseMovement = m_CurrMousePosition - m_OldMousePosition;
 
 	return true;
 }
