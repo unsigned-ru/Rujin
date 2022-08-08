@@ -5,8 +5,6 @@
 
 namespace rujin
 {
-	struct Rectf;
-	struct Transform;
 	struct WindowContext;
 
 	namespace settings
@@ -28,7 +26,7 @@ namespace rujin
 		MainRenderProvider& operator=(MainRenderProvider&&) noexcept = delete;
 
 		void Render() const override;
-		void RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot, const Rectf* srcRect = nullptr) const override;
+		void RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot, const Recti* srcRect = nullptr, bool isXFlipped = false, bool isYFlipped = false) const override;
 
 #pragma region Primitive Drawing
 		void SetColor(const glm::vec4& color) const override;

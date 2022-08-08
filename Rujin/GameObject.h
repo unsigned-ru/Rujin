@@ -44,10 +44,10 @@ namespace rujin
 			return component;
 		}
 
-		template<typename ComponentType, typename = std::enable_if<std::is_base_of_v<Component, ComponentType>>>
-		ComponentType* AddComponent()
+		template<typename ComponentType, typename... Args, typename = std::enable_if<std::is_base_of_v<Component, ComponentType>>>
+		ComponentType* AddComponent(Args&&... args)
 		{
-			return AddComponent(new ComponentType());
+			return AddComponent(new ComponentType(std::forward<Args>(args)...));
 		}
 
 		template<typename ComponentType, typename = std::enable_if<std::is_base_of_v<Component, ComponentType>>>
@@ -60,6 +60,21 @@ namespace rujin
 			return nullptr;
 		}
 
+		template<typename ComponentType, typename = std::enable_if<std::is_base_of_v<Component, ComponentType>>>
+		ComponentType* GetComponentInChildren() const
+		{
+			for (const auto& child : m_Children)
+			{
+				if (ComponentType* pResult = child->GetComponent<ComponentType>(); pResult)
+					return pResult;
+
+				if (ComponentType* pResult = child->GetComponentInChildren<ComponentType>(); pResult)
+					return pResult;
+			}
+
+			return nullptr;
+		}
+
 		void AddChild(std::unique_ptr<GameObject>& pChild);
 		void AttachTo(GameObject* pParent);
 
@@ -67,6 +82,7 @@ namespace rujin
 		GameObject* GetParent() const;
 		GameObject* GetRootParent();
 		const std::vector<std::unique_ptr<GameObject>>& GetChildren() const;
+		const GameObject* GetChildByName(const std::string& name) const;
 		const std::vector<std::unique_ptr<Component>>& GetComponents() const;
 		TransformComponent* GetTransform() const;
 		std::string GetName() const;

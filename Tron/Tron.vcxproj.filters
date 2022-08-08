@@ -29,6 +29,12 @@
     <ClCompile Include="TronPlayerComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="TankMovementComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TankComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TronPCH.h">
@@ -47,6 +53,12 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="InputEvents.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TankMovementComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TankComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,12 +6,14 @@
 #include "TextureRenderComponent.h"
 
 #include "ServiceLocator.h"
+#include "Texture.h"
 #include "TransformComponent.h"
 
-rujin::TextureRenderComponent::TextureRenderComponent(const std::shared_ptr<Texture>& texture, const glm::vec2& pivot)
+rujin::TextureRenderComponent::TextureRenderComponent(const std::shared_ptr<Texture>& texture, const glm::vec2& pivot, const Recti& sourceRect)
 	: m_pTexture(texture)
 	, m_Pivot(pivot)
 {
+	SetSourceRect(sourceRect);
 }
 
 void rujin::TextureRenderComponent::LateStart()
@@ -23,7 +25,7 @@ void rujin::TextureRenderComponent::Draw() const
 {
 	const auto transform = GameObject()->GetTransform();
 
-	ServiceLocator::GetService<RenderService>().RenderTexture(*m_pTexture, transform->GetTransform(), m_Pivot);
+	ServiceLocator::GetService<RenderService>().RenderTexture(*m_pTexture, transform->GetTransform(), m_Pivot, &m_SourceRect, m_IsFlippedX, m_IsFlippedY);
 }
 
 void rujin::TextureRenderComponent::SetTexture(const std::shared_ptr<Texture>& texture)
@@ -31,7 +33,35 @@ void rujin::TextureRenderComponent::SetTexture(const std::shared_ptr<Texture>& t
 	m_pTexture = texture;
 }
 
+void rujin::TextureRenderComponent::SetSourceRect(const Recti& sourceRect)
+{
+	if (sourceRect == Recti{}) //if we passed default sourceRect, then we want to draw the entire texture.
+		m_SourceRect = Recti{ 0, 0, m_pTexture->GetSize().x, m_pTexture->GetSize().y };
+	else
+		m_SourceRect = sourceRect;
+}
+
 void rujin::TextureRenderComponent::SetPivot(const glm::vec2& pivot)
 {
 	m_Pivot = pivot;
+}
+
+void rujin::TextureRenderComponent::SetFlippedX(const bool flipped)
+{
+	m_IsFlippedX = flipped;
+}
+
+void rujin::TextureRenderComponent::SetFlippedY(const bool flipped)
+{
+	m_IsFlippedY = flipped;
+}
+
+bool rujin::TextureRenderComponent::IsFlippedX() const
+{
+	return m_IsFlippedX;
+}
+
+bool rujin::TextureRenderComponent::IsFlippedY() const
+{
+	return m_IsFlippedY;
 }

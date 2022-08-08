@@ -1,11 +1,11 @@
 ﻿#include "RujinPCH.h"
 #include "BoxCollider.h"
 
-#include "ColliderComponent.h"
+#include "BoxColliderComponent.h"
 #include "GameObject.h"
 #include "CollisionFunctions.h"
 
-rujin::BoxCollider::BoxCollider(ColliderComponent* pComponent, const glm::vec2& size, const bool isStatic, const glm::vec2& pivot)
+rujin::BoxCollider::BoxCollider(BoxColliderComponent* pComponent, const glm::vec2& size, const bool isStatic, const glm::vec2& pivot)
 	: Collider(pComponent, isStatic, pivot)
 	, m_Size(size)
 {
@@ -80,8 +80,11 @@ void rujin::BoxCollider::ResolveOverlap(const CollisionResult& result)
 		const float xDiff = (a.left + (a.width / 2.f)) - (b.left + (b.width / 2.f));
 		const float yDiff = (a.bottom + (a.height / 2.f)) - (b.bottom + (b.height / 2.f));
 
-		//find longest resolve axis.
-		if (abs(xDiff) > abs(yDiff)) //longest axis is X
+
+		//to determine which region of this rectangle the rect's center point is in,
+		//we have to account for the scale of this rectangle.
+		//To do that, we divide dx and dy by its width and height respectively.
+		if (abs(xDiff / b.width) > abs(yDiff / b.height)) 
 		{
 			if(xDiff > 0) // colliding on our left
 			{

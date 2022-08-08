@@ -2,10 +2,12 @@
 #define TRON_PLAYER_COMPONENT_H
 #include "Component.h"
 #include "InputStructs.h"
+#include "TankMovementComponent.h"
 
 
 namespace rujin
 {
+	class TextureRenderComponent;
 	class CollisionQuadTree;
 	class InputService;
 	class BoxColliderComponent;
@@ -20,19 +22,14 @@ public:
 	void FixedUpdate() override;
 	void Draw() const override;
 
+	PlayerIndex GetPlayerIndex() const;
+
 private:
-	void HandleMovement(const InputService& input, CollisionQuadTree* pCollisionTree);
+	void HandleMovement(const InputService& input);
 
-	BoxColliderComponent* m_pBoxCollider = nullptr;
+	const PlayerIndex m_PlayerIdx;
 
-	float m_MoveSpeed{ 200.f };
-
-	inline static float s_WallCheckOffset{ 1.f };
-	inline static float s_WallCheckLengthReduction{ 4.f };
-
-	PlayerIndex m_PlayerIdx;
-
-	Direction m_FacingDirection{ Direction::UP };
+	TankMovementComponent* m_pTankMovement = nullptr;
 };
 
 

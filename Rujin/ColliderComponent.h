@@ -6,7 +6,6 @@
 namespace rujin
 {
 	class RenderService;
-	class Collider;
 
 	class ColliderComponent : public Component
 	{

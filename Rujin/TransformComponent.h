@@ -40,6 +40,7 @@ namespace rujin
 		const Transform& GetLocalTransform() const;
 #pragma endregion
 
+	private:
 		Transform m_LocalTransform{};
 	};
 

@@ -19,7 +19,7 @@ rujin::BoxColliderComponent::~BoxColliderComponent()
 	delete m_pCollider;
 };
 
-rujin::Collider* rujin::BoxColliderComponent::GetCollider() const
+rujin::BoxCollider* rujin::BoxColliderComponent::GetCollider() const
 {
 	return m_pCollider;
 }

@@ -92,7 +92,6 @@ void rujin::MainRenderProvider::Render() const
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	
 	auto& sceneService = ServiceLocator::GetService<SceneService>();
 
 	sceneService.Draw();
@@ -111,7 +110,7 @@ void rujin::MainRenderProvider::Render() const
 	SDL_GL_SwapWindow(m_WindowInfo.pWindow);
 }
 
-void rujin::MainRenderProvider::RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot, const Rectf* srcRect) const
+void rujin::MainRenderProvider::RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot, const Recti* srcRect, bool isXFlipped, bool isYFlipped) const
 {
 	const glm::ivec2& texSize = texture.GetSize();
 
@@ -132,10 +131,10 @@ void rujin::MainRenderProvider::RenderTexture(const Texture& texture, const Tran
 	else
 	{
 		// Convert to the range [0.0, 1.0]
-		texCoords.left = srcRect->left / texSize.x;
-		texCoords.right = (srcRect->left + srcRect->width) / texSize.x;
-		texCoords.top = (srcRect->bottom - srcRect->height) / texSize.y;
-		texCoords.bottom = srcRect->bottom  / texSize.y;
+		texCoords.left = static_cast<float>(srcRect->left) / static_cast<float>(texSize.x);
+		texCoords.right = static_cast<float>(srcRect->left + srcRect->width) / static_cast<float>(texSize.x);
+		texCoords.top = static_cast<float>(texSize.y - (srcRect->bottom + srcRect->height)) / static_cast<float>(texSize.y);
+		texCoords.bottom = static_cast<float>(texSize.y - srcRect->bottom)  / static_cast<float>(texSize.y);
 
 		srcSize = glm::ivec2{ srcRect->width, srcRect->height};
 	}
@@ -150,11 +149,11 @@ void rujin::MainRenderProvider::RenderTexture(const Texture& texture, const Tran
 	destRect.left = transform.pos.x - pivotOffset.x;
 	destRect.bottom = transform.pos.y - pivotOffset.y;
 
-	//perform tranform tranformations
+	//perform tranorm tranformations
 	glPushMatrix();
 	glTranslatef(transform.pos.x, transform.pos.y, 0);
 	glRotatef(glm::degrees(transform.rot), 0.f, 0.f, 1.f);
-	glScalef(transform.scale.x, transform.scale.y, 1.f);
+	glScalef(transform.scale.x * (isXFlipped ? -1.f : 1.f), transform.scale.y * (isYFlipped ? -1.f : 1.f), 1.f);
 	glTranslatef(-transform.pos.x, -transform.pos.y, 0);
 
 	//Create vertex info

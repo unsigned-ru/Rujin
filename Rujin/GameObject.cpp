@@ -169,6 +169,16 @@ const std::vector<std::unique_ptr<GameObject>>& GameObject::GetChildren() const
 	return m_Children;
 }
 
+const GameObject* GameObject::GetChildByName(const std::string& name) const
+{
+	const auto& it = std::ranges::find_if(m_Children, [&name](const std::unique_ptr<GameObject>& pChild) { return pChild->GetName() == name; });
+
+	if (it != m_Children.end())
+		return it->get();
+
+	return nullptr;
+}
+
 const std::vector<std::unique_ptr<Component>>& GameObject::GetComponents() const
 {
 	return m_Components;
