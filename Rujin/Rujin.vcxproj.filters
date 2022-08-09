@@ -261,6 +261,9 @@
     <ClInclude Include="Rutils\StandardColors.h">
       <Filter>Rutils</Filter>
     </ClInclude>
+    <ClInclude Include="Rutils\Math.h">
+      <Filter>Rutils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Rujin.cpp">

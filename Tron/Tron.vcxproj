@@ -202,6 +202,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="TankAimingComponent.cpp" />
     <ClCompile Include="TankComponent.cpp" />
     <ClCompile Include="TankMovementComponent.cpp" />
     <ClCompile Include="Tron.cpp" />
@@ -214,17 +215,16 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TronPCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TronPlayerComponent.cpp" />
-    <ClCompile Include="TronTestComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Rujin\GameEvents.h" />
     <ClInclude Include="InputEvents.h" />
+    <ClInclude Include="TankAimingComponent.h" />
     <ClInclude Include="TankComponent.h" />
     <ClInclude Include="TankMovementComponent.h" />
     <ClInclude Include="Tron.h" />
     <ClInclude Include="TronPCH.h" />
     <ClInclude Include="TronPlayerComponent.h" />
-    <ClInclude Include="TronTestComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

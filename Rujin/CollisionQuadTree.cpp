@@ -9,7 +9,6 @@
 #include "GameObject.h"
 #include "RenderService.h"
 #include "ServiceLocator.h"
-#include "Rutils/General.h"
 
 rujin::CollisionQuadTree::CollisionQuadTree(const Rectf& bounds) : CollisionQuadTree(5, 5, 0, bounds, nullptr) {}
 

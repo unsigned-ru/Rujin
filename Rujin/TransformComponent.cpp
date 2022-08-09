@@ -5,18 +5,16 @@
 
 #include "EventData.h"
 
+#include "Rutils/Math.h"
+
 rujin::TransformComponent::TransformComponent()
 	: Subject({})
 {
 }
 
-//recursive
-rujin::Position rujin::TransformComponent::GetPosition() const
+const rujin::Position& rujin::TransformComponent::GetPosition() const
 {
-	if (const auto* pParent = m_pGameObject->GetParent())
-		return pParent->GetTransform()->GetPosition() + GetLocalPosition();
-
-	return GetLocalPosition();
+	return m_GlobalTransform.pos;
 }
 
 void rujin::TransformComponent::SetPosition(const rujin::Position& pos)
@@ -26,40 +24,31 @@ void rujin::TransformComponent::SetPosition(const rujin::Position& pos)
 	{
 		m_LocalTransform.pos += localOffset;
 
-		event::OnTransformChanged_t event(this);
-		event.position = true;
-		Notify(static_cast<uint32_t>(event::Identifier::OnTransformChanged), &event);
+		m_TransformChanged |= TransformChanged::POSITION;
 	}
 }
 
 rujin::Rotation rujin::TransformComponent::GetRotation() const
 {
-	if (const auto* pParent = GameObject()->GetParent())
-		return fmod(pParent->GetTransform()->GetRotation() + GetLocalRotation(), 2.f * std::numbers::pi_v<float>);
-
-	return GetLocalRotation();
+	return m_GlobalTransform.rot;
 }
+
 
 void rujin::TransformComponent::SetRotation(const Rotation rot)
 {
-	//calculate difference between  wanted global rotation and current global rotation
+	//calculate difference between requested global rotation and current global rotation
 	//and add locally
 	if (const Rotation localOffset = rot - GetRotation(); abs(localOffset) > FLT_EPSILON)
 	{
 		m_LocalTransform.rot += localOffset;
 
-		event::OnTransformChanged_t event(this);
-		event.rotation = true;
-		Notify(static_cast<uint32_t>(event::Identifier::OnTransformChanged), &event);
+		m_TransformChanged |= TransformChanged::ROTATION;
 	}
 }
 
-rujin::Scale rujin::TransformComponent::GetScale() const
+const rujin::Scale& rujin::TransformComponent::GetScale() const
 {
-	if (const auto* pParent = m_pGameObject->GetParent())
-		return pParent->GetTransform()->GetScale() * GetLocalScale();
-
-	return GetLocalScale();
+	return m_GlobalTransform.scale;
 }
 
 void rujin::TransformComponent::SetScale(const Scale& scale)
@@ -68,21 +57,13 @@ void rujin::TransformComponent::SetScale(const Scale& scale)
 	{
 		m_LocalTransform.scale += localOffset;
 
-		event::OnTransformChanged_t event(this);
-		event.scale = true;
-		Notify(static_cast<uint32_t>(event::Identifier::OnTransformChanged), &event);
+		m_TransformChanged |= TransformChanged::SCALE;
 	}
-	
 }
 
-rujin::Transform rujin::TransformComponent::GetTransform() const
+const rujin::Transform& rujin::TransformComponent::GetTransform() const
 {
-	if (const auto* pParent = m_pGameObject->GetParent())
-	{
-		return pParent->GetTransform()->GetTransform() + GetLocalTransform();
-	}
-
-	return GetLocalTransform();
+	return m_GlobalTransform;
 }
 
 const rujin::Position& rujin::TransformComponent::GetLocalPosition() const
@@ -94,9 +75,7 @@ void rujin::TransformComponent::SetLocalPosition(const Position& pos)
 {
 	m_LocalTransform.pos = pos;
 
-	event::OnTransformChanged_t event(this);
-	event.position = true;
-	Notify(static_cast<uint32_t>(event::Identifier::OnTransformChanged), &event);
+	m_TransformChanged |= TransformChanged::POSITION;
 }
 
 void rujin::TransformComponent::AddLocalPosition(const Position& pos)
@@ -105,9 +84,7 @@ void rujin::TransformComponent::AddLocalPosition(const Position& pos)
 	{
 		m_LocalTransform.pos += pos;
 
-		event::OnTransformChanged_t event(this);
-		event.position = true;
-		Notify(static_cast<uint32_t>(event::Identifier::OnTransformChanged), &event);
+		m_TransformChanged |= TransformChanged::POSITION;
 	}
 }
 
@@ -120,9 +97,7 @@ void rujin::TransformComponent::SetLocalRotation(const Rotation rot)
 {
 	m_LocalTransform.rot = fmod(rot, std::numbers::pi_v<float> *2.f);
 
-	event::OnTransformChanged_t event(this);
-	event.rotation = true;
-	Notify(static_cast<uint32_t>(event::Identifier::OnTransformChanged), &event);
+	m_TransformChanged |= TransformChanged::ROTATION;
 }
 void rujin::TransformComponent::AddLocalRotation(Rotation rot)
 {
@@ -130,9 +105,7 @@ void rujin::TransformComponent::AddLocalRotation(Rotation rot)
 	{
 		m_LocalTransform.rot = fmod(m_LocalTransform.rot + rot, std::numbers::pi_v<float> *2.f);
 
-		event::OnTransformChanged_t event(this);
-		event.rotation = true;
-		Notify(static_cast<uint32_t>(event::Identifier::OnTransformChanged), &event);
+		m_TransformChanged |= TransformChanged::ROTATION;
 	}
 }
 
@@ -145,9 +118,7 @@ void rujin::TransformComponent::SetLocalScale(const Scale& scale)
 {
 	m_LocalTransform.scale = scale;
 
-	event::OnTransformChanged_t event(this);
-	event.scale = true;
-	Notify(static_cast<uint32_t>(event::Identifier::OnTransformChanged), &event);
+	m_TransformChanged |= TransformChanged::SCALE;
 }
 void rujin::TransformComponent::AddLocalScale(const Scale& scale)
 {
@@ -155,13 +126,46 @@ void rujin::TransformComponent::AddLocalScale(const Scale& scale)
 	{
 		m_LocalTransform.scale += scale;
 
-		event::OnTransformChanged_t event(this);
-		event.scale = true;
-		Notify(static_cast<uint32_t>(event::Identifier::OnTransformChanged), &event);
+		m_TransformChanged |= TransformChanged::SCALE;
 	}
 }
 
 const rujin::Transform& rujin::TransformComponent::GetLocalTransform() const
 {
 	return m_LocalTransform;
+}
+
+void rujin::TransformComponent::Start()
+{
+	//we want to update at start once for the construction transformations to go through
+	Update();
+}
+
+void rujin::TransformComponent::Update()
+{
+	if (static_cast<uint32_t>(m_TransformChanged) > 0)
+	{
+		UpdateSelfAndChildren();
+
+		//notify changes
+		const event::OnTransformChanged_t event(this, m_TransformChanged);
+		Notify(static_cast<uint32_t>(event::Identifier::OnTransformChanged), &event);
+
+		m_TransformChanged = {};
+	}
+}
+
+void rujin::TransformComponent::UpdateSelfAndChildren()
+{
+	if (const rujin::GameObject* pParent = GameObject()->GetParent(); pParent)
+		m_LocalTransform.worldMatrix = pParent->GetTransform()->GetLocalTransform().worldMatrix * m_LocalTransform.GetLocalModelMatrix();
+	else
+		m_LocalTransform.worldMatrix = m_LocalTransform.GetLocalModelMatrix();
+
+	//decompose and update global transform
+	rutils::Decompose(m_LocalTransform.worldMatrix, m_GlobalTransform.pos, m_GlobalTransform.rot, m_GlobalTransform.scale);
+
+	//update children.
+	for (const std::unique_ptr<rujin::GameObject>& child : GameObject()->GetChildren())
+		child->GetTransform()->UpdateSelfAndChildren();
 }

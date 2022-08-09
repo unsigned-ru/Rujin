@@ -20,15 +20,14 @@ namespace rujin::event
 
 	struct OnTransformChanged_t final : Data
 	{
-		explicit OnTransformChanged_t(TransformComponent* pTransform)
+		explicit OnTransformChanged_t(TransformComponent* pTransform, const TransformChanged& transformChanged)
 			: pTransformComponent(pTransform)
+			, transformChanged(transformChanged)
 		{}
 
 		TransformComponent* pTransformComponent;
 
-		bool position = false;
-		bool rotation = false;
-		bool scale = false;
+		const TransformChanged& transformChanged;
 	};
 
 }

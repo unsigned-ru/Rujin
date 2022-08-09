@@ -4,6 +4,23 @@
 
 namespace rujin
 {
+	enum class TransformChanged : uint32_t
+	{
+		NONE = 0x00,
+		POSITION = 0x01,
+		ROTATION = 0x02,
+		SCALE = 0x04,
+	};
+	inline TransformChanged operator|(TransformChanged& lhs, TransformChanged rhs)
+	{
+		return static_cast<TransformChanged>(static_cast<uint32_t>(lhs) | static_cast<uint32_t>(rhs));
+	}
+	inline TransformChanged& operator|=(TransformChanged& lhs, TransformChanged rhs)
+	{
+		lhs = lhs | rhs;
+		return lhs;
+	}
+
 	enum class VSyncMode : int { ON = 1, OFF = 0, ADAPTIVE = -1 };
 	enum class Direction {LEFT, UP, RIGHT, DOWN};
 
@@ -38,6 +55,7 @@ namespace rujin
 
 		struct Vertices
 		{
+			Vertices() = default;
 			Vertices(std::array<glm::tvec2<T>, 4>&& vertices)
 				: vertices(std::move(vertices))
 			{}
@@ -47,7 +65,7 @@ namespace rujin
 			glm::tvec2<T>& bottomRight = vertices[2];
 			glm::tvec2<T>& topRight = vertices[3];
 
-			std::array<glm::tvec2<T>, 4> vertices;
+			std::array<glm::tvec2<T>, 4> vertices{};
 		};
 
 		Vertices GetVertices() const
@@ -93,6 +111,34 @@ namespace rujin
 		Rotation rot{};
 		Scale scale{ 1.f, 1.f };
 
+		glm::mat3 worldMatrix = glm::mat4(1.0f);
+
+
+		glm::mat3 GetLocalModelMatrix()
+		{
+			const glm::mat3 translationMatrix
+			{
+				1.f,	0.f,	0.f,
+				0.f,	1.f,	0.f,
+				pos.x,	pos.y,	1.f
+			};
+
+			const glm::mat3 rotationMatrix
+			{
+				cos(rot),	sin(rot),	0,
+				-sin(rot),	cos(rot),	0,
+				0.f,		0.f,		1.f
+			};
+
+			const glm::mat3 scaleMatrix
+			{
+				scale.x,	0.f,		0.f,
+				0.f,		scale.y,	0.f,
+				0.f,		0.f,		1.f
+			};
+
+			return translationMatrix * rotationMatrix * scaleMatrix;
+		}
 
 		Transform operator+(const Transform& other) const
 		{

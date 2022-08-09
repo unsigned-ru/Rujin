@@ -3,20 +3,19 @@
 
 #include <SDL_image.h>
 
-#include "BoxCollider.h"
 #include "BoxColliderComponent.h"
 #include "FMOD_AudioProvider.h"
 #include "GameObject.h"
-#include "InputService.h"
 #include "ResourceProvider.h"
 #include "Rujin.h"
 #include "Scene.h"
 #include "SceneProvider.h"
 #include "ServiceLocator.h"
+#include "TankAimingComponent.h"
 #include "TankComponent.h"
 #include "TextureRenderComponent.h"
 #include "TronPlayerComponent.h"
-#include "TronTestComponent.h"
+#include "TankMovementComponent.h"
 
 using namespace rujin;
 
@@ -39,7 +38,7 @@ void Tron::Load()
 	const auto& windowSize = Rujin::Get()->GetWindowContext().windowSize;
 	Scene* pScene = sceneService.CreateScene("Tron Demo Scene", Rectf{0, 0, static_cast<float>(windowSize.x), static_cast<float>(windowSize.y)});
 
-	/* Create Circuit background */
+	///* Create Circuit background */
 	{
 		auto go = std::make_unique<GameObject>("Circuit_BG");
 		go->AddComponent(new TextureRenderComponent(resourceService.LoadTexture("Textures/Circuit.png"), {0.f, 0.f}));
@@ -56,9 +55,9 @@ void Tron::Load()
 	{
 		auto playerGO = std::make_unique<GameObject>("Player1");
 
-		auto* pBodyRenderer = playerGO->AddComponent<TextureRenderComponent>(resourceService.LoadTexture("Textures/Spritesheet.png"), glm::vec2{0.5f, 0.5f}, Recti{0, 0, 50, 50});
-		auto* pTankCollider = playerGO->AddComponent<BoxColliderComponent>(glm::vec2{ 50, 50 }, false);
-		auto* pTankMovement = playerGO->AddComponent<TankMovementComponent>();
+		auto* pBodyRenderer = playerGO->AddComponent(new TextureRenderComponent(resourceService.LoadTexture("Textures/Spritesheet.png"), {0.5f, 0.5f}, Recti{0, 0, 50, 50}));
+		auto* pTankCollider = playerGO->AddComponent(new BoxColliderComponent({ 50, 50 }, false));
+		auto* pTankMovement = playerGO->AddComponent(new TankMovementComponent());
 
 #ifdef _DEBUG
 		playerGO->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
@@ -69,12 +68,15 @@ void Tron::Load()
 
 		/* Add Turret */
 		auto Turret = std::make_unique<GameObject>("Turret");
-		auto* pTurretRenderer = Turret->AddComponent(new TextureRenderComponent(resourceService.LoadTexture("Textures/Spritesheet.png"), {0.5f, 0.45f}, Recti{0, 50, 45, 21}));
+		auto* pTankAimingComponent = Turret->AddComponent(new TankAimingComponent());
+		auto* pTurretRenderer = Turret->AddComponent(new TextureRenderComponent(resourceService.LoadTexture("Textures/Spritesheet.png"), {0.2f, 0.5f}, Recti{0, 50, 45, 21}));
+		Turret->GetTransform()->AddLocalPosition({ -8.f, 0.f });
 		playerGO->AddChild(Turret);
+		/* Turret added*/
 
-		playerGO->AddComponent(new TankComponent(pTankMovement, pBodyRenderer, pTurretRenderer, pTankCollider));
+		auto* pTank = playerGO->AddComponent(new TankComponent(pTankMovement, pTankAimingComponent, pBodyRenderer, pTurretRenderer, pTankCollider));
 
-		playerGO->AddComponent<TronPlayerComponent>();
+		playerGO->AddComponent(new TronPlayerComponent(pTank));
 
 		pScene->AddGameObject(playerGO);
 	}

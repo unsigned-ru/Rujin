@@ -3,7 +3,6 @@
 
 
 #include "Component.h"
-#include "TankComponent.h"
 
 class TankComponent;
 class TronPlayerComponent;
@@ -30,7 +29,7 @@ public:
 
 	void SetFacingDirection(Direction newDirection);
 private:
-	friend TankComponent::TankComponent(TankMovementComponent* pTankMovement, TextureRenderComponent* pTankBodyRenderer, TextureRenderComponent* pTankTurretRenderer, BoxColliderComponent* pTankCollider);
+	friend class TankComponent;
 	void SetTank(TankComponent* pTank);
 
 	TankComponent* m_pTank = nullptr;

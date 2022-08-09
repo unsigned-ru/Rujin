@@ -12,16 +12,16 @@ namespace rujin
 		explicit TransformComponent();
 
 #pragma region Global
-		Position GetPosition() const;
+		const Position& GetPosition() const;
 		void SetPosition(const Position& pos);
 
 		Rotation GetRotation() const;
 		void SetRotation(Rotation rot);
 
-		glm::vec2 GetScale() const;
+		const Scale& GetScale() const;
 		void SetScale(const Scale& scale);
 
-		Transform GetTransform() const;
+		const Transform& GetTransform() const;
 #pragma endregion
 
 #pragma region Local
@@ -41,7 +41,13 @@ namespace rujin
 #pragma endregion
 
 	private:
+		void Start() override;
+		void Update() override;
+		void UpdateSelfAndChildren();
+
+		TransformChanged m_TransformChanged{};
 		Transform m_LocalTransform{};
+		Transform m_GlobalTransform{};
 	};
 
 }

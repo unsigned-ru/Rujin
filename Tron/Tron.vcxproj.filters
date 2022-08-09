@@ -23,9 +23,6 @@
     <ClCompile Include="Tron.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="TronTestComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="TronPlayerComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
@@ -33,6 +30,9 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="TankComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="TankAimingComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -46,9 +46,6 @@
     <ClInclude Include="..\Rujin\GameEvents.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="TronTestComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="TronPlayerComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -59,6 +56,9 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="TankComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TankAimingComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

@@ -24,7 +24,7 @@ void rujin::TextureRenderComponent::LateStart()
 void rujin::TextureRenderComponent::Draw() const
 {
 	const auto transform = GameObject()->GetTransform();
-
+	
 	ServiceLocator::GetService<RenderService>().RenderTexture(*m_pTexture, transform->GetTransform(), m_Pivot, &m_SourceRect, m_IsFlippedX, m_IsFlippedY);
 }
 

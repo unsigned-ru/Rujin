@@ -5,14 +5,15 @@
 
 enum class InputAction : uint32_t
 {
-	LeftClick,
-	RightClick
+	Shoot
 };
 
 enum class AxisAction : uint32_t
 {
 	MoveRight,
-	MoveUp
+	MoveUp,
+	AimRight,
+	AimUp
 };
 
 
