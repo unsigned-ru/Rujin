@@ -35,6 +35,10 @@ void Scene::Start()
 {
 	for (const auto& pObject : m_GameObjects)
 	{
+		//apply construction-time transformations.
+		pObject->GetTransform().UpdateSelfAndChildren();
+
+		//start.
 		pObject->Start();
 	}
 }
@@ -63,6 +67,7 @@ void rujin::Scene::FixedUpdate()
 	}
 
 	m_pCollisionQuadTree->HandleCollision(m_pCollisionQuadTree.get());
+
 }
 
 void Scene::OnGui(SDL_Window* pWindow)
@@ -81,6 +86,9 @@ void Scene::Draw() const
 
 	for (const auto& pObject : m_GameObjects)
 	{
+		//update global transforms before drawing
+		pObject->GetTransform().UpdateSelfAndChildren();
+
 		pObject->Draw();
 	}
 

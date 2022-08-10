@@ -5,7 +5,7 @@
 
 namespace rujin
 {
-	struct Transform;
+	class Transform;
 	class Texture;
 
 	class RenderService : public Service

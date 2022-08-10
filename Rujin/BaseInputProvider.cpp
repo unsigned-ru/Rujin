@@ -5,6 +5,7 @@
 #include <numeric>
 
 #include "PlayerInput.h"
+#include "Rujin.h"
 
 rujin::BaseInputProvider::BaseInputProvider()
 	: InputService()
@@ -23,10 +24,16 @@ rujin::BaseInputProvider::~BaseInputProvider()
 	delete m_pKeyboardSession;
 };
 
-void rujin::BaseInputProvider::ProcessInput(float deltaTime)
+void rujin::BaseInputProvider::Start()
+{
+	RegisterNewDevices();
+	ProcessInput();
+}
+
+void rujin::BaseInputProvider::ProcessInput()
 {
 	//device scanning. (every 3 seconds)
-	if (m_DeviceScanTimer.Tick(deltaTime))
+	if (m_DeviceScanTimer.Tick(Rujin::Get()->GetDeltaTime()))
 		RegisterNewDevices();
 
 	//update connected devices

@@ -50,7 +50,7 @@ rujin::Collider* rujin::CollisionQuadTree::Insert(Collider* pCollider)
 	
 	if (!pCollider->IsStatic()) //if it dynamic
 		//observe transform of collider to ensure we update our quadtree if we update the position of the collider.
-		pCollider->GetComponent()->GameObject()->GetTransform()->AddObserver(this);
+		pCollider->GetComponent()->GameObject()->GetTransform().AddObserver(this);
 	
 
 	//since we inserted a pCollider, we need to check if this new insertion exceeds our node limits.
@@ -79,7 +79,7 @@ rujin::Collider* rujin::CollisionQuadTree::Insert(Collider* pCollider)
 					it = m_Colliders.erase(it); // remove it from this tree's vector
 
 					if (!pCollider->IsStatic()) //if it dynamic
-						pCollider->GetComponent()->GameObject()->GetTransform()->RemoveObserver(this); //remove this tree as observer.
+						pCollider->GetComponent()->GameObject()->GetTransform().RemoveObserver(this); //remove this tree as observer.
 
 					continue; //to prevent increment
 				}
@@ -113,7 +113,7 @@ void rujin::CollisionQuadTree::Remove(Collider* pCollider)
 				
 				if (!pCollider->IsStatic()) //if it dynamic
 					//remove this tree as observer of the transform
-					pCollider->GetComponent()->GameObject()->GetTransform()->RemoveObserver(this);
+					pCollider->GetComponent()->GameObject()->GetTransform().RemoveObserver(this);
 			}
 		}
 		else
@@ -157,10 +157,16 @@ void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 	if (!pRoot)
 		pRoot = GetRoot();
 
+	//update global transforms of all collision bodies to ensure we use up to date global data.
+	pRoot->UpdateGlobalTransforms();
+
 	for (Collider* pCollider : m_Colliders)
 	{
 		if (pCollider->IsStatic())
 			continue;
+
+		//update global transform before collision check, to ensure we use up-to-date transforms.
+		pCollider->GetComponent()->GameObject()->GetTransform().UpdateSelfAndChildren();
 
 		if (BoxCollider* pBoxCollider = dynamic_cast<BoxCollider*>(pCollider); pBoxCollider)
 		{
@@ -193,6 +199,17 @@ void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 			m_Children[i]->HandleCollision(pRoot);
 }
 
+void rujin::CollisionQuadTree::UpdateGlobalTransforms()
+{
+	for (const Collider* pCollider : m_Colliders)
+		pCollider->GetComponent()->GameObject()->GetTransform().UpdateSelfAndChildren();
+
+	if (m_Children[0])
+		//recursion! update child colliders global transform
+		for (uint8_t i = 0u; i < 4u; ++i)
+			m_Children[i]->UpdateGlobalTransforms();
+}
+
 bool rujin::CollisionQuadTree::Raycast(const glm::vec2& p1, const glm::vec2& p2, const std::vector<const Collider*>& ignore, glm::vec2* pIntesection, const Collider** ppHitCollider)
 {
 	std::vector<const Collider*> possibleIntersections{};
@@ -206,7 +223,7 @@ bool rujin::CollisionQuadTree::Raycast(const glm::vec2& p1, const glm::vec2& p2,
 		possibleIntersections, 
 		[&p1](const Collider* c1, const Collider* c2)
 		{
-			return distance2(p1, c1->GetComponent()->GameObject()->GetTransform()->GetPosition()) < distance2(p1, c2->GetComponent()->GameObject()->GetTransform()->GetPosition());
+			return distance2(p1, c1->GetComponent()->GameObject()->GetTransform().GetPosition()) < distance2(p1, c2->GetComponent()->GameObject()->GetTransform().GetPosition());
 		}
 	);
 
@@ -402,7 +419,7 @@ void rujin::CollisionQuadTree::OnNotify(const uint32_t identifier, const event::
 		//make sure the collider remains in the correct quadtree.
 
 		//Get the collider from the collider component.
-		if (const ColliderComponent* pColliderComp = onTransformChanged->pTransformComponent->GameObject()->GetComponent<ColliderComponent>(); pColliderComp)
+		if (const ColliderComponent* pColliderComp = onTransformChanged->transform.GetGameObject()->GetComponent<ColliderComponent>(); pColliderComp)
 		{
 			//found the collider comp.
 			Collider* pCollider = pColliderComp->GetCollider();

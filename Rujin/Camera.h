@@ -2,27 +2,23 @@
 #define CAMERA_H
 
 
-#include "TransformComponent.h"
+#include "Transform.h"
 
 namespace rujin
 {
 	class Camera final
 	{
 	public:
-		explicit Camera(const glm::ivec2& size, const Transform& transform = {});
+		explicit Camera(const glm::ivec2& size);
 
 		void Project() const;
 
-		void SetPosition(const Position& pos);
-		void SetRotation(Rotation rot);
-
-		const Position& GetPosition() const;
-		Rotation GetRotation() const;
+		Transform& GetTransform();
 		const glm::vec2& GetSize() const;
 
 	private:
 		glm::vec2 m_Size;
-		rujin::Transform m_Transform;
+		Transform m_Transform;
 	};
 
 }

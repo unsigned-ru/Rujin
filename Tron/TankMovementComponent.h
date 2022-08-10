@@ -38,7 +38,7 @@ private:
 
 	inline static constexpr float m_MoveSpeed{ 200.f };
 	inline static constexpr float s_WallCheckOffset{ 1.f };
-	inline static constexpr float s_WallCheckLengthReduction{ 4.f };
+	inline static constexpr float s_WallCheckLengthReduction{ 2.f };
 };
 
 

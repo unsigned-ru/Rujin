@@ -2,7 +2,8 @@
 #define GAMEOBJECT_H
 
 #include "IGameLoopObject.h"
-#include "TransformComponent.h"
+#include "Transform.h"
+#include "Component.h"
 
 namespace rujin
 {
@@ -84,7 +85,7 @@ namespace rujin
 		const std::vector<std::unique_ptr<GameObject>>& GetChildren() const;
 		const GameObject* GetChildByName(const std::string& name) const;
 		const std::vector<std::unique_ptr<Component>>& GetComponents() const;
-		TransformComponent* GetTransform() const;
+		Transform& GetTransform();
 		std::string GetName() const;
 
 	private:
@@ -100,9 +101,7 @@ namespace rujin
 		std::vector<std::unique_ptr<GameObject>> m_Children{};
 		std::vector<std::unique_ptr<Component>> m_Components{};
 
-		// all GO's have a transform so we can speed up access time by storing it explicitly
-		// gets destroyed by unique_ptr in m_Components going out of scope
-		TransformComponent* m_pTransformComp; 
+		Transform m_Transform{this}; 
 	};
 }
 

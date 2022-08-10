@@ -20,7 +20,7 @@ void TankMovementComponent::Start()
 void TankMovementComponent::MoveRight(const float inputIntensity, const float deltaTime)
 {
 	CollisionQuadTree* pCollisionTree = GameObject()->GetScene()->GetCollisionQuadTree();
-	TransformComponent* pTransform = GameObject()->GetTransform();
+	Transform& transform = GameObject()->GetTransform();
 
 	//if we aren't facing right.
 	if (m_FacingDirection != Direction::RIGHT)
@@ -61,7 +61,7 @@ void TankMovementComponent::MoveRight(const float inputIntensity, const float de
 			}
 
 			//we hit a wall, keep going in the facing direction
-			pTransform->AddLocalPosition(moveDir * abs(inputIntensity) * m_MoveSpeed * deltaTime);
+			transform.AddLocalPosition(moveDir * abs(inputIntensity) * m_MoveSpeed * deltaTime);
 		}
 		else
 		{
@@ -70,20 +70,20 @@ void TankMovementComponent::MoveRight(const float inputIntensity, const float de
 			SetFacingDirection(Direction::RIGHT);
 
 			//move...
-			pTransform->AddLocalPosition(glm::vec2{ inputIntensity * m_MoveSpeed * deltaTime,  0 });
+			transform.AddLocalPosition(glm::vec2{ inputIntensity * m_MoveSpeed * deltaTime,  0 });
 		}
 	}
 	else
 	{
 		//we are already facing right, just move...
-		pTransform->AddLocalPosition(glm::vec2{ inputIntensity * m_MoveSpeed * deltaTime,  0 });
+		transform.AddLocalPosition(glm::vec2{ inputIntensity * m_MoveSpeed * deltaTime,  0 });
 	}
 }
 
 void TankMovementComponent::MoveLeft(const float inputIntensity, const float deltaTime)
 {
 	CollisionQuadTree* pCollisionTree = GameObject()->GetScene()->GetCollisionQuadTree();
-	TransformComponent* pTransform = GameObject()->GetTransform();
+	Transform& transform = GameObject()->GetTransform();
 
 	//if we aren't facing left
 	if (m_FacingDirection != Direction::LEFT)
@@ -123,7 +123,7 @@ void TankMovementComponent::MoveLeft(const float inputIntensity, const float del
 			}
 
 			//keep moving in the facing direction!
-			pTransform->AddLocalPosition(moveDir * abs(inputIntensity) * m_MoveSpeed * deltaTime);
+			transform.AddLocalPosition(moveDir * abs(inputIntensity) * m_MoveSpeed * deltaTime);
 		}
 		else
 		{
@@ -132,20 +132,20 @@ void TankMovementComponent::MoveLeft(const float inputIntensity, const float del
 			SetFacingDirection(Direction::LEFT);
 
 			//move...
-			pTransform->AddLocalPosition(glm::vec2{ inputIntensity * m_MoveSpeed * deltaTime,  0 });
+			transform.AddLocalPosition(glm::vec2{ inputIntensity * m_MoveSpeed * deltaTime,  0 });
 		}
 	}
 	else
 	{
 		// we are already facing left
-		pTransform->AddLocalPosition(glm::vec2{ inputIntensity * m_MoveSpeed * deltaTime,  0 });
+		transform.AddLocalPosition(glm::vec2{ inputIntensity * m_MoveSpeed * deltaTime,  0 });
 	}
 }
 
 void TankMovementComponent::MoveUp(const float inputIntensity, const float deltaTime)
 {
 	CollisionQuadTree* pCollisionTree = GameObject()->GetScene()->GetCollisionQuadTree();
-	TransformComponent* pTransform = GameObject()->GetTransform();
+	Transform& transform = GameObject()->GetTransform();
 
 	//if we aren't facing up.
 	if (m_FacingDirection != Direction::UP)
@@ -185,7 +185,7 @@ void TankMovementComponent::MoveUp(const float inputIntensity, const float delta
 			}
 
 			//keep going in the facing direction
-			pTransform->AddLocalPosition(moveDir * abs(inputIntensity) * m_MoveSpeed * deltaTime);
+			transform.AddLocalPosition(moveDir * abs(inputIntensity) * m_MoveSpeed * deltaTime);
 		}
 		else
 		{
@@ -194,13 +194,13 @@ void TankMovementComponent::MoveUp(const float inputIntensity, const float delta
 			SetFacingDirection(Direction::UP);
 
 			//move...
-			pTransform->AddLocalPosition(glm::vec2{ 0.f,  inputIntensity * m_MoveSpeed * deltaTime });
+			transform.AddLocalPosition(glm::vec2{ 0.f,  inputIntensity * m_MoveSpeed * deltaTime });
 		}
 	}
 	else
 	{
 		//we are already facing up, just move...
-		pTransform->AddLocalPosition(glm::vec2{ 0.f, inputIntensity * m_MoveSpeed * deltaTime });
+		transform.AddLocalPosition(glm::vec2{ 0.f, inputIntensity * m_MoveSpeed * deltaTime });
 	}
 }
 
@@ -208,7 +208,7 @@ void TankMovementComponent::MoveUp(const float inputIntensity, const float delta
 void TankMovementComponent::MoveDown(const float inputIntensity, const float deltaTime)
 {
 	CollisionQuadTree* pCollisionTree = GameObject()->GetScene()->GetCollisionQuadTree();
-	TransformComponent* pTransform = GameObject()->GetTransform();
+	Transform& transform = GameObject()->GetTransform();
 
 	//if we aren't facing down
 	if (m_FacingDirection != Direction::DOWN)
@@ -246,7 +246,7 @@ void TankMovementComponent::MoveDown(const float inputIntensity, const float del
 			}
 
 			//keep moving in the facing direction!
-			pTransform->AddLocalPosition(moveDir * abs(inputIntensity) * m_MoveSpeed * deltaTime);
+			transform.AddLocalPosition(moveDir * abs(inputIntensity) * m_MoveSpeed * deltaTime);
 		}
 		else
 		{
@@ -255,14 +255,14 @@ void TankMovementComponent::MoveDown(const float inputIntensity, const float del
 			SetFacingDirection(Direction::DOWN);
 
 			//move...
-			pTransform->AddLocalPosition(glm::vec2{ 0, inputIntensity * m_MoveSpeed * deltaTime });
+			transform.AddLocalPosition(glm::vec2{ 0, inputIntensity * m_MoveSpeed * deltaTime });
 		}
 	}
 	else
 	{
 		// we are already facing down
 		// just move!
-		pTransform->AddLocalPosition(glm::vec2{ 0, inputIntensity * m_MoveSpeed * deltaTime });
+		transform.AddLocalPosition(glm::vec2{ 0, inputIntensity * m_MoveSpeed * deltaTime });
 	}
 }
 
@@ -371,7 +371,7 @@ void TankMovementComponent::SetFacingDirection(Direction newDirection)
 			rotation = (std::numbers::pi_v<Rotation> / 2) * 3;
 	}
 
-	GameObject()->GetTransform()->SetLocalRotation(rotation);
+	GameObject()->GetTransform().SetLocalRotation(rotation);
 }
 
 void TankMovementComponent::SetTank(TankComponent* pTank)

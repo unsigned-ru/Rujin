@@ -3,7 +3,7 @@
 
 namespace rujin
 {
-	class TransformComponent;
+	class Transform;
 }
 
 namespace rujin::event
@@ -20,12 +20,12 @@ namespace rujin::event
 
 	struct OnTransformChanged_t final : Data
 	{
-		explicit OnTransformChanged_t(TransformComponent* pTransform, const TransformChanged& transformChanged)
-			: pTransformComponent(pTransform)
+		explicit OnTransformChanged_t(Transform& transform, const TransformChanged& transformChanged)
+			: transform(transform)
 			, transformChanged(transformChanged)
 		{}
 
-		TransformComponent* pTransformComponent;
+		Transform& transform;
 
 		const TransformChanged& transformChanged;
 	};

@@ -6,6 +6,7 @@
 #include "BoxColliderComponent.h"
 #include "FMOD_AudioProvider.h"
 #include "GameObject.h"
+#include "InputService.h"
 #include "ResourceProvider.h"
 #include "Rujin.h"
 #include "Scene.h"
@@ -64,18 +65,18 @@ void Tron::Load()
 #endif //_DEBUG
 
 		//calc position
-		playerGO->GetTransform()->SetPosition({ (m_GridStart.x + m_GridDimensions.x * m_CellSize) / 2.f, (m_GridStart.y + m_GridDimensions.y * m_CellSize) / 2.f });
+		playerGO->GetTransform().SetPosition({ (m_GridStart.x + m_GridDimensions.x * m_CellSize) / 2.f, (m_GridStart.y + m_GridDimensions.y * m_CellSize) / 2.f });
 
 		/* Add Turret */
 		auto Turret = std::make_unique<GameObject>("Turret");
 		auto* pTankAimingComponent = Turret->AddComponent(new TankAimingComponent());
 		auto* pTurretRenderer = Turret->AddComponent(new TextureRenderComponent(resourceService.LoadTexture("Textures/Spritesheet.png"), {0.2f, 0.5f}, Recti{0, 50, 45, 21}));
-		Turret->GetTransform()->AddLocalPosition({ -8.f, 0.f });
+		Turret->GetTransform().AddLocalPosition({ -8.f, 0.f });
 		playerGO->AddChild(Turret);
 		/* Turret added*/
 
 		auto* pTank = playerGO->AddComponent(new TankComponent(pTankMovement, pTankAimingComponent, pBodyRenderer, pTurretRenderer, pTankCollider));
-
+		//ServiceLocator::GetService<InputService>().RegisterPlayer();
 		playerGO->AddComponent(new TronPlayerComponent(pTank));
 
 		pScene->AddGameObject(playerGO);
@@ -122,7 +123,7 @@ void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelT
 			{
 				//if the pixel is white spawn a road at that grid cell.
 				auto go = std::make_unique<GameObject>(fmt::format("Grid-{}_{}.Road", x, y));
-				go->GetTransform()->SetPosition(pos);
+				go->GetTransform().SetPosition(pos);
 
 				//Floor texture renderer
 				go->AddComponent(new TextureRenderComponent(resources.LoadTexture("Textures/Spritesheet.png"), { 0.f, 0.f }, floorSourceRect));
@@ -133,7 +134,7 @@ void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelT
 			{
 				//pixel is black, spawn a wall at the grid cell.
 				auto go = std::make_unique<GameObject>(fmt::format("Grid-{}_{}.Wall", x, y));
-				go->GetTransform()->SetPosition(pos);
+				go->GetTransform().SetPosition(pos);
 
 				//invisible box collider.
 				go->AddComponent(new BoxColliderComponent({ m_CellSize, m_CellSize }, true, true, { 0.f, 0.f }));
@@ -173,7 +174,7 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 			go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
 #endif //_DEBUG
 
-			go->GetTransform()->SetPosition(playFieldBounds.bottomLeft);
+			go->GetTransform().SetPosition(playFieldBounds.bottomLeft);
 
 		pLevelCollidersGO->AddChild(go);
 	}
@@ -197,7 +198,7 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 		go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
 #endif //_DEBUG
 
-		go->GetTransform()->SetPosition(playFieldBounds.bottomRight);
+		go->GetTransform().SetPosition(playFieldBounds.bottomRight);
 
 		pLevelCollidersGO->AddChild(go);
 	}
@@ -221,7 +222,7 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 		go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
 #endif //_DEBUG
 
-		go->GetTransform()->SetPosition(playFieldBounds.topLeft);
+		go->GetTransform().SetPosition(playFieldBounds.topLeft);
 
 		pLevelCollidersGO->AddChild(go);
 	}
@@ -245,7 +246,7 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 		go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
 #endif //_DEBUG
 
-		go->GetTransform()->SetPosition(playFieldBounds.bottomLeft);
+		go->GetTransform().SetPosition(playFieldBounds.bottomLeft);
 
 		pLevelCollidersGO->AddChild(go);
 	}

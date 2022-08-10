@@ -8,19 +8,20 @@
 
 void TankAimingComponent::AimAt(const glm::vec2& direction)
 {
-	TransformComponent* pTransform = GameObject()->GetTransform();
+	//TODO: fix bug
+	Transform& transform = GameObject()->GetTransform();
 
 	//get the angle required to face the direction
 	const float angleRequired = rutils::GetAngleBetween(GetSocketOffset(), direction);
 
 	//rotate GO so we face the direction
-	pTransform->AddLocalRotation(angleRequired);
+	transform.AddLocalRotation(angleRequired);
 }
 
 glm::vec2 TankAimingComponent::GetSocketOffset() const
 {
-	const TransformComponent* pTransform = GameObject()->GetTransform();
-	const Rotation rotation = pTransform->GetRotation();
+	const Transform& transform = GameObject()->GetTransform();
+	const Rotation rotation = transform.GetRotation();
 	const glm::vec2 socketVector{ s_BulletSpawnDistance, 0.f };
 
 	return rutils::Rotate(socketVector, rotation);
@@ -28,9 +29,10 @@ glm::vec2 TankAimingComponent::GetSocketOffset() const
 
 void TankAimingComponent::Draw() const
 {
-	RenderService& renderer = ServiceLocator::GetService<RenderService>();
-	TransformComponent* pTransform = GameObject()->GetTransform();
+	//TODO: remove
+	const RenderService& renderer = ServiceLocator::GetService<RenderService>();
+	const Transform& pTransform = GameObject()->GetTransform();
 
-	renderer.DrawPoint(pTransform->GetPosition(), 5.f);
+	renderer.DrawPoint(pTransform.GetPosition(), 5.f);
 
 }

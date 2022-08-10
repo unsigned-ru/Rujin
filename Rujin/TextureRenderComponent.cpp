@@ -7,7 +7,7 @@
 
 #include "ServiceLocator.h"
 #include "Texture.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 
 rujin::TextureRenderComponent::TextureRenderComponent(const std::shared_ptr<Texture>& texture, const glm::vec2& pivot, const Recti& sourceRect)
 	: m_pTexture(texture)
@@ -23,9 +23,7 @@ void rujin::TextureRenderComponent::LateStart()
 
 void rujin::TextureRenderComponent::Draw() const
 {
-	const auto transform = GameObject()->GetTransform();
-	
-	ServiceLocator::GetService<RenderService>().RenderTexture(*m_pTexture, transform->GetTransform(), m_Pivot, &m_SourceRect, m_IsFlippedX, m_IsFlippedY);
+	ServiceLocator::GetService<RenderService>().RenderTexture(*m_pTexture, GameObject()->GetTransform(), m_Pivot, &m_SourceRect, m_IsFlippedX, m_IsFlippedY);
 }
 
 void rujin::TextureRenderComponent::SetTexture(const std::shared_ptr<Texture>& texture)

@@ -20,12 +20,14 @@ namespace rujin
 		InputService(InputService&&) = delete;
 		InputService& operator=(InputService&&) = delete;
 
-		virtual void ProcessInput(float deltaTime) = 0;
+		virtual void ProcessInput() = 0;
 
 		virtual glm::ivec2 GetMousePosition(bool previousFrame = false) const = 0;
 		virtual glm::ivec2 GetMouseMovement() const = 0;
 
 		virtual PlayerIndex RegisterPlayer() = 0;
+
+		virtual void Start() = 0;
 
 		virtual void AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds) = 0;
 		virtual void AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds) = 0;

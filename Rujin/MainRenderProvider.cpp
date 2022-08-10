@@ -10,7 +10,7 @@
 #include "ServiceLocator.h"
 
 #include "Texture.h"
-#include "TransformComponent.h"
+#include "Transform.h"
 
 int GetOpenGLDriverIndex()
 {
@@ -139,22 +139,26 @@ void rujin::MainRenderProvider::RenderTexture(const Texture& texture, const Tran
 		srcSize = glm::ivec2{ srcRect->width, srcRect->height};
 	}
 
+	const Position& pos = transform.GetPosition();
+	const Rotation rot = transform.GetRotation();
+	const Scale& scale = transform.GetScale();
+
 	//create dest rect
 	Rectf destRect;
-	destRect.width = srcSize.x * transform.scale.x;
-	destRect.height = srcSize.y * transform.scale.y;
+	destRect.width = srcSize.x * scale.x;
+	destRect.height = srcSize.y * scale.y;
 
 	const glm::vec2 pivotOffset{ destRect.width * pivot.x, destRect.height * pivot.y };
 
-	destRect.left = transform.pos.x - pivotOffset.x;
-	destRect.bottom = transform.pos.y - pivotOffset.y;
+	destRect.left = pos.x - pivotOffset.x;
+	destRect.bottom = pos.y - pivotOffset.y;
 
-	//perform tranorm tranformations
+	//perform transform tranformations
 	glPushMatrix();
-	glTranslatef(transform.pos.x, transform.pos.y, 0);
-	glRotatef(glm::degrees(transform.rot), 0.f, 0.f, 1.f);
-	glScalef(transform.scale.x * (isXFlipped ? -1.f : 1.f), transform.scale.y * (isYFlipped ? -1.f : 1.f), 1.f);
-	glTranslatef(-transform.pos.x, -transform.pos.y, 0);
+	glTranslatef(pos.x, pos.y, 0);
+	glRotatef(glm::degrees(rot), 0.f, 0.f, 1.f);
+	glScalef(scale.x * (isXFlipped ? -1.f : 1.f), scale.y * (isYFlipped ? -1.f : 1.f), 1.f);
+	glTranslatef(-pos.x, -pos.y, 0);
 
 	//Create vertex info
 	const Margins vertexInfo{ destRect.left, destRect.left + destRect.width, destRect.bottom + destRect.height, destRect.bottom };

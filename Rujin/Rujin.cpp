@@ -98,6 +98,7 @@ void rujin::Rujin::Run()
 
 	LOG_DEBUG("Starting Game...");
 	sceneService.Start();
+	input.Start();
 	sceneService.LateStart();
 	LOG_DEBUG("Game Started.");
 
@@ -129,7 +130,7 @@ void rujin::Rujin::Run()
 		lag += m_DeltaTime;
 
 		/* input */
-		input.ProcessInput(m_DeltaTime);
+		input.ProcessInput();
 
 		/* Update scene */
 		sceneService.Update();

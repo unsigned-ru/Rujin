@@ -1,6 +1,8 @@
 #include "RujinPCH.h"
 #include "GameObject.h"
 
+#include "Component.h"
+
 using namespace rujin;
 
 void GameObject::Start()
@@ -102,9 +104,9 @@ void GameObject::BroadcastOverlap(const CollisionResult& collision)
 	}
 }
 
-TransformComponent* GameObject::GetTransform() const
+Transform& GameObject::GetTransform()
 {
-	return m_pTransformComp;
+	return m_Transform;
 }
 
 void GameObject::AddChild(std::unique_ptr<GameObject>& pChild)
@@ -202,6 +204,5 @@ void GameObject::SetScene(Scene* pScene)
 GameObject::GameObject(const std::string& name)
 	: IGameLoopObject()
 	, m_Name(name)
-	, m_pTransformComp(AddComponent<TransformComponent>())
 {
 }

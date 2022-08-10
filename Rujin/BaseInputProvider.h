@@ -26,7 +26,8 @@ namespace rujin
 		BaseInputProvider& operator=(const BaseInputProvider&) = delete;
 		BaseInputProvider& operator=(BaseInputProvider&&) noexcept = delete;
 
-		void ProcessInput(float deltaTime) override;
+		void Start() override;
+		void ProcessInput() override;
 
 		PlayerIndex RegisterPlayer() override;
 
@@ -46,6 +47,7 @@ namespace rujin
 	protected:
 		virtual void RegisterNewDevices() = 0;
 
+	protected:
 		std::unordered_map<PlayerIndex, PlayerInput> m_Players;
 
 		rutils::DeltaTimer m_DeviceScanTimer;

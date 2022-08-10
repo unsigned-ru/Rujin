@@ -33,7 +33,10 @@ void rujin::ColliderComponent::Draw() const
 void rujin::ColliderComponent::OnOverlap(const CollisionResult& result)
 {
 	if (m_AutoResolve)
+	{
 		GetCollider()->ResolveOverlap(result);
+		GameObject()->GetTransform().UpdateSelfAndChildren();
+	}
 }
 
 #ifdef _DEBUG

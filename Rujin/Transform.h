@@ -1,15 +1,16 @@
 #ifndef TRANSFORM_COMPONENT_H
 #define TRANSFORM_COMPONENT_H
-#include "Component.h"
 #include "Structs.h"
 #include "Subject.h"
 
 namespace rujin
 {
-	class TransformComponent final : public Component, public event::Subject
+	class GameObject;
+
+	class Transform final : public event::Subject
 	{
 	public:
-		explicit TransformComponent();
+		explicit Transform(GameObject* pOwner);
 
 #pragma region Global
 		const Position& GetPosition() const;
@@ -20,8 +21,6 @@ namespace rujin
 
 		const Scale& GetScale() const;
 		void SetScale(const Scale& scale);
-
-		const Transform& GetTransform() const;
 #pragma endregion
 
 #pragma region Local
@@ -36,18 +35,30 @@ namespace rujin
 		const Scale& GetLocalScale() const;
 		void SetLocalScale(const Scale& scale);
 		void AddLocalScale(const Scale& scale);
-
-		const Transform& GetLocalTransform() const;
 #pragma endregion
 
-	private:
-		void Start() override;
-		void Update() override;
+		GameObject* GetGameObject() const;
+
 		void UpdateSelfAndChildren();
 
+	private:
+		void ApplyTransformationsToSelfAndChildren();
+
+		glm::mat3 GetLocalModelMatrix();
+
+		Position m_LocalPosition{};
+		Rotation m_LocalRotation{};
+		Scale m_LocalScale{ 1.f, 1.f };
+
+		Position m_GlobalPosition{};
+		Rotation m_GlobalRotation{};
+		Scale m_GlobalScale{ 1.f, 1.f };
+
+		glm::mat3 m_WorldMatrix = glm::mat4(1.0f);
+
 		TransformChanged m_TransformChanged{};
-		Transform m_LocalTransform{};
-		Transform m_GlobalTransform{};
+
+		GameObject* const m_pGameObject;
 	};
 
 }

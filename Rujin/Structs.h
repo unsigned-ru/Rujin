@@ -105,51 +105,6 @@ namespace rujin
 	using Rotation = float;
 	using Scale = glm::vec2;
 
-	struct Transform
-	{
-		Position pos{};
-		Rotation rot{};
-		Scale scale{ 1.f, 1.f };
-
-		glm::mat3 worldMatrix = glm::mat4(1.0f);
-
-
-		glm::mat3 GetLocalModelMatrix()
-		{
-			const glm::mat3 translationMatrix
-			{
-				1.f,	0.f,	0.f,
-				0.f,	1.f,	0.f,
-				pos.x,	pos.y,	1.f
-			};
-
-			const glm::mat3 rotationMatrix
-			{
-				cos(rot),	sin(rot),	0,
-				-sin(rot),	cos(rot),	0,
-				0.f,		0.f,		1.f
-			};
-
-			const glm::mat3 scaleMatrix
-			{
-				scale.x,	0.f,		0.f,
-				0.f,		scale.y,	0.f,
-				0.f,		0.f,		1.f
-			};
-
-			return translationMatrix * rotationMatrix * scaleMatrix;
-		}
-
-		Transform operator+(const Transform& other) const
-		{
-			Transform rv = *this;
-			rv.pos += other.pos;
-			rv.rot += other.rot;
-			rv.scale *= other.scale;
-			return rv;
-		}
-	};
-
 	class Collider;
 	struct CollisionResult
 	{

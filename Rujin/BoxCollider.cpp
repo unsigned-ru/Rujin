@@ -25,11 +25,11 @@ rujin::Rectf rujin::BoxCollider::GetRect() const
 {
 	//generate rect from transform, pivot and size.
 	Rectf rv;
-	const TransformComponent* pTransform = m_pComponent->GameObject()->GetTransform();
-	const Position pos = pTransform->GetPosition();
+	const Transform& pTransform = m_pComponent->GameObject()->GetTransform();
+	const Position pos = pTransform.GetPosition();
 	//TODO: add rotation.
 	//const Rotation rot = pTransform->GetRotation();
-	const Scale scale = pTransform->GetScale();
+	const Scale scale = pTransform.GetScale();
 
 	rv.left = pos.x - (m_Pivot.x * m_Size.x * scale.x);
 	rv.bottom = pos.y - (m_Pivot.y * m_Size.y * scale.y);
@@ -67,7 +67,7 @@ void rujin::BoxCollider::ResolveOverlap(const CollisionResult& result)
 {
 	if (m_IsStatic || !result.isColliding) return;
 
-	TransformComponent* pTransform = m_pComponent->GameObject()->GetTransform();
+	Transform& pTransform = m_pComponent->GameObject()->GetTransform();
 
 	const Rectf a = GetRect();
 
@@ -97,7 +97,7 @@ void rujin::BoxCollider::ResolveOverlap(const CollisionResult& result)
 				resolve = b.left - (a.left + a.width);
 			}
 
-			pTransform->AddLocalPosition({ resolve, 0 });
+			pTransform.AddLocalPosition({ resolve, 0 });
 		}
 		else //longest axis is Y
 		{
@@ -112,7 +112,7 @@ void rujin::BoxCollider::ResolveOverlap(const CollisionResult& result)
 				resolve = b.bottom - (a.bottom + a.height);
 			}
 
-			pTransform->AddLocalPosition({ 0, resolve });
+			pTransform.AddLocalPosition({ 0, resolve });
 		}
 	}
 	else
