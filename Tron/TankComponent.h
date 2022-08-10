@@ -1,13 +1,15 @@
-﻿#pragma once
-#include "Component.h"
+﻿#ifndef TANK_COMPONENT_H
+#define TANK_COMPONENT_H
 
-class TankAimingComponent;
+#include "Component.h"
+#include "BoxColliderComponent.h"
 
 namespace rujin
 {
-	class BoxColliderComponent;
 	class TextureRenderComponent;
 }
+
+class TankAimingComponent;
 
 class TankMovementComponent;
 
@@ -24,6 +26,8 @@ public:
 
 	BoxColliderComponent* GetColliderComponent() const;
 
+	void Shoot();
+
 private:
 	TankMovementComponent* m_pTankMovement = nullptr;
 	TankAimingComponent* m_pTankAiming = nullptr;
@@ -32,4 +36,10 @@ private:
 	TextureRenderComponent* m_pTankTurretRenderer = nullptr;
 
 	BoxColliderComponent* m_pBoxCollider = nullptr;
+
+	const uint8_t m_MaxBounces{ 5 };
+	const float m_BulletSpeed{ 300.f };
+	const float m_BulletDamage{ 25.f };
 };
+
+#endif // Include Guard: TANK_COMPONENT_H

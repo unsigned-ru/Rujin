@@ -264,6 +264,9 @@
     <ClInclude Include="Rutils\Math.h">
       <Filter>Rutils</Filter>
     </ClInclude>
+    <ClInclude Include="ProjectileMovementComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Rujin.cpp">
@@ -394,6 +397,9 @@
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="BoxColliderComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectileMovementComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>

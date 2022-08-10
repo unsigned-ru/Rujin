@@ -3,18 +3,18 @@
 #include "Component.h"
 
 
+class TankComponent;
+
 class TankAimingComponent : public Component
 {
 public:
 	explicit TankAimingComponent() = default;
 
 	void AimAt(const glm::vec2& direction);
+	void GetBulletSocket(Position& pos, Rotation& rot, glm::vec2& barrelDirection) const;
+
 private:
-	inline static constexpr float s_BulletSpawnDistance{ 25.f };
-
-	glm::vec2 GetSocketOffset() const;
-
-	void Draw() const override;
+	inline static constexpr float s_BulletSpawnDistance{ 50.f };
 };
 
 

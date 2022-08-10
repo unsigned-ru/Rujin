@@ -1,7 +1,14 @@
 ﻿#include "TronPCH.h"
 #include "TankComponent.h"
 
+#include "BoxColliderComponent.h"
 #include "GameObject.h"
+#include "ProjectileMovementComponent.h"
+#include "ResourceService.h"
+#include "Scene.h"
+#include "ServiceLocator.h"
+#include "TankAimingComponent.h"
+#include "TankBulletComponent.h"
 #include "TankMovementComponent.h"
 #include "TextureRenderComponent.h"
 
@@ -44,4 +51,24 @@ TextureRenderComponent* TankComponent::GetTurretRenderer() const
 BoxColliderComponent* TankComponent::GetColliderComponent() const
 {
 	return m_pBoxCollider;
+}
+
+void TankComponent::Shoot()
+{
+	//get bullet spawn position and rotation from socket.
+	Position bulletSpawnPos;
+	Rotation bulletSpawnRot;
+	glm::vec2 bulletDirection;
+	m_pTankAiming->GetBulletSocket(bulletSpawnPos, bulletSpawnRot, bulletDirection);
+
+	std::unique_ptr<rujin::GameObject> pBulletGO = std::make_unique<rujin::GameObject>(GameObject()->GetName() + "_Bullet");
+	pBulletGO->AddComponent(new BoxColliderComponent({ 15, 15 }, false, true))->EnableDebugDrawing();
+ 	pBulletGO->AddComponent(new ProjectileMovementComponent(bulletDirection * m_BulletSpeed));
+	pBulletGO->AddComponent(new TextureRenderComponent(ServiceLocator::GetService<ResourceService>().LoadTexture("Textures/Spritesheet.png"), {0.5f, 0.5f}, Recti{50, 50, 19, 15}));
+	pBulletGO->AddComponent(new TankBulletComponent(m_MaxBounces, m_BulletSpeed,m_BulletDamage));
+
+	pBulletGO->GetTransform().SetPosition(bulletSpawnPos);
+	pBulletGO->GetTransform().SetLocalRotation(bulletSpawnRot);
+
+	GameObject()->GetScene()->AddGameObject(pBulletGO);
 }

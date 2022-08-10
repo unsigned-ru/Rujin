@@ -203,6 +203,7 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="TankAimingComponent.cpp" />
+    <ClCompile Include="TankBulletComponent.cpp" />
     <ClCompile Include="TankComponent.cpp" />
     <ClCompile Include="TankMovementComponent.cpp" />
     <ClCompile Include="Tron.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="..\Rujin\GameEvents.h" />
     <ClInclude Include="InputEvents.h" />
     <ClInclude Include="TankAimingComponent.h" />
+    <ClInclude Include="TankBulletComponent.h" />
     <ClInclude Include="TankComponent.h" />
     <ClInclude Include="TankMovementComponent.h" />
     <ClInclude Include="Tron.h" />

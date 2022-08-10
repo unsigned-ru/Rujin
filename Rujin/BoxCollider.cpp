@@ -43,18 +43,48 @@ rujin::CollisionResult rujin::BoxCollider::IsOverlapping(const Collider* pOther)
 {
 	CollisionResult rv{};
 
-	if (const BoxCollider* pBoxCollider = dynamic_cast<const BoxCollider*>(pOther); pBoxCollider)
-	{
-		//get vertices
-		auto a = GetRect().GetVertices();
-		auto b = pBoxCollider->GetRect().GetVertices();
+	rv.other = pOther;
 
-		//check if overlapping.
-		if (collision::IsOverlapping(GetRect(), pBoxCollider->GetRect()))
+	const Rectf a = GetRect();
+	if (const BoxCollider* pOtherBox = dynamic_cast<const BoxCollider*>(pOther); pOtherBox)
+	{
+		const Rectf b = pOtherBox->GetRect();
+
+		const float xDiff = (a.left + (a.width / 2.f)) - (b.left + (b.width / 2.f));
+		const float yDiff = (a.bottom + (a.height / 2.f)) - (b.bottom + (b.height / 2.f));
+		const float averageWidth = (a.width + b.width) / 2.f;
+		const float averageHeight = (a.height + b.height) / 2.f;
+
+		//if either distance is greater than the average dimension there is no collision.
+		if (abs(xDiff) > averageWidth || abs(yDiff) > averageHeight)
 		{
-			//we are overlapping.
-			rv.isColliding = true;
-			rv.other = pOther;
+			//no collision
+			rv.isColliding = false;
+			return rv;
+		}
+
+		rv.isColliding = true;
+
+		//to determine which region of this rectangle the rect's center point is in,
+		//we have to account for the scale of this rectangle.
+		//To do that, we divide dx and dy by its width and height respectively.
+		if (abs(xDiff / b.width) > abs(yDiff / b.height))
+		{
+			if (xDiff > 0) // colliding on our left
+				rv.collisionDirection = Direction::LEFT;
+			else //colliding on our right.
+				rv.collisionDirection = Direction::RIGHT;
+		}
+		else //longest axis is Y
+		{
+			if (yDiff > 0) // colliding on our bottom
+			{
+				rv.collisionDirection = Direction::DOWN;
+			}
+			else //colliding on our top.
+			{
+				rv.collisionDirection = Direction::UP;
+			}
 		}
 	}
 	else
@@ -67,53 +97,32 @@ void rujin::BoxCollider::ResolveOverlap(const CollisionResult& result)
 {
 	if (m_IsStatic || !result.isColliding) return;
 
-	Transform& pTransform = m_pComponent->GameObject()->GetTransform();
-
+	Transform& transform = m_pComponent->GameObject()->GetTransform();
 	const Rectf a = GetRect();
 
 	if (const BoxCollider* pOtherBox = dynamic_cast<const BoxCollider*>(result.other); pOtherBox)
 	{
 		const Rectf b = pOtherBox->GetRect();
 
-		float resolve{};
+		glm::vec2 resolve{};
 
-		const float xDiff = (a.left + (a.width / 2.f)) - (b.left + (b.width / 2.f));
-		const float yDiff = (a.bottom + (a.height / 2.f)) - (b.bottom + (b.height / 2.f));
-
-
-		//to determine which region of this rectangle the rect's center point is in,
-		//we have to account for the scale of this rectangle.
-		//To do that, we divide dx and dy by its width and height respectively.
-		if (abs(xDiff / b.width) > abs(yDiff / b.height)) 
+		switch (result.collisionDirection)
 		{
-			if(xDiff > 0) // colliding on our left
-			{
-				// We add a positive x value to move the object to the right.
-				resolve = b.left + b.width - a.left;
-			}
-			else //colliding on our right.
-			{
-				// We add a negative x value to move the object to the left.
-				resolve = b.left - (a.left + a.width);
-			}
-
-			pTransform.AddLocalPosition({ resolve, 0 });
+		case Direction::LEFT:
+			resolve.x = b.left + b.width - a.left;
+			break;
+		case Direction::UP:
+			resolve.y = b.bottom - (a.bottom + a.height);
+			break;
+		case Direction::RIGHT:
+			resolve.x = b.left - (a.left + a.width);
+			break;
+		case Direction::DOWN:
+			resolve.y = b.bottom + b.height - a.bottom;
+			break;
 		}
-		else //longest axis is Y
-		{
-			if (yDiff > 0) // colliding on our bottom
-			{
-				// We add a negative y value to move the object towards the bottom.
-				resolve = b.bottom + b.height - a.bottom;
-			}
-			else //colliding on our bottom.
-			{
-				// We add a positive y value to move the object towards the top.
-				resolve = b.bottom - (a.bottom + a.height);
-			}
 
-			pTransform.AddLocalPosition({ 0, resolve });
-		}
+		transform.AddLocalPosition(resolve);
 	}
 	else
 		LOG_WARNING("Unimplemented Collider detected. Did you forget to implement?");

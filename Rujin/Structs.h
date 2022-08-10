@@ -110,6 +110,9 @@ namespace rujin
 	{
 		bool isColliding = false;
 		const Collider* other = nullptr;
+
+		//relative to me, where is the collision happening.
+		Direction collisionDirection{Direction::RIGHT};
 	};
 }
 

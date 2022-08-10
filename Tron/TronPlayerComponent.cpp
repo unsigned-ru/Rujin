@@ -70,6 +70,9 @@ void TronPlayerComponent::FixedUpdate()
 	HandleMovement(input);
 
 	HandleAiming(input);
+
+	if (input.IsInputActionTriggered(m_PlayerIdx, static_cast<uint32_t>(InputAction::Shoot)))
+		m_pTank->Shoot();
 }
 
 void TronPlayerComponent::Draw() const
@@ -86,7 +89,7 @@ void TronPlayerComponent::HandleMovement(const InputService& input)
 	float inputIntensity;
 	const float deltaTime = Rujin::Get()->GetDeltaTime();
 
-	if (input.IsAxisActionTriggered(0, static_cast<uint32_t>(AxisAction::MoveRight), &inputIntensity))
+	if (input.IsAxisActionTriggered(m_PlayerIdx, static_cast<uint32_t>(AxisAction::MoveRight), &inputIntensity))
 	{
 		if (inputIntensity > 0)
 			//we want to move right
@@ -95,7 +98,7 @@ void TronPlayerComponent::HandleMovement(const InputService& input)
 			//we want to move left
 			m_pTank->GetMovement()->MoveLeft(inputIntensity, deltaTime);
 	}
-	else if (input.IsAxisActionTriggered(0, static_cast<uint32_t>(AxisAction::MoveUp), &inputIntensity))
+	else if (input.IsAxisActionTriggered(m_PlayerIdx, static_cast<uint32_t>(AxisAction::MoveUp), &inputIntensity))
 	{
 		if (inputIntensity > 0)
 			//we want to move up
@@ -113,19 +116,22 @@ void TronPlayerComponent::HandleAiming(const InputService& input)
 
 	glm::vec2 aimingDirection{};
 
-	if (input.IsAxisActionTriggered(0, static_cast<uint32_t>(AxisAction::AimUp), &inputIntensity))
+	if (input.IsAxisActionTriggered(m_PlayerIdx, static_cast<uint32_t>(AxisAction::AimUp), &inputIntensity))
 	{
 		inputTriggered = true;
 		aimingDirection.y = inputIntensity;
 	}
 
-	if (input.IsAxisActionTriggered(0, static_cast<uint32_t>(AxisAction::AimRight), &inputIntensity))
+	if (input.IsAxisActionTriggered(m_PlayerIdx, static_cast<uint32_t>(AxisAction::AimRight), &inputIntensity))
 	{
 		inputTriggered = true;
 		aimingDirection.x = inputIntensity;
 	}
 
 	if (inputTriggered)
+	{
+		LOG_DEBUG_("Aiming direction: [{}, {}]", aimingDirection.x, aimingDirection.y);
 		m_pTank->GetAiming()->AimAt(aimingDirection);
+	}
 }
 

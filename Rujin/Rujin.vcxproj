@@ -247,6 +247,7 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClInclude Include="GamepadInputSession.h" />
     <ClInclude Include="KeyboardAndMouseInputSession.h" />
     <ClInclude Include="CollisionQuadTree.h" />
+    <ClInclude Include="ProjectileMovementComponent.h" />
     <ClInclude Include="RenderService.h" />
     <ClInclude Include="Rutils\Math.h" />
     <ClInclude Include="SceneService.h" />
@@ -381,6 +382,7 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClCompile Include="InputSession.cpp" />
     <ClCompile Include="KeyboardAndMouseInputSession.cpp" />
     <ClCompile Include="CollisionQuadTree.cpp" />
+    <ClCompile Include="ProjectileMovementComponent.cpp" />
     <ClCompile Include="StatefullObject.cpp" />
     <ClCompile Include="XInputKeyboardAndMouseSession.cpp" />
     <ClCompile Include="PlayerInput.cpp" />
