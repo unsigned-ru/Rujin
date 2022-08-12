@@ -1,9 +1,6 @@
 ﻿#include "RujinPCH.h"
 #include "StatefullObject.h"
 
-StatefullObject& StatefullObject::operator=(StatefullObject&& other) noexcept = default;
-StatefullObject& StatefullObject::operator=(const StatefullObject& other) = default;
-
 void StatefullObject::SetEnabled(const bool enabled)
 {
 	if (enabled)

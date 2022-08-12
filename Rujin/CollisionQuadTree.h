@@ -27,8 +27,6 @@ namespace rujin
 		//in this tree and child trees.
 		void HandleCollision(CollisionQuadTree* pRoot = nullptr);
 
-		void UpdateGlobalTransforms();
-
 		/**
 		 * \brief Returns the first hit collider
 		 * \param p1 Start point of line.

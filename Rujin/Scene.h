@@ -26,12 +26,18 @@ namespace rujin
 		void Draw() const override;
 		void Destroy() override;
 
-		void AddGameObject(std::unique_ptr<GameObject>& gameObject);
+		void AddGameObject(GameObject* gameObject);
+		void RemoveGameObject(GameObject* gameObject);
+
+		DeferredRemovalVector<GameObject*>& GetEnabledGameObjects();
+		DeferredRemovalVector<GameObject*>& GetDisabledGameObjects();
 
 		Camera* GetActiveCamera() const { return m_pActiveCamera; }
 		void SetActiveCamera(Camera* pCamera) { m_pActiveCamera = pCamera; }
 
 		CollisionQuadTree* GetCollisionQuadTree() const;
+
+		bool HasStarted() const;
 	private:
 		friend class SceneProvider;
 		explicit Scene(const std::string& name, const Rectf& collisionTreeBounds, Camera* pCamera);
@@ -39,13 +45,16 @@ namespace rujin
 		const std::string m_Name;
 		static uint32_t m_IdCounter;
 
-		std::vector<std::unique_ptr<GameObject>> m_GameObjects;
+		DeferredRemovalVector<GameObject*> m_ActiveGameObjects{};
+		DeferredRemovalVector<GameObject*> m_InactiveGameObjects{};
+		DeferredRemovalVector<std::unique_ptr<GameObject>> m_GameObjects{};
+
 		std::unique_ptr<CollisionQuadTree> m_pCollisionQuadTree;
-		std::vector<std::weak_ptr<GameObject>> m_ActiveGameObjects;
-		std::vector<std::weak_ptr<GameObject>> m_InactiveGameObjects;
 
 		Camera* m_pActiveCamera;
 		Camera* m_pDefaultCamera = nullptr;
+
+		bool m_IsStarted = false;
 
 	};
 

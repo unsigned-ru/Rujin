@@ -14,7 +14,7 @@
 
 void TankMovementComponent::Start()
 {
-	ASSERT(m_pTank, "This component needs a TankComponent.");
+	ASSERT_MSG(m_pTank, "This component needs a TankComponent.");
 }
 
 void TankMovementComponent::MoveRight(const float inputIntensity, const float deltaTime)

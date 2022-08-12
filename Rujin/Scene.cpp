@@ -12,10 +12,7 @@ unsigned int Scene::m_IdCounter = 0;
 Scene::Scene(const std::string& name, const Rectf& collisionTreeBounds, Camera* pCamera)
 	: IGameLoopObject()
 	, m_Name(name)
-	, m_GameObjects()
 	, m_pCollisionQuadTree(std::make_unique<CollisionQuadTree>(collisionTreeBounds))
-	, m_ActiveGameObjects()
-	, m_InactiveGameObjects()
 {
 	if (!pCamera)
 	{
@@ -33,49 +30,74 @@ Scene::~Scene()
 
 void Scene::Start()
 {
-	for (const auto& pObject : m_GameObjects)
-	{
-		//apply construction-time transformations.
-		pObject->GetTransform().UpdateSelfAndChildren();
+	m_GameObjects.Iterate
+	(
+		[](const std::unique_ptr<GameObject>& pGameObject)
+		{
+			//apply construction-time transformations.
+			pGameObject->GetTransform().UpdateSelfAndChildren();
 
-		//start.
-		pObject->Start();
-	}
+			//start.
+			pGameObject->Start();
+		}
+	);
+
+	m_IsStarted = true;
 }
 
 void Scene::LateStart()
 {
-	for (const auto& pObject : m_GameObjects)
-	{
-		pObject->LateStart();
-	}
+	m_GameObjects.Iterate
+	(
+		[](const std::unique_ptr<GameObject>& pGameObject)
+		{
+			pGameObject->LateStart();
+		}
+	);
 }
 
 void Scene::Update()
 {
-	for (const auto& pObject : m_GameObjects)
-	{
-		pObject->Update();
-	}
+	m_ActiveGameObjects.Iterate
+	(
+		[](GameObject* pGameObject)
+		{
+			pGameObject->Update();
+		}
+	);
 }
 
-void rujin::Scene::FixedUpdate()
+void Scene::FixedUpdate()
 {
-	for (const auto& pObject : m_GameObjects)
-	{
-		pObject->FixedUpdate();
-	}
+	m_ActiveGameObjects.Iterate
+	(
+		[](GameObject* pGameObject)
+		{
+			pGameObject->FixedUpdate();
+		}
+	);
+
+	//ensure transforms are up to date for collision checks.
+	m_ActiveGameObjects.Iterate
+	(
+		[](GameObject* pGameObject)
+		{
+			pGameObject->GetTransform().UpdateSelfAndChildren();
+		}
+	);
 
 	m_pCollisionQuadTree->HandleCollision(m_pCollisionQuadTree.get());
-
 }
 
 void Scene::OnGui(SDL_Window* pWindow)
 {
-	for (const auto& pObject : m_GameObjects)
-	{
-		pObject->OnGui(pWindow);
-	}
+	m_ActiveGameObjects.Iterate
+	(
+		[pWindow](GameObject* pGameObject)
+		{
+			pGameObject->OnGui(pWindow);
+		}
+	);
 }
 
 void Scene::Draw() const
@@ -84,13 +106,13 @@ void Scene::Draw() const
 
 	m_pActiveCamera->Project();
 
-	for (const auto& pObject : m_GameObjects)
-	{
-		//update global transforms before drawing
-		pObject->GetTransform().UpdateSelfAndChildren();
-
-		pObject->Draw();
-	}
+	m_ActiveGameObjects.Iterate
+	(
+		[](const GameObject* pGameObject)
+		{
+			pGameObject->Draw();
+		}
+	);
 
 	m_pCollisionQuadTree->DrawDebug();
 
@@ -102,13 +124,47 @@ void Scene::Destroy()
 	delete m_pDefaultCamera;
 }
 
-void Scene::AddGameObject(std::unique_ptr<GameObject>& gameObject)
+void Scene::AddGameObject(GameObject* gameObject)
 {
 	gameObject->SetScene(this);
-	m_GameObjects.push_back(std::move(gameObject));
+
+	if (m_IsStarted) //if we have already started, we are adding the GO at runtime... call start.
+	{
+		gameObject->GetTransform().UpdateSelfAndChildren();
+		gameObject->Start();
+	}
+
+	m_GameObjects.GetVector().emplace_back(std::unique_ptr<GameObject>(gameObject));
+	m_ActiveGameObjects.GetVector().emplace_back(gameObject);
 }
+
+void Scene::RemoveGameObject(GameObject* gameObject)
+{
+	if (gameObject->IsEnabled())
+		m_ActiveGameObjects.Remove(gameObject);
+	else
+		m_InactiveGameObjects.Remove(gameObject);
+
+	m_GameObjects.RemoveIf([gameObject](const std::unique_ptr<GameObject>& pObject) { return pObject.get() == gameObject; });
+}
+
+DeferredRemovalVector<GameObject*>& Scene::GetEnabledGameObjects()
+{
+	return m_ActiveGameObjects;
+}
+
+DeferredRemovalVector<GameObject*>& Scene::GetDisabledGameObjects()
+{
+	return m_InactiveGameObjects;
+}
+
 
 CollisionQuadTree* Scene::GetCollisionQuadTree() const
 {
 	return m_pCollisionQuadTree.get();
+}
+
+bool Scene::HasStarted() const
+{
+	return m_IsStarted;
 }

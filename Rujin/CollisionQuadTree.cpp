@@ -129,7 +129,7 @@ std::vector<const rujin::Collider*> rujin::CollisionQuadTree::Search(const Rectf
 	std::vector<const Collider*> possibleOverlaps{};
 	Search(area, possibleOverlaps);
 
-	std::vector<const Collider*>actualOverlaps{};
+	std::vector<const Collider*> actualOverlaps{};
 
 	//check in detail if the possible overlaps, actually overlap.
 	for (const Collider* pCollider : possibleOverlaps)
@@ -154,19 +154,10 @@ const rujin::Rectf& rujin::CollisionQuadTree::GetBounds() const
 
 void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 {
-	if (!pRoot)
-		pRoot = GetRoot();
-
-	//update global transforms of all collision bodies to ensure we use up to date global data.
-	pRoot->UpdateGlobalTransforms();
-
 	for (Collider* pCollider : m_Colliders)
 	{
 		if (pCollider->IsStatic())
 			continue;
-
-		//update global transform before collision check, to ensure we use up-to-date transforms.
-		pCollider->GetComponent()->GameObject()->GetTransform().UpdateSelfAndChildren();
 
 		if (BoxCollider* pBoxCollider = dynamic_cast<BoxCollider*>(pCollider); pBoxCollider)
 		{
@@ -197,17 +188,6 @@ void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 		//recursion! handle children tree collision.
 		for (uint8_t i = 0u; i < 4u; ++i)
 			m_Children[i]->HandleCollision(pRoot);
-}
-
-void rujin::CollisionQuadTree::UpdateGlobalTransforms()
-{
-	for (const Collider* pCollider : m_Colliders)
-		pCollider->GetComponent()->GameObject()->GetTransform().UpdateSelfAndChildren();
-
-	if (m_Children[0])
-		//recursion! update child colliders global transform
-		for (uint8_t i = 0u; i < 4u; ++i)
-			m_Children[i]->UpdateGlobalTransforms();
 }
 
 bool rujin::CollisionQuadTree::Raycast(const glm::vec2& p1, const glm::vec2& p2, const std::vector<const Collider*>& ignore, glm::vec2* pIntesection, const Collider** ppHitCollider)
@@ -285,6 +265,7 @@ void rujin::CollisionQuadTree::DrawDebug() const
 		}
 	}
 }
+
 
 void rujin::CollisionQuadTree::Search(const Rectf& area, std::vector<const Collider*>& overlappingColliders)
 {

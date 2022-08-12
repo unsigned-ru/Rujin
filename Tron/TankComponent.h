@@ -16,7 +16,7 @@ class TankMovementComponent;
 class TankComponent final : public Component
 {
 public:
-	explicit TankComponent(TankMovementComponent* pTankMovement, TankAimingComponent* pTankAiming, TextureRenderComponent* pTankBodyRenderer, TextureRenderComponent* pTankTurretRenderer, BoxColliderComponent* pTankCollider);
+	explicit TankComponent(float maxHealth, TankMovementComponent* pTankMovement, TankAimingComponent* pTankAiming, TextureRenderComponent* pTankBodyRenderer, TextureRenderComponent* pTankTurretRenderer, BoxColliderComponent* pTankCollider);
 
 	TankMovementComponent* GetMovement() const;
 	TankAimingComponent* GetAiming() const;
@@ -28,6 +28,10 @@ public:
 
 	void Shoot();
 
+	void TakeDamage(float damage);
+
+	void OnOverlap(const CollisionResult&) override;
+
 private:
 	TankMovementComponent* m_pTankMovement = nullptr;
 	TankAimingComponent* m_pTankAiming = nullptr;
@@ -38,8 +42,11 @@ private:
 	BoxColliderComponent* m_pBoxCollider = nullptr;
 
 	const uint8_t m_MaxBounces{ 5 };
-	const float m_BulletSpeed{ 300.f };
+	const float m_BulletSpeed{ 200.f };
 	const float m_BulletDamage{ 25.f };
+
+	const float m_MaxHealth;
+	float m_CurrentHealth;
 };
 
 #endif // Include Guard: TANK_COMPONENT_H

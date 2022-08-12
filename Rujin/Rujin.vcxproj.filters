@@ -267,6 +267,9 @@
     <ClInclude Include="ProjectileMovementComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="DefferedRemovalVector.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Rujin.cpp">

@@ -2,106 +2,241 @@
 #include "GameObject.h"
 
 #include "Component.h"
+#include "Scene.h"
 
 using namespace rujin;
 
 void GameObject::Start()
 {
-	for (const auto& component : m_Components)
-	{
-		component->Start();
-	}
+	m_Components.Iterate
+	(
+		[](const std::unique_ptr<Component>& pComponent)
+		{
+			pComponent->Start();
+		}
+	);
 
-	for (const auto& child : m_Children)
-	{
-		child->Start();
-	}
+	m_Children.Iterate
+	(
+		[](const std::unique_ptr<GameObject>& pChild)
+		{
+			pChild->Start();
+		}
+	);
 }
 
 void GameObject::LateStart()
 {
-	for (const auto& component : m_Components)
-	{
-		component->LateStart();
-	}
+	m_Components.Iterate
+	(
+		[](const std::unique_ptr<Component>& pComponent)
+		{
+			pComponent->LateStart();
+		}
+	);
 
-	for (const auto& child : m_Children)
-	{
-		child->LateStart();
-	}
+	m_Children.Iterate
+	(
+		[](const std::unique_ptr<GameObject>& pChild)
+		{
+			pChild->LateStart();
+		}
+	);
+
+	m_IsInitialized = true;
 }
 
 void GameObject::Update()
 {
-	for (const auto& component : m_Components)
-	{
-		component->Update();
-	}
+	m_EnabledComponents.Iterate
+	(
+		[](Component* pComponent)
+		{
+			pComponent->Update();
+		}
+	);
 
-	for (const auto& child : m_Children)
-	{
-		child->Update();
-	}
+	m_EnabledChildren.Iterate
+	(
+		[](GameObject* pGameObject)
+		{
+			pGameObject->Update();
+		}
+	);
 }
 
 void GameObject::FixedUpdate()
 {
-	for (const auto& component : m_Components)
-	{
-		component->FixedUpdate();
-	}
+	m_Components.SetIterating(true);
+	m_EnabledComponents.Iterate
+	(
+		[](Component* pComponent)
+		{
+			pComponent->FixedUpdate();
+		}
+	);
+	m_Components.SetIterating(false);
 
-	for (const auto& child : m_Children)
-	{
-		child->FixedUpdate();
-	}
+	m_Children.SetIterating(true);
+	m_EnabledChildren.Iterate
+	(
+		[](GameObject* pGameObject)
+		{
+			pGameObject->FixedUpdate();
+		}
+	);
+	m_Children.SetIterating(false);
 }
 
 void GameObject::OnGui(SDL_Window* pWindow)
 {
-	for (const auto& component : m_Components)
-	{
-		component->OnGui(pWindow);
-	}
+	m_EnabledComponents.Iterate
+	(
+		[pWindow](Component* pComponent)
+		{
+			pComponent->OnGui(pWindow);
+		}
+	);
 
-	for (const auto& child : m_Children)
-	{
-		child->OnGui(pWindow);
-	}
+	m_EnabledChildren.Iterate
+	(
+		[pWindow](GameObject* pGameObject)
+		{
+			pGameObject->OnGui(pWindow);
+		}
+	);
 }
 
 void GameObject::Draw() const
 {
-	for (const auto& component : m_Components)
-	{
-		component->Draw();
-	}
+	m_EnabledComponents.Iterate
+	(
+		[](const Component* pComponent)
+		{
+			pComponent->Draw();
+		}
+	);
 
-	for (const auto& child : m_Children)
-	{
-		child->Draw();
-	}
+	m_EnabledChildren.Iterate
+	(
+		[](const GameObject* pGameObject)
+		{
+			pGameObject->Draw();
+		}
+	);
 }
 
 void GameObject::Destroy()
 {
-	for (const auto& component : m_Components)
-	{
-		component->Destroy();
-	}
+	m_PendingDestroy = true;
 
-	for (const auto& child : m_Children)
+	//let all our components know, we are going to be destroyed...
+	m_Components.Iterate
+	(
+		[](const std::unique_ptr<Component>& pComponent)
+		{
+			pComponent->m_PendingDestroy = true;
+		}
+	);
+
+	//let all our children know they are going to be destroyed....
+	m_Children.Iterate
+	(
+		[](const std::unique_ptr<GameObject>& pChild)
+		{
+			pChild->m_PendingDestroy = true;
+
+			//let all components of our children know they are going to be destroyed...
+			pChild->m_Components.Iterate
+			(
+				[](const std::unique_ptr<Component>& pComponent)
+				{
+					pComponent->m_PendingDestroy = true;
+				}
+			);
+		}
+	);
+
+	if (m_pParent)
+		m_pParent->RemoveChild(this);
+	else
+		m_pScene->RemoveGameObject(this);
+}
+
+void GameObject::OnEnable()
+{
+	if (m_PendingDestroy) 
+		return;
+
+	StatefullObject::OnEnable();
+
+	if (m_pParent)
 	{
-		child->Destroy();
+		auto& parentEnabledChildren = m_pParent->m_EnabledChildren.GetVector();
+		if (std::find(parentEnabledChildren.begin(), parentEnabledChildren.end(), this) == parentEnabledChildren.end())
+		{
+			//we are not in the enabled children, disable
+			parentEnabledChildren.emplace_back(this);
+			m_pParent->m_DisabledChildren.Remove(this);
+		}
+	}
+	else if (m_pScene) //we don't have a parent, do we have a scene?
+	{
+		//we are a root gameobject.
+		auto& sceneEnabledGameobjects = m_pScene->GetEnabledGameObjects().GetVector();
+		if (std::find(sceneEnabledGameobjects.begin(), sceneEnabledGameobjects.end(), this) == sceneEnabledGameobjects.end())
+		{
+			//we are disabled, enable
+			sceneEnabledGameobjects.emplace_back(this);
+
+			m_pScene->GetDisabledGameObjects().Remove(this);
+		}
+	}
+}
+
+void GameObject::OnDisable()
+{
+	if (m_PendingDestroy) 
+		return;
+
+	StatefullObject::OnDisable();
+
+	if (m_pParent)
+	{
+		auto& parentDisabledChildren = m_pParent->m_DisabledChildren.GetVector();
+		if (std::find(parentDisabledChildren.begin(), parentDisabledChildren.end(), this) == parentDisabledChildren.end())
+		{
+			//we are not in the disabled children, enable...
+			parentDisabledChildren.emplace_back(this);
+			m_pParent->m_EnabledChildren.Remove(this);
+		}
+	}
+	else if (m_pScene) //we don't have a parent, do we have a scene?
+	{
+		//we are a root gameobject.
+		auto& sceneDisabledGameObjects = m_pScene->GetDisabledGameObjects().GetVector();
+		if (std::find(sceneDisabledGameObjects.begin(), sceneDisabledGameObjects.end(), this) == sceneDisabledGameObjects.end())
+		{
+			//we are enabled, disable
+			sceneDisabledGameObjects.emplace_back(this);
+
+			m_pScene->GetEnabledGameObjects().Remove(this);
+		}
 	}
 }
 
 void GameObject::BroadcastOverlap(const CollisionResult& collision)
 {
-	for (const auto& component : m_Components)
-	{
-		component->OnOverlap(collision);
-	}
+	if (m_PendingDestroy) 
+		return;
+
+	m_EnabledComponents.Iterate
+	(
+		[&collision](Component* pComponent)
+		{
+			pComponent->OnOverlap(collision);
+		}
+	);
 }
 
 Transform& GameObject::GetTransform()
@@ -109,41 +244,63 @@ Transform& GameObject::GetTransform()
 	return m_Transform;
 }
 
-void GameObject::AddChild(std::unique_ptr<GameObject>& pChild)
+void GameObject::AddChild(GameObject* pChild)
 {
-	assert(pChild); //GameObject invalid.
+	ASSERT(pChild);
 
 	pChild->SetParent(this);
-	m_Children.push_back(std::move(pChild));
+
+	if (m_IsInitialized)
+	{
+		//this gameobject is added as child post initialization.
+		pChild->GetTransform().UpdateSelfAndChildren();
+		pChild->Start();
+	}
+
+	m_Children.GetVector().emplace_back(std::unique_ptr<GameObject>(pChild));
+	m_EnabledChildren.GetVector().emplace_back(pChild);
 }
 
-/**
- * \brief Detaches from old parent, attaches to new parent.
- */
-void GameObject::AttachTo(GameObject* pParent)
+void GameObject::RemoveChild(GameObject* pChild)
 {
-	//TODO: Handle RootObject attaching to other object (remove from pScene)
-	//TODO: Add Possible nullptr to make gameObject root object. (add to pScene)
+	ASSERT(pChild);
 
-	assert(pParent); //Parent must be valid.
-	assert(m_pParent);
+	if (pChild->IsEnabled())
+		m_EnabledChildren.Remove(pChild);
+	else
+		m_DisabledChildren.Remove(pChild);
 
-	//1. Ensure i am one of my parent's children
-	auto& children = m_pParent->m_Children;
-	const auto it = std::ranges::find_if(children, [this](const auto& pChild) { return pChild.get() == this; });
-
-	assert(it != children.end()); //I am not a child of my current parent. You did something terribly wrong if this triggers.
-
-	//2. Move ownership from oldParent, to newParent, become newParent's child.
-	pParent->AddChild(*it); // <-- will move ownership of unique_ptr to new parent.
-
-	//3. remove from old parents children.
-	//TODO: This might cause a bug (removing during iterating) maybe some kind of queueing system for this
-	children.erase(it);
-
-	//4. Update parent ptr
-	SetParent(pParent);
+	m_Children.RemoveIf([pChild](const std::unique_ptr<GameObject>& child) { return child.get() == pChild; });
 }
+
+///**
+// * \brief Detaches from old parent, attaches to new parent.
+// */
+//void GameObject::AttachTo(GameObject* pParent)
+//{
+//	//TODO: Handle RootObject attaching to other object (remove from pScene)
+//	//TODO: Add Possible nullptr to make gameObject root object. (add to pScene)
+//
+//	ASSERT(pParent);
+//	ASSERT(m_pParent);
+//
+//	//1. Ensure i am one of my parent's children
+//	auto& children = m_pParent->m_Children;
+//	const auto it = std::ranges::find_if(children, [this](const auto& pChild) { return pChild.get() == this; });
+//
+//	ASSERT(it != children.end()); //I am not a child of my current parent. You did something terribly wrong if this triggers.
+//
+//	//2. Move ownership from oldParent, to newParent, become newParent's child.
+//	pParent->AddChild(it->get()); // <-- will move ownership of unique_ptr to new parent.
+//
+//	//3. remove from old parents children.
+//	//TODO: This might cause a bug (removing during iterating) maybe some kind of queueing system for this
+//	//unique_ptr bug here.
+//	RemoveChild(it->get());
+//
+//	//4. Update parent ptr
+//	SetParent(pParent);
+//}
 
 Scene* GameObject::GetScene() const
 {
@@ -166,24 +323,45 @@ GameObject* GameObject::GetRootParent()
 	return m_pParent->GetRootParent();
 }
 
-const std::vector<std::unique_ptr<GameObject>>& GameObject::GetChildren() const 
+const DeferredRemovalVector<std::unique_ptr<GameObject>>& GameObject::GetChildren()
 {
 	return m_Children;
 }
 
+DeferredRemovalVector<GameObject*>& GameObject::GetEnabledChildren()
+{
+	return m_EnabledChildren;
+}
+
+DeferredRemovalVector<GameObject*>& GameObject::GetDisabledChildren()
+{
+	return m_DisabledChildren;
+}
+
 const GameObject* GameObject::GetChildByName(const std::string& name) const
 {
-	const auto& it = std::ranges::find_if(m_Children, [&name](const std::unique_ptr<GameObject>& pChild) { return pChild->GetName() == name; });
+	const auto& children = m_Children.GetVector();
+	const auto& it = std::ranges::find_if(children, [&name](const std::unique_ptr<GameObject>& pChild) { return pChild->GetName() == name; });
 
-	if (it != m_Children.end())
+	if (it != children.end())
 		return it->get();
 
 	return nullptr;
 }
 
-const std::vector<std::unique_ptr<Component>>& GameObject::GetComponents() const
+const DeferredRemovalVector<std::unique_ptr<Component>>& GameObject::GetComponents()
 {
 	return m_Components;
+}
+
+DeferredRemovalVector<Component*>& GameObject::GetEnabledComponents()
+{
+	return m_EnabledComponents;
+}
+
+DeferredRemovalVector<Component*>& GameObject::GetDisabledComponents()
+{
+	return m_DisabledComponents;
 }
 
 std::string GameObject::GetName() const
@@ -206,3 +384,5 @@ GameObject::GameObject(const std::string& name)
 	, m_Name(name)
 {
 }
+
+GameObject::~GameObject() = default;

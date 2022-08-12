@@ -60,7 +60,7 @@ TronPlayerComponent::TronPlayerComponent(TankComponent* pTank)
 
 void TronPlayerComponent::Start()
 {
-	ASSERT(m_pTank, "This component requires a TankComponent.");
+	ASSERT_MSG(m_pTank, "This component requires a TankComponent.");
 }
 
 void TronPlayerComponent::FixedUpdate()

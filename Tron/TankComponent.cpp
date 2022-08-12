@@ -13,17 +13,18 @@
 #include "TextureRenderComponent.h"
 
 
-TankComponent::TankComponent(TankMovementComponent* pTankMovement, TankAimingComponent* pTankAiming, TextureRenderComponent* pTankBodyRenderer, TextureRenderComponent* pTankTurretRenderer, BoxColliderComponent* pTankCollider)
+TankComponent::TankComponent(float maxHealth, TankMovementComponent* pTankMovement, TankAimingComponent* pTankAiming, TextureRenderComponent* pTankBodyRenderer, TextureRenderComponent* pTankTurretRenderer, BoxColliderComponent* pTankCollider)
 	: m_pTankMovement(pTankMovement)
 	, m_pTankAiming(pTankAiming)
 	, m_pTankBodyRenderer(pTankBodyRenderer)
 	, m_pTankTurretRenderer(pTankTurretRenderer)
 	, m_pBoxCollider(pTankCollider)
+	, m_MaxHealth(maxHealth)
 {
-	ASSERT(m_pTankMovement, "This component requires a TankMovementComponent.");
-	ASSERT(m_pTankAiming, "This component requires a TankAimingComponent.");
-	ASSERT(m_pTankBodyRenderer, "This component requires a TextureRenderComponent for the body.");
-	ASSERT(m_pBoxCollider, "This component requires a BoxColliderComponent.");
+	ASSERT_MSG(m_pTankMovement, "This component requires a TankMovementComponent.");
+	ASSERT_MSG(m_pTankAiming, "This component requires a TankAimingComponent.");
+	ASSERT_MSG(m_pTankBodyRenderer, "This component requires a TextureRenderComponent for the body.");
+	ASSERT_MSG(m_pBoxCollider, "This component requires a BoxColliderComponent.");
 
 	m_pTankMovement->SetTank(this);
 }
@@ -61,7 +62,7 @@ void TankComponent::Shoot()
 	glm::vec2 bulletDirection;
 	m_pTankAiming->GetBulletSocket(bulletSpawnPos, bulletSpawnRot, bulletDirection);
 
-	std::unique_ptr<rujin::GameObject> pBulletGO = std::make_unique<rujin::GameObject>(GameObject()->GetName() + "_Bullet");
+	rujin::GameObject* pBulletGO = new rujin::GameObject(GameObject()->GetName() + "_Bullet");
 	pBulletGO->AddComponent(new BoxColliderComponent({ 15, 15 }, false, true))->EnableDebugDrawing();
  	pBulletGO->AddComponent(new ProjectileMovementComponent(bulletDirection * m_BulletSpeed));
 	pBulletGO->AddComponent(new TextureRenderComponent(ServiceLocator::GetService<ResourceService>().LoadTexture("Textures/Spritesheet.png"), {0.5f, 0.5f}, Recti{50, 50, 19, 15}));
@@ -71,4 +72,14 @@ void TankComponent::Shoot()
 	pBulletGO->GetTransform().SetLocalRotation(bulletSpawnRot);
 
 	GameObject()->GetScene()->AddGameObject(pBulletGO);
+}
+
+void TankComponent::TakeDamage(float damage)
+{
+	m_CurrentHealth -= damage;
+}
+
+void TankComponent::OnOverlap(const CollisionResult&)
+{
+	LOG_DEBUG_("Overlapping");
 }

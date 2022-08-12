@@ -17,15 +17,20 @@ TankBulletComponent::TankBulletComponent(uint8_t maxBounces, float bulletSpeed, 
 void TankBulletComponent::Start()
 {
 	m_pProjectileMovement = GameObject()->GetComponent<ProjectileMovementComponent>();
-	ASSERT(m_pProjectileMovement, "This component requires a ProjectileMovementComponent to be present on the GameObject.");
-	ASSERT(GameObject()->GetComponent<BoxColliderComponent>(), "This component requires a BoxColliderComponent to be present on the GameObject.");
+	ASSERT_MSG(m_pProjectileMovement, "This component requires a ProjectileMovementComponent to be present on the GameObject.");
+	ASSERT_MSG(GameObject()->GetComponent<BoxColliderComponent>(), "This component requires a BoxColliderComponent to be present on the GameObject.");
 }
 
 void TankBulletComponent::OnOverlap(const CollisionResult& result)
 {
+	LOG_DEBUG("Overlap");
 	if (TankComponent* pTank = result.other->GetComponent()->GameObject()->GetComponent<TankComponent>())
 	{
 		//we hit a tank
+		pTank->TakeDamage(m_Damage);
+
+		//remove gameobject
+		m_pGameObject->Destroy();
 	}
 	else
 	{
@@ -43,6 +48,9 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 			break;
 		}
 
-		++m_CurrentBounces;
+		if (++m_CurrentBounces > 5)
+		{
+			m_pGameObject->Destroy();
+		}
 	}
 }

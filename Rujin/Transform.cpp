@@ -138,7 +138,7 @@ void rujin::Transform::UpdateSelfAndChildren()
 		ApplyTransformationsToSelfAndChildren();
 	else
 		//if transform hasn't changed, check if child transform might have changed...
-		for (const std::unique_ptr<GameObject>& child : m_pGameObject->GetChildren())
+		for (const std::unique_ptr<GameObject>& child : m_pGameObject->GetChildren().GetVector())
 			child->GetTransform().UpdateSelfAndChildren();
 }
 
@@ -153,7 +153,7 @@ void rujin::Transform::ApplyTransformationsToSelfAndChildren()
 	rutils::Decompose(m_WorldMatrix, m_GlobalPosition, m_GlobalRotation, m_GlobalScale);
 
 	//update children.
-	for (const std::unique_ptr<GameObject>& child : m_pGameObject->GetChildren())
+	for (const std::unique_ptr<GameObject>& child : m_pGameObject->GetChildren().GetVector())
 		child->GetTransform().ApplyTransformationsToSelfAndChildren();
 
 	//notify changes

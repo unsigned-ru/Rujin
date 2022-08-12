@@ -1,16 +1,17 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 #include "IGameLoopObject.h"
+#include "StatefullObject.h"
 
 namespace rujin
 {
 	struct CollisionResult;
 	class GameObject;
 
-	class Component : public IGameLoopObject
+	class Component : public IGameLoopObject, public StatefullObject
 	{
 	public:
-		explicit Component();
+		explicit Component() = default;
 		~Component() override = default;
 		Component(const Component& other) = delete;
 		Component(Component&& other) = delete;
@@ -25,7 +26,10 @@ namespace rujin
 
 	private:
 		friend class GameObject;
-		virtual void OnOverlap(const CollisionResult& /*collision*/) {};
+		virtual void OnOverlap(const CollisionResult& /*collision*/) {}
+
+		void OnEnable() override;
+		void OnDisable() override;
 	};
 
 }

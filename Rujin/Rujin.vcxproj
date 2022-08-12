@@ -241,6 +241,7 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClInclude Include="ColliderComponent.h" />
     <ClInclude Include="CollisionFunctions.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="DefferedRemovalVector.h" />
     <ClInclude Include="EventData.h" />
     <ClInclude Include="FMOD_AudioProvider.h" />
     <ClInclude Include="FpsComponent.h" />
