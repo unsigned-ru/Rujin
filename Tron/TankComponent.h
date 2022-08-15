@@ -30,8 +30,6 @@ public:
 
 	void TakeDamage(float damage);
 
-	void OnOverlap(const CollisionResult&) override;
-
 private:
 	TankMovementComponent* m_pTankMovement = nullptr;
 	TankAimingComponent* m_pTankAiming = nullptr;
@@ -47,6 +45,8 @@ private:
 
 	const float m_MaxHealth;
 	float m_CurrentHealth;
+
+	inline static uint32_t s_BulletCount{ 1 };
 };
 
 #endif // Include Guard: TANK_COMPONENT_H

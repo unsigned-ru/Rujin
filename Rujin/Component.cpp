@@ -20,7 +20,7 @@ void Component::OnEnable()
 	if (std::find(goEnabledComponents.begin(), goEnabledComponents.end(), this) == goEnabledComponents.end())
 	{
 		goEnabledComponents.emplace_back(this);
-		pGameObject->GetDisabledComponents().Remove(this);
+		pGameObject->GetDisabledComponents().PendRemove(this);
 	}
 }
 

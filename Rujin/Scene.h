@@ -22,15 +22,15 @@ namespace rujin
 		void LateStart() override;
 		void Update() override;
 		void FixedUpdate() override;
+		void ProcessAdditionsAndRemovals();
 		void OnGui(SDL_Window* pWindow) override;
 		void Draw() const override;
-		void Destroy() override;
 
 		void AddGameObject(GameObject* gameObject);
 		void RemoveGameObject(GameObject* gameObject);
 
-		DeferredRemovalVector<GameObject*>& GetEnabledGameObjects();
-		DeferredRemovalVector<GameObject*>& GetDisabledGameObjects();
+		DeferredVector<GameObject*, GameObject*>& GetEnabledGameObjects();
+		DeferredVector<GameObject*, GameObject*>& GetDisabledGameObjects();
 
 		Camera* GetActiveCamera() const { return m_pActiveCamera; }
 		void SetActiveCamera(Camera* pCamera) { m_pActiveCamera = pCamera; }
@@ -45,11 +45,11 @@ namespace rujin
 		const std::string m_Name;
 		static uint32_t m_IdCounter;
 
-		DeferredRemovalVector<GameObject*> m_ActiveGameObjects{};
-		DeferredRemovalVector<GameObject*> m_InactiveGameObjects{};
-		DeferredRemovalVector<std::unique_ptr<GameObject>> m_GameObjects{};
-
 		std::unique_ptr<CollisionQuadTree> m_pCollisionQuadTree;
+
+		DeferredVector<GameObject*, GameObject*> m_ActiveGameObjects{};
+		DeferredVector<GameObject*, GameObject*> m_InactiveGameObjects{};
+		DeferredVector<std::unique_ptr<GameObject>, GameObject*> m_GameObjects{};
 
 		Camera* m_pActiveCamera;
 		Camera* m_pDefaultCamera = nullptr;

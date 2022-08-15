@@ -10,7 +10,7 @@
 #include "RenderService.h"
 #include "ServiceLocator.h"
 
-rujin::CollisionQuadTree::CollisionQuadTree(const Rectf& bounds) : CollisionQuadTree(5, 5, 0, bounds, nullptr) {}
+rujin::CollisionQuadTree::CollisionQuadTree(const Rectf& bounds) : CollisionQuadTree(15, 5, 0, bounds, nullptr) {}
 
 rujin::CollisionQuadTree::CollisionQuadTree
 (
@@ -27,8 +27,11 @@ rujin::CollisionQuadTree::CollisionQuadTree
 
 rujin::Collider* rujin::CollisionQuadTree::Insert(Collider* pCollider)
 {
-	if (!pCollider)
-		LOG_ERROR("Error inserting, pCollider was nullptr.");
+	ASSERT_RV(pCollider, nullptr);
+
+	if (!m_pParent && !pCollider->IsStatic()) //if we are root and collider isn't static.
+		//observe transform of collider to ensure we update our quadtree if we update the position of the collider.
+		pCollider->GetComponent()->GameObject()->GetTransform().AddObserver(this); //NOTE: only root should observe.
 
 	//check if we have any children nodes. if we have 1 child node,
 	//we assume we have 4, since they only ever get created in pairs of 4.
@@ -44,51 +47,18 @@ rujin::Collider* rujin::CollisionQuadTree::Insert(Collider* pCollider)
 		}
 	}
 
-	//at this point we know the pCollider should be inserted in the current node
-	m_Colliders.emplace_back(pCollider); //insert it
-
-	
-	if (!pCollider->IsStatic()) //if it dynamic
-		//observe transform of collider to ensure we update our quadtree if we update the position of the collider.
-		pCollider->GetComponent()->GameObject()->GetTransform().AddObserver(this);
-	
-
-	//since we inserted a pCollider, we need to check if this new insertion exceeds our node limits.
-	if (m_Colliders.size() > m_MaxObjects && m_Level < m_MaxLevels && m_Children[0] == nullptr)
+	//collider should be inserted into this node....
+	//if inserting is going to make us exceed the capacity...
+	if (m_Colliders.GetVector().size() + 1 > m_MaxObjects && m_Level < m_MaxLevels && m_Children[0] == nullptr)
 	{
-		//if it does,
 		Split(); // we need to split
-
-		//because we have split, we need to recalculate what new node each pCollider
-		//now belongs to.
-		auto it = m_Colliders.begin();
-		while (it != m_Colliders.end())
-		{
-			Collider* pCurrObj = *it;
-
-			if (const BoxCollider* boxObject = dynamic_cast<BoxCollider*>(pCurrObj); boxObject)
-			{
-				const int8_t indexToPlaceObject = GetChildIndexForObject(boxObject->GetRect());
-
-
-				if (indexToPlaceObject != s_ThisTree)
-				{
-					//we need to move it inside one of the child trees.
-					m_Children[indexToPlaceObject]->Insert(pCurrObj); //insert it.
-
-					it = m_Colliders.erase(it); // remove it from this tree's vector
-
-					if (!pCollider->IsStatic()) //if it dynamic
-						pCollider->GetComponent()->GameObject()->GetTransform().RemoveObserver(this); //remove this tree as observer.
-
-					continue; //to prevent increment
-				}
-			}
-			else
-				LOG_WARNING("Unimplemented Collider detected. Did you forget to implement?");
-
-			++it;
-		}
+		Insert(pCollider); // call insert again, this time there will be enough space!
+	}
+	else
+	{
+		//we haven't reached our capacity, insert it into this node.
+		m_Colliders.GetVector().emplace_back(pCollider);
+		pCollider->m_pOwningQuadTree = this;
 	}
 
 	return pCollider;
@@ -96,6 +66,10 @@ rujin::Collider* rujin::CollisionQuadTree::Insert(Collider* pCollider)
 
 void rujin::CollisionQuadTree::Remove(Collider* pCollider)
 {
+	if (!m_pParent && !pCollider->IsStatic()) //if we are root and collider isn't static.
+		//stop observing the colliders transform, we no longer need to update it's position in the quadtree
+		pCollider->GetComponent()->GameObject()->GetTransform().RemoveObserver(this); //NOTE: only root should observe.
+
 	if (const BoxCollider* pBoxCollider = dynamic_cast<BoxCollider*>(pCollider); pBoxCollider)
 	{
 		const int8_t idx = GetChildIndexForObject(pBoxCollider->GetRect());
@@ -103,20 +77,25 @@ void rujin::CollisionQuadTree::Remove(Collider* pCollider)
 		//check if collider belongs to this node and has no children...
 		if (idx == s_ThisTree || m_Children[idx] == nullptr)
 		{
-			//find the collider by checking if they have the same "owning" component.
-			Component* pColliderComp = pCollider->GetComponent();
-			const auto it = std::ranges::find_if(m_Colliders, [pColliderComp](const Collider* pCurrCollider) { return pCurrCollider->GetComponent() == pColliderComp; });
+			//Collider must be in this node!
+			//Find it by comparing the owning component.
 
-			if (it != m_Colliders.end()) //if we found the collider in this tree's vector...
+			Component* pColliderComp = pCollider->GetComponent();
+
+			const auto it = std::ranges::find_if
+			(m_Colliders.GetVector(), 
+				[pColliderComp](const Collider* pCurrCollider)
+				{
+					return pCurrCollider->GetComponent() == pColliderComp;
+				}
+			);
+
+			if (it != m_Colliders.GetVector().end()) //if we found the collider in this tree's vector...
 			{
-				m_Colliders.erase(it); //...remove it
-				
-				if (!pCollider->IsStatic()) //if it dynamic
-					//remove this tree as observer of the transform
-					pCollider->GetComponent()->GameObject()->GetTransform().RemoveObserver(this);
+				m_Colliders.GetVector().erase(it); //...remove it
 			}
-		}
-		else
+ 		}
+		else //search it in our children
 			return m_Children[idx]->Remove(pCollider);
 	}
 	else
@@ -154,7 +133,7 @@ const rujin::Rectf& rujin::CollisionQuadTree::GetBounds() const
 
 void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 {
-	for (Collider* pCollider : m_Colliders)
+	for (Collider* pCollider : m_Colliders.GetVector())
 	{
 		if (pCollider->IsStatic())
 			continue;
@@ -172,12 +151,35 @@ void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 				if (pCollider == pPossibleOverlapCollider)
 					continue;
 
-				const CollisionResult result = pBoxCollider->IsOverlapping(pPossibleOverlapCollider);
+				CollisionResult result = pBoxCollider->IsOverlapping(pPossibleOverlapCollider);
 
 				if (result.isColliding)
-					pBoxCollider->GetComponent()->GameObject()->BroadcastOverlap(result);
-			}
+				{
+					switch (GetResponseForCollisionLayer(pBoxCollider->GetCollisionLayer(), result.other->GetCollisionLayer()))
+					{
+					case CollisionResponse::Block: //intentional break-through
+						pBoxCollider->ResolveOverlap(result);
+						pBoxCollider->GetComponent()->GameObject()->GetTransform().UpdateSelfAndChildren();
+					case CollisionResponse::Overlap:
+						pBoxCollider->GetComponent()->GameObject()->BroadcastOverlap(result);
+						break;
+					case CollisionResponse::Ignore: //intentional break-through
+					default: break;
+					}
 
+
+					if (GetResponseForCollisionLayer(result.other->GetCollisionLayer(), pBoxCollider->GetCollisionLayer()) != CollisionResponse::Ignore)
+					{
+						//also let the other know we overlapped!
+						result.other = pBoxCollider;
+
+						//invert collision direction
+						result.collisionDirection = GetInverted(result.collisionDirection);
+
+						pPossibleOverlapCollider->GetComponent()->GameObject()->BroadcastOverlap(result);
+					}
+				}
+			}
 		}
 		else
 			LOG_WARNING("Unimplemented Collider detected. Did you forget to implement?");
@@ -260,6 +262,7 @@ void rujin::CollisionQuadTree::DrawDebug() const
 			//set random debug color
 			rs.SetColor({1.f, 0.f, 0.f, 1.f});
 			rs.DrawRect(m_Children[i]->GetBounds());
+
 			m_Children[i]->DrawDebug();
 			rs.SetColor({ 1.f, 1.f, 1.f, 1.f });
 		}
@@ -270,7 +273,7 @@ void rujin::CollisionQuadTree::DrawDebug() const
 void rujin::CollisionQuadTree::Search(const Rectf& area, std::vector<const Collider*>& overlappingColliders)
 {
 	//add all objects in this node to the vector.
-	overlappingColliders.insert(overlappingColliders.end(), m_Colliders.begin(), m_Colliders.end());
+	overlappingColliders.insert(overlappingColliders.end(), m_Colliders.GetVector().begin(), m_Colliders.GetVector().end());
 
 	if (m_Children[0]) //if we have child nodes...
 	{
@@ -300,7 +303,7 @@ void rujin::CollisionQuadTree::Search(const Rectf& area, std::vector<const Colli
 void rujin::CollisionQuadTree::Search(const glm::vec2& p1, const glm::vec2& p2, std::vector<const Collider*>& overlappingColliders)
 {
 	//add all objects in this node to the vector.
-	overlappingColliders.insert(overlappingColliders.end(), m_Colliders.begin(), m_Colliders.end());
+	overlappingColliders.insert(overlappingColliders.end(), m_Colliders.GetVector().begin(), m_Colliders.GetVector().end());
 
 	if (m_Children[0]) //if we have child nodes...
 	{
@@ -364,31 +367,62 @@ int8_t rujin::CollisionQuadTree::GetChildIndexForObject(const Rectf& colliderBou
 
 void rujin::CollisionQuadTree::Split()
 {
+	//create children...
 	const glm::vec2 childSize{ m_Bounds.width / 2.f, m_Bounds.height / 2.f };
 
 	m_Children[s_ChildIdxNE] = std::make_unique<CollisionQuadTree>(
 		m_MaxObjects, m_MaxLevels, m_Level + 1,
 		Rectf{ m_Bounds.left + childSize.x, m_Bounds.bottom + childSize.y, childSize.x, childSize.y },
 		this
-		);
+	);
 
 	m_Children[s_ChildIdxSE] = std::make_unique<CollisionQuadTree>(
 		m_MaxObjects, m_MaxLevels, m_Level + 1,
 		Rectf{ m_Bounds.left + childSize.x, m_Bounds.bottom, childSize.x, childSize.y },
 		this
-		);
+	);
 
 	m_Children[s_ChildIdxSW] = std::make_unique<CollisionQuadTree>(
 		m_MaxObjects, m_MaxLevels, m_Level + 1,
 		Rectf{ m_Bounds.left, m_Bounds.bottom, childSize.x, childSize.y },
 		this
-		);
+	);
 
 	m_Children[s_ChildIdxNW] = std::make_unique<CollisionQuadTree>(
 		m_MaxObjects, m_MaxLevels, m_Level + 1,
 		Rectf{ m_Bounds.left, m_Bounds.bottom + childSize.y, childSize.x, childSize.y },
 		this
-		);
+	);
+
+	//because we have split, we need to recalculate what new node each pCollider
+	//now belongs to.
+	auto it = m_Colliders.GetVector().begin();
+	while (it != m_Colliders.GetVector().end())
+	{
+		Collider* pCurrObj = *it;
+
+		if (const BoxCollider* boxObject = dynamic_cast<BoxCollider*>(pCurrObj); boxObject)
+		{
+			const int8_t indexToPlaceObject = GetChildIndexForObject(boxObject->GetRect());
+
+			if (indexToPlaceObject != s_ThisTree)
+			{
+				//we need to move it inside one of the child trees.
+				m_Children[indexToPlaceObject]->Insert(pCurrObj); //insert it.
+
+				it = m_Colliders.GetVector().erase(it); // remove it from this tree's vector
+
+				if (!pCurrObj->IsStatic()) //if it dynamic
+					pCurrObj->GetComponent()->GameObject()->GetTransform().RemoveObserver(this); //remove this tree as observer.
+
+				continue; //to prevent increment
+			}
+		}
+		else
+			LOG_WARNING("Unimplemented Collider detected. Did you forget to implement?");
+
+		++it;
+	}
 }
 
 void rujin::CollisionQuadTree::OnNotify(const uint32_t identifier, const event::Data* pEventData)
@@ -406,13 +440,10 @@ void rujin::CollisionQuadTree::OnNotify(const uint32_t identifier, const event::
 			Collider* pCollider = pColliderComp->GetCollider();
 
 			//remove it from this quad-tree.
-			Remove(pCollider);
-
-			//find root (parent) tree.
-			CollisionQuadTree* pRoot = GetRoot();
+			Remove_(pCollider);
 
 			//insert it again in the root (parent) tree!
-			pRoot->Insert(pCollider);
+			Insert(pCollider);
 		}
 	}
 }
@@ -425,4 +456,14 @@ rujin::CollisionQuadTree* rujin::CollisionQuadTree::GetRoot()
 		pRoot = pRoot->m_pParent;
 
 	return pRoot;
+}
+
+void rujin::CollisionQuadTree::Remove_(Collider* pCollider)
+{
+	if (!m_pParent && !pCollider->IsStatic()) //if we are root and collider isn't static.
+		//stop observing the colliders transform, we no longer need to update it's position in the quadtree
+		pCollider->GetComponent()->GameObject()->GetTransform().RemoveObserver(this); //NOTE: only root should observe.
+
+	auto& owningTree = pCollider->m_pOwningQuadTree->m_Colliders.GetVector();
+	owningTree.erase(std::ranges::find(owningTree, pCollider));
 }

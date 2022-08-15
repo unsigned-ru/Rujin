@@ -10,7 +10,7 @@ namespace rujin
 	class ColliderComponent : public Component
 	{
 	public:
-		explicit ColliderComponent(bool autoResolve = true);
+		explicit ColliderComponent() = default;
 		~ColliderComponent() override = default;
 
 		ColliderComponent(const ColliderComponent&) = delete;
@@ -20,7 +20,6 @@ namespace rujin
 
 		void Start() override;
 		void Draw() const override;
-		void OnOverlap(const CollisionResult&) override;
 
 #ifdef _DEBUG
 		void EnableDebugDrawing(bool enable = true);
@@ -28,9 +27,6 @@ namespace rujin
 #endif
 
 		virtual Collider* GetCollider() const = 0;
-
-	protected:
-		bool m_AutoResolve;
 
 	private:
 #ifdef _DEBUG

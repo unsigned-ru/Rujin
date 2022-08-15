@@ -62,11 +62,11 @@ void TankComponent::Shoot()
 	glm::vec2 bulletDirection;
 	m_pTankAiming->GetBulletSocket(bulletSpawnPos, bulletSpawnRot, bulletDirection);
 
-	rujin::GameObject* pBulletGO = new rujin::GameObject(GameObject()->GetName() + "_Bullet");
-	pBulletGO->AddComponent(new BoxColliderComponent({ 15, 15 }, false, true))->EnableDebugDrawing();
+	auto* pBulletGO = new rujin::GameObject(GameObject()->GetName() + "_Bullet_" + std::to_string(s_BulletCount++));
+	pBulletGO->AddComponent(new BoxColliderComponent({ 15, 15 }, false, glm::vec2{0.5f, 0.5f}, CollisionLayer::Bullet))->EnableDebugDrawing();
  	pBulletGO->AddComponent(new ProjectileMovementComponent(bulletDirection * m_BulletSpeed));
 	pBulletGO->AddComponent(new TextureRenderComponent(ServiceLocator::GetService<ResourceService>().LoadTexture("Textures/Spritesheet.png"), {0.5f, 0.5f}, Recti{50, 50, 19, 15}));
-	pBulletGO->AddComponent(new TankBulletComponent(m_MaxBounces, m_BulletSpeed,m_BulletDamage));
+	pBulletGO->AddComponent(new TankBulletComponent(this, m_MaxBounces, m_BulletSpeed, m_BulletDamage));
 
 	pBulletGO->GetTransform().SetPosition(bulletSpawnPos);
 	pBulletGO->GetTransform().SetLocalRotation(bulletSpawnRot);
@@ -77,9 +77,4 @@ void TankComponent::Shoot()
 void TankComponent::TakeDamage(float damage)
 {
 	m_CurrentHealth -= damage;
-}
-
-void TankComponent::OnOverlap(const CollisionResult&)
-{
-	LOG_DEBUG_("Overlapping");
 }

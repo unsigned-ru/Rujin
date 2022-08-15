@@ -8,154 +8,122 @@ using namespace rujin;
 
 void GameObject::Start()
 {
-	m_Components.Iterate
-	(
-		[](const std::unique_ptr<Component>& pComponent)
-		{
-			pComponent->Start();
-		}
-	);
+	for (const std::unique_ptr<Component>& pComponent : m_Components.GetVector())
+	{
+		pComponent->Start();
+	}
 
-	m_Children.Iterate
-	(
-		[](const std::unique_ptr<GameObject>& pChild)
-		{
-			pChild->Start();
-		}
-	);
+	for (const std::unique_ptr<GameObject>& pChild : m_Children.GetVector())
+	{
+		pChild->Start();
+	}
 }
 
 void GameObject::LateStart()
 {
-	m_Components.Iterate
-	(
-		[](const std::unique_ptr<Component>& pComponent)
-		{
-			pComponent->LateStart();
-		}
-	);
+	for (const std::unique_ptr<Component>& pComponent : m_Components.GetVector())
+	{
+		pComponent->LateStart();
+	}
 
-	m_Children.Iterate
-	(
-		[](const std::unique_ptr<GameObject>& pChild)
-		{
-			pChild->LateStart();
-		}
-	);
+	for (const std::unique_ptr<GameObject>& pChild : m_Children.GetVector())
+	{
+		pChild->LateStart();
+	}
 
 	m_IsInitialized = true;
 }
 
 void GameObject::Update()
 {
-	m_EnabledComponents.Iterate
-	(
-		[](Component* pComponent)
-		{
-			pComponent->Update();
-		}
-	);
+	for (Component* pComponent : m_EnabledComponents.GetVector())
+	{
+		pComponent->Update();
+	}
 
-	m_EnabledChildren.Iterate
-	(
-		[](GameObject* pGameObject)
-		{
-			pGameObject->Update();
-		}
-	);
+	for (GameObject* pChild : m_EnabledChildren.GetVector())
+	{
+		pChild->Update();
+	}
 }
 
 void GameObject::FixedUpdate()
 {
-	m_Components.SetIterating(true);
-	m_EnabledComponents.Iterate
-	(
-		[](Component* pComponent)
-		{
-			pComponent->FixedUpdate();
-		}
-	);
-	m_Components.SetIterating(false);
+	for (Component* pComponent : m_EnabledComponents.GetVector())
+	{
+		pComponent->FixedUpdate();
+	}
 
-	m_Children.SetIterating(true);
-	m_EnabledChildren.Iterate
-	(
-		[](GameObject* pGameObject)
-		{
-			pGameObject->FixedUpdate();
-		}
-	);
-	m_Children.SetIterating(false);
+	for (GameObject* pChild : m_EnabledChildren.GetVector())
+	{
+		pChild->FixedUpdate();
+	}
+}
+
+void GameObject::ProcessAdditionsAndRemovals()
+{
+	m_DisabledComponents.ProcessRemovals();
+	m_EnabledComponents.ProcessRemovals();
+	m_Components.ProcessRemovals();
+
+	m_DisabledChildren.ProcessRemovals();
+	m_EnabledChildren.ProcessRemovals();
+	m_Children.ProcessRemovals();
+
+	for (GameObject* pChild : m_EnabledChildren.GetVector())
+	{
+		pChild->ProcessAdditionsAndRemovals();
+	}
+
+	for (GameObject* pChild : m_EnabledChildren.GetElementsToAdd())
+	{
+		pChild->ProcessAdditionsAndRemovals();
+	}
+
+	m_DisabledComponents.ProcessAdditions();
+	m_EnabledComponents.ProcessAdditions();
+	m_Components.ProcessAdditions();
+
+	m_DisabledChildren.ProcessAdditions();
+	m_EnabledChildren.ProcessAdditions();
+	m_Children.ProcessAdditions();
 }
 
 void GameObject::OnGui(SDL_Window* pWindow)
 {
-	m_EnabledComponents.Iterate
-	(
-		[pWindow](Component* pComponent)
-		{
-			pComponent->OnGui(pWindow);
-		}
-	);
+	for (Component* pComponent : m_EnabledComponents.GetVector())
+	{
+		pComponent->OnGui(pWindow);
+	}
 
-	m_EnabledChildren.Iterate
-	(
-		[pWindow](GameObject* pGameObject)
-		{
-			pGameObject->OnGui(pWindow);
-		}
-	);
+	for (GameObject* pChild : m_EnabledChildren.GetVector())
+	{
+		pChild->OnGui(pWindow);
+	}
 }
 
 void GameObject::Draw() const
 {
-	m_EnabledComponents.Iterate
-	(
-		[](const Component* pComponent)
-		{
-			pComponent->Draw();
-		}
-	);
+	for (const Component* pComponent : m_EnabledComponents.GetVector())
+	{
+		pComponent->Draw();
+	}
 
-	m_EnabledChildren.Iterate
-	(
-		[](const GameObject* pGameObject)
-		{
-			pGameObject->Draw();
-		}
-	);
+	for (const GameObject* pChild : m_EnabledChildren.GetVector())
+	{
+		pChild->Draw();
+	}
 }
 
 void GameObject::Destroy()
 {
+	LOG_DEBUG_("Destroying GO: {}", m_Name);
+
+	if (m_PendingDestroy)
+		return;
+
 	m_PendingDestroy = true;
 
-	//let all our components know, we are going to be destroyed...
-	m_Components.Iterate
-	(
-		[](const std::unique_ptr<Component>& pComponent)
-		{
-			pComponent->m_PendingDestroy = true;
-		}
-	);
-
-	//let all our children know they are going to be destroyed....
-	m_Children.Iterate
-	(
-		[](const std::unique_ptr<GameObject>& pChild)
-		{
-			pChild->m_PendingDestroy = true;
-
-			//let all components of our children know they are going to be destroyed...
-			pChild->m_Components.Iterate
-			(
-				[](const std::unique_ptr<Component>& pComponent)
-				{
-					pComponent->m_PendingDestroy = true;
-				}
-			);
-		}
-	);
 
 	if (m_pParent)
 		m_pParent->RemoveChild(this);
@@ -165,9 +133,6 @@ void GameObject::Destroy()
 
 void GameObject::OnEnable()
 {
-	if (m_PendingDestroy) 
-		return;
-
 	StatefullObject::OnEnable();
 
 	if (m_pParent)
@@ -177,7 +142,7 @@ void GameObject::OnEnable()
 		{
 			//we are not in the enabled children, disable
 			parentEnabledChildren.emplace_back(this);
-			m_pParent->m_DisabledChildren.Remove(this);
+			m_pParent->m_DisabledChildren.PendRemove(this);
 		}
 	}
 	else if (m_pScene) //we don't have a parent, do we have a scene?
@@ -189,16 +154,13 @@ void GameObject::OnEnable()
 			//we are disabled, enable
 			sceneEnabledGameobjects.emplace_back(this);
 
-			m_pScene->GetDisabledGameObjects().Remove(this);
+			m_pScene->GetDisabledGameObjects().PendRemove(this);
 		}
 	}
 }
 
 void GameObject::OnDisable()
 {
-	if (m_PendingDestroy) 
-		return;
-
 	StatefullObject::OnDisable();
 
 	if (m_pParent)
@@ -208,7 +170,7 @@ void GameObject::OnDisable()
 		{
 			//we are not in the disabled children, enable...
 			parentDisabledChildren.emplace_back(this);
-			m_pParent->m_EnabledChildren.Remove(this);
+			m_pParent->m_EnabledChildren.PendRemove(this);
 		}
 	}
 	else if (m_pScene) //we don't have a parent, do we have a scene?
@@ -220,23 +182,17 @@ void GameObject::OnDisable()
 			//we are enabled, disable
 			sceneDisabledGameObjects.emplace_back(this);
 
-			m_pScene->GetEnabledGameObjects().Remove(this);
+			m_pScene->GetEnabledGameObjects().PendRemove(this);
 		}
 	}
 }
 
 void GameObject::BroadcastOverlap(const CollisionResult& collision)
 {
-	if (m_PendingDestroy) 
-		return;
-
-	m_EnabledComponents.Iterate
-	(
-		[&collision](Component* pComponent)
-		{
-			pComponent->OnOverlap(collision);
-		}
-	);
+	for (Component* pComponent : m_EnabledComponents.GetVector())
+	{
+		pComponent->OnOverlap(collision);
+	}
 }
 
 Transform& GameObject::GetTransform()
@@ -257,8 +213,8 @@ void GameObject::AddChild(GameObject* pChild)
 		pChild->Start();
 	}
 
-	m_Children.GetVector().emplace_back(std::unique_ptr<GameObject>(pChild));
-	m_EnabledChildren.GetVector().emplace_back(pChild);
+	m_Children.PendPushBack(std::unique_ptr<GameObject>(pChild));
+	m_EnabledChildren.PendPushBack(pChild);
 }
 
 void GameObject::RemoveChild(GameObject* pChild)
@@ -266,11 +222,11 @@ void GameObject::RemoveChild(GameObject* pChild)
 	ASSERT(pChild);
 
 	if (pChild->IsEnabled())
-		m_EnabledChildren.Remove(pChild);
+		m_EnabledChildren.PendRemove(pChild);
 	else
-		m_DisabledChildren.Remove(pChild);
+		m_DisabledChildren.PendRemove(pChild);
 
-	m_Children.RemoveIf([pChild](const std::unique_ptr<GameObject>& child) { return child.get() == pChild; });
+	m_Children.PendRemove(std::ranges::find_if(m_Children.GetVector(), [pChild](const std::unique_ptr<GameObject>& child) { return child.get() == pChild; })->get());
 }
 
 ///**
@@ -323,17 +279,17 @@ GameObject* GameObject::GetRootParent()
 	return m_pParent->GetRootParent();
 }
 
-const DeferredRemovalVector<std::unique_ptr<GameObject>>& GameObject::GetChildren()
+const DeferredVector<std::unique_ptr<GameObject>, GameObject*>& GameObject::GetChildren()
 {
 	return m_Children;
 }
 
-DeferredRemovalVector<GameObject*>& GameObject::GetEnabledChildren()
+DeferredVector<GameObject*, GameObject*>& GameObject::GetEnabledChildren()
 {
 	return m_EnabledChildren;
 }
 
-DeferredRemovalVector<GameObject*>& GameObject::GetDisabledChildren()
+DeferredVector<GameObject*, GameObject*>& GameObject::GetDisabledChildren()
 {
 	return m_DisabledChildren;
 }
@@ -349,17 +305,17 @@ const GameObject* GameObject::GetChildByName(const std::string& name) const
 	return nullptr;
 }
 
-const DeferredRemovalVector<std::unique_ptr<Component>>& GameObject::GetComponents()
+const DeferredVector<std::unique_ptr<Component>, Component*>& GameObject::GetComponents()
 {
 	return m_Components;
 }
 
-DeferredRemovalVector<Component*>& GameObject::GetEnabledComponents()
+DeferredVector<Component*, Component*>& GameObject::GetEnabledComponents()
 {
 	return m_EnabledComponents;
 }
 
-DeferredRemovalVector<Component*>& GameObject::GetDisabledComponents()
+DeferredVector<Component*, Component*>& GameObject::GetDisabledComponents()
 {
 	return m_DisabledComponents;
 }
@@ -367,6 +323,21 @@ DeferredRemovalVector<Component*>& GameObject::GetDisabledComponents()
 std::string GameObject::GetName() const
 {
 	return m_Name;
+}
+
+bool GameObject::HasTag(const std::string& tag) const
+{
+	return m_Tags.contains(tag);
+}
+
+void GameObject::AddTag(const std::string& tag)
+{
+	m_Tags.emplace(tag);
+}
+
+void GameObject::RemoveTag(const std::string& tag)
+{
+	m_Tags.erase(tag);
 }
 
 void GameObject::SetParent(GameObject* pParent)
@@ -385,4 +356,8 @@ GameObject::GameObject(const std::string& name)
 {
 }
 
-GameObject::~GameObject() = default;
+GameObject::~GameObject()
+{
+	LOG_DEBUG_("GameObject Destroyed: {}", m_Name);
+}
+ 

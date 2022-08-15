@@ -135,9 +135,9 @@ void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelT
 				//pixel is black, spawn a wall at the grid cell.
 				GameObject* go = new GameObject(fmt::format("Grid-{}_{}.Wall", x, y));
 				go->GetTransform().SetPosition(pos);
-
+				go->AddTag("wall");
 				//invisible box collider.
-				go->AddComponent(new BoxColliderComponent({ m_CellSize, m_CellSize }, true, true, { 0.f, 0.f }));
+				go->AddComponent(new BoxColliderComponent({ m_CellSize, m_CellSize }, true, { 0.f, 0.f }));
 
 #ifdef _DEBUG
 				go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
@@ -165,10 +165,10 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 			(
 				{ m_BoundsColliderSize, playFieldBounds.topRight.y - playFieldBounds.bottomRight.y + m_BoundsColliderSize },
 				true,
-				true,
 				{ 1.f, 0.f }
 			)
 		);
+		go->AddTag("wall");
 
 #ifdef _DEBUG
 			go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
@@ -189,10 +189,10 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 			(
 				{ m_BoundsColliderSize, playFieldBounds.topRight.y - playFieldBounds.bottomRight.y + m_BoundsColliderSize },
 				true,
-				true,
 				{ 0.f, 0.f }
 			)
 		);
+		go->AddTag("wall");
 
 #ifdef _DEBUG
 		go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
@@ -213,10 +213,11 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 			(
 				{ playFieldBounds.topRight.x - playFieldBounds.topLeft.x + m_BoundsColliderSize, m_BoundsColliderSize },
 				true,
-				true,
 				{ 0.f, 0.f }
 			)
 		);
+
+		go->AddTag("wall");
 
 #ifdef _DEBUG
 		go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
@@ -237,10 +238,11 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 			(
 				{ playFieldBounds.topRight.x - playFieldBounds.topLeft.x + m_BoundsColliderSize, m_BoundsColliderSize },
 				true,
-				true,
 				{ 0.f, 1.f }
 			)
 		);
+
+		go->AddTag("wall");
 
 #ifdef _DEBUG
 		go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();

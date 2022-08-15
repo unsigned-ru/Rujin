@@ -1,8 +1,9 @@
 ﻿#include "RujinPCH.h"
 #include "Collider.h"
 
-rujin::Collider::Collider(ColliderComponent* pComponent, const bool isStatic, const glm::vec2& pivot)
-	: m_pComponent(pComponent)
+rujin::Collider::Collider(ColliderComponent* pComponent, const bool isStatic, const glm::vec2& pivot, CollisionLayer collisionLayer)
+	: m_CollisionLayer(collisionLayer)
+	, m_pComponent(pComponent)
 	, m_Pivot(pivot)
 	, m_IsStatic(isStatic)
 {
@@ -26,4 +27,9 @@ bool rujin::Collider::IsStatic() const
 rujin::ColliderComponent* rujin::Collider::GetComponent() const
 {
 	return m_pComponent;
+}
+
+rujin::CollisionLayer rujin::Collider::GetCollisionLayer() const
+{
+	return m_CollisionLayer;
 }

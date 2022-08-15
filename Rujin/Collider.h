@@ -1,5 +1,7 @@
 ﻿#ifndef COLLIDER_H
 #define COLLIDER_H
+#include "CollisionLayers.h"
+#include "CollisionQuadTree.h"
 #include "Structs.h"
 
 
@@ -10,7 +12,7 @@ namespace rujin
 	class Collider
 	{
 	public:
-		explicit Collider(ColliderComponent* pComponent, bool isStatic, const glm::vec2& pivot);
+		explicit Collider(ColliderComponent* pComponent, bool isStatic, const glm::vec2& pivot, CollisionLayer collisionLayer);
 		virtual ~Collider() = default;
 
 		Collider(const Collider&) = delete;
@@ -27,11 +29,17 @@ namespace rujin
 		bool IsStatic() const;
 
 		ColliderComponent* GetComponent() const;
+		CollisionLayer GetCollisionLayer() const;
 
 	protected:
+		CollisionLayer m_CollisionLayer;
 		ColliderComponent* m_pComponent;
 		glm::vec2 m_Pivot;
 		bool m_IsStatic;
+
+	private:
+		friend class CollisionQuadTree;
+		CollisionQuadTree* m_pOwningQuadTree = nullptr;
 	};
 
 }

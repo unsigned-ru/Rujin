@@ -7,10 +7,11 @@
 #include "ProjectileMovementComponent.h"
 #include "TankComponent.h"
 
-TankBulletComponent::TankBulletComponent(uint8_t maxBounces, float bulletSpeed, float damage)
+TankBulletComponent::TankBulletComponent(TankComponent* pOwner, uint8_t maxBounces, float bulletSpeed, float damage)
 	: m_MaxBounces(maxBounces)
 	, m_BulletSpeed(bulletSpeed)
 	, m_Damage(damage)
+	, m_pOwningTank(pOwner)
 {
 }
 
@@ -21,9 +22,14 @@ void TankBulletComponent::Start()
 	ASSERT_MSG(GameObject()->GetComponent<BoxColliderComponent>(), "This component requires a BoxColliderComponent to be present on the GameObject.");
 }
 
+void TankBulletComponent::FixedUpdate()
+{
+	m_HitWallThisFrame = false;
+}
+
 void TankBulletComponent::OnOverlap(const CollisionResult& result)
 {
-	LOG_DEBUG("Overlap");
+	
 	if (TankComponent* pTank = result.other->GetComponent()->GameObject()->GetComponent<TankComponent>())
 	{
 		//we hit a tank
@@ -31,9 +37,13 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 
 		//remove gameobject
 		m_pGameObject->Destroy();
+
 	}
 	else
 	{
+		if (m_HitWallThisFrame)
+			return;
+
 		const glm::vec2& velocity = m_pProjectileMovement->GetVelocity();
 		//we hit something else.
 		switch (result.collisionDirection)
@@ -48,7 +58,9 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 			break;
 		}
 
-		if (++m_CurrentBounces > 5)
+		m_HitWallThisFrame = true;
+
+		if (++m_CurrentBounces > m_MaxBounces)
 		{
 			m_pGameObject->Destroy();
 		}

@@ -18,6 +18,8 @@ public:
 	virtual void FixedUpdate() {};
 	virtual void OnGui(SDL_Window* /*pWindow*/) {};
 	virtual void Draw() const {};
+
+
 	virtual void Destroy() {};
 };
 

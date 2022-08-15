@@ -12,7 +12,6 @@ namespace rujin
 	{
 	public:
 		explicit Component() = default;
-		~Component() override = default;
 		Component(const Component& other) = delete;
 		Component(Component&& other) = delete;
 		Component& operator=(const Component& other) = delete;

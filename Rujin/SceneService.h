@@ -24,6 +24,7 @@ namespace rujin
 		virtual void LateStart() = 0;
 		virtual void Update() = 0;
 		virtual void FixedUpdate() = 0;
+		virtual void ProcessAdditionsAndRemovals() = 0;
 		virtual void OnGui(SDL_Window* pWindow) = 0;
 		virtual void Draw() const = 0;
 

@@ -24,6 +24,23 @@ namespace rujin
 	enum class VSyncMode : int { ON = 1, OFF = 0, ADAPTIVE = -1 };
 	enum class Direction {LEFT, UP, RIGHT, DOWN};
 
+	inline Direction GetInverted(Direction dir)
+	{
+		switch (dir)
+		{
+			case Direction::LEFT:
+				return Direction::RIGHT;
+			case Direction::UP:
+				return Direction::DOWN;
+			case Direction::RIGHT:
+				return Direction::LEFT;
+			case Direction::DOWN:
+				return Direction::UP;
+			default:
+				return dir;
+		}
+	}
+
 	struct WindowContext
 	{
 		std::string windowTitle{};

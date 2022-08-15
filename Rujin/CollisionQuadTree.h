@@ -1,5 +1,6 @@
 #ifndef COLLISION_QUAD_TREE_H
 #define COLLISION_QUAD_TREE_H
+#include "DefferedRemovalVector.h"
 #include "IObserver.h"
 #include "Structs.h"
 
@@ -8,9 +9,9 @@ namespace rujin
 	class CollisionQuadTree final : public event::IObserver
 	{
 	public:
-		CollisionQuadTree(const Rectf& bounds);
-		CollisionQuadTree(uint32_t maxObjects, uint32_t maxLevels, uint32_t level, const Rectf& bounds, CollisionQuadTree* pParent);
-
+		explicit CollisionQuadTree(const Rectf& bounds);
+		explicit CollisionQuadTree(uint32_t maxObjects, uint32_t maxLevels, uint32_t level, const Rectf& bounds, CollisionQuadTree* pParent);
+		~CollisionQuadTree() override = default;
 		// Inserts pCollider into our quadtree.
 		Collider* Insert(Collider* pCollider);
 
@@ -57,6 +58,9 @@ namespace rujin
 
 		CollisionQuadTree* GetRoot();
 
+		// Removes via stored ptr. For internal use only.
+		void Remove_(Collider* pCollider);
+
 	private:
 		std::unique_ptr<CollisionQuadTree> m_Children[4];
 		inline static constexpr int8_t s_ChildIdxNE = 0;
@@ -70,7 +74,7 @@ namespace rujin
 
 		CollisionQuadTree* m_pParent;
 		
-		std::vector<Collider*> m_Colliders;
+		DeferredVector<Collider*, Collider*> m_Colliders;
 
 		// How deep the current node is from the base node. 
 		// The first node starts at 0 and then its child node 	

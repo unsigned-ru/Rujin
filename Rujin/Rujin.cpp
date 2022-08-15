@@ -97,6 +97,7 @@ void rujin::Rujin::Run()
 	LOG_DEBUG("Loading Complete.");
 
 	LOG_DEBUG("Starting Game...");
+	sceneService.ProcessAdditionsAndRemovals();
 	sceneService.Start();
 	input.Start();
 	sceneService.LateStart();
@@ -141,6 +142,8 @@ void rujin::Rujin::Run()
 			sceneService.FixedUpdate();
 			lag -= m_FixedUpdateTimestep;
 		}
+
+		sceneService.ProcessAdditionsAndRemovals();
 
 		/* render */
 		renderer.Render();

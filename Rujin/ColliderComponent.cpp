@@ -7,11 +7,6 @@
 #include "Scene.h"
 #include "ServiceLocator.h"
 
-rujin::ColliderComponent::ColliderComponent(bool autoResolve)
-	: m_AutoResolve(autoResolve)
-{
-}
-
 void rujin::ColliderComponent::Start()
 {
 	m_pGameObject->GetScene()->GetCollisionQuadTree()->Insert(GetCollider());
@@ -28,15 +23,6 @@ void rujin::ColliderComponent::Draw() const
 		renderer.SetColor();
 	}
 #endif
-}
-
-void rujin::ColliderComponent::OnOverlap(const CollisionResult& result)
-{
-	if (m_AutoResolve)
-	{
-		GetCollider()->ResolveOverlap(result);
-		GameObject()->GetTransform().UpdateSelfAndChildren();
-	}
 }
 
 #ifdef _DEBUG

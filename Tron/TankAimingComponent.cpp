@@ -14,7 +14,7 @@ void TankAimingComponent::AimAt(const glm::vec2& direction)
 	const float angleRequired = atan2f(direction.y, direction.x);
 
 	//rotate GO so we face the direction
-	transform.SetLocalRotation(angleRequired);
+	transform.SetRotation(angleRequired);
 }
 
 void TankAimingComponent::GetBulletSocket(Position& pos, Rotation& rot, glm::vec2& barrelDirection) const

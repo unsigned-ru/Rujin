@@ -1,6 +1,8 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
+#include <set>
+
 #include "IGameLoopObject.h"
 #include "Transform.h"
 #include "Component.h"
@@ -32,8 +34,10 @@ namespace rujin
 		void LateStart() override;
 		void Update() override;
 		void FixedUpdate() override;
+		void ProcessAdditionsAndRemovals();
 		void OnGui(SDL_Window* pWindow) override;
 		void Draw() const override;
+
 		void Destroy() override;
 
 		void OnEnable() override;
@@ -48,8 +52,8 @@ namespace rujin
 				return nullptr;
 
 			pComponent->m_pGameObject = this;
-			m_Components.GetVector().emplace_back(pComponent);
-			m_EnabledComponents.GetVector().emplace_back(pComponent);
+			m_Components.PendPushBack(std::unique_ptr<ComponentType>(pComponent));
+			m_EnabledComponents.PendPushBack(pComponent);
 
 			return pComponent;
 		}
@@ -64,6 +68,10 @@ namespace rujin
 		ComponentType* GetComponent() const
 		{
 			for (const auto& component : m_Components.GetVector())
+				if (const auto result = dynamic_cast<ComponentType*>(component.get()); result != nullptr)
+					return result;
+
+			for (const auto& component : m_Components.GetElementsToAdd())
 				if (const auto result = dynamic_cast<ComponentType*>(component.get()); result != nullptr)
 					return result;
 
@@ -93,18 +101,22 @@ namespace rujin
 		GameObject* GetParent() const;
 		GameObject* GetRootParent();
 
-		const DeferredRemovalVector<std::unique_ptr<GameObject>>& GetChildren();
-		DeferredRemovalVector<GameObject*>& GetEnabledChildren();
-		DeferredRemovalVector<GameObject*>& GetDisabledChildren();
+		const DeferredVector<std::unique_ptr<GameObject>, GameObject*>& GetChildren();
+		DeferredVector<GameObject*, GameObject*>& GetEnabledChildren();
+		DeferredVector<GameObject*, GameObject*>& GetDisabledChildren();
 
 		const GameObject* GetChildByName(const std::string& name) const;
 
-		const DeferredRemovalVector<std::unique_ptr<Component>>& GetComponents();
-		DeferredRemovalVector<Component*>& GetEnabledComponents();
-		DeferredRemovalVector<Component*>& GetDisabledComponents();
+		const DeferredVector<std::unique_ptr<Component>, Component*>& GetComponents();
+		DeferredVector<Component*, Component*>& GetEnabledComponents();
+		DeferredVector<Component*, Component*>& GetDisabledComponents();
 
 		Transform& GetTransform();
 		std::string GetName() const;
+
+		bool HasTag(const std::string& tag) const;
+		void AddTag(const std::string& tag);
+		void RemoveTag(const std::string& tag);
 
 	private:
 		friend class Scene;
@@ -117,15 +129,17 @@ namespace rujin
 		GameObject* m_pParent{};
 		Scene* m_pScene{};
 
-		DeferredRemovalVector<std::unique_ptr<GameObject>> m_Children{};
-		DeferredRemovalVector<GameObject*> m_EnabledChildren{};
-		DeferredRemovalVector<GameObject*> m_DisabledChildren{};
+		DeferredVector<std::unique_ptr<GameObject>, GameObject*> m_Children{};
+		DeferredVector<GameObject*, GameObject*> m_EnabledChildren{};
+		DeferredVector<GameObject*, GameObject*> m_DisabledChildren{};
 
-		DeferredRemovalVector<std::unique_ptr<Component>> m_Components{};
-		DeferredRemovalVector<Component*> m_EnabledComponents{};
-		DeferredRemovalVector<Component*> m_DisabledComponents{};
+		DeferredVector<std::unique_ptr<Component>, Component*> m_Components{};
+		DeferredVector<Component*, Component*> m_EnabledComponents{};
+		DeferredVector<Component*, Component*> m_DisabledComponents{};
 
 		Transform m_Transform = Transform(this);
+
+		std::set<std::string> m_Tags{};
 
 		bool m_IsInitialized = false;
 	};

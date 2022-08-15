@@ -5,8 +5,8 @@
 #include "GameObject.h"
 #include "CollisionFunctions.h"
 
-rujin::BoxCollider::BoxCollider(BoxColliderComponent* pComponent, const glm::vec2& size, const bool isStatic, const glm::vec2& pivot)
-	: Collider(pComponent, isStatic, pivot)
+rujin::BoxCollider::BoxCollider(BoxColliderComponent* pComponent, const glm::vec2& size, const bool isStatic, const glm::vec2& pivot, CollisionLayer collisionLayer)
+	: Collider(pComponent, isStatic, pivot, collisionLayer)
 	, m_Size(size)
 {
 }

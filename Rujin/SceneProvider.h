@@ -29,6 +29,7 @@ namespace rujin
 		void LateStart() override;
 		void Update() override;
 		void FixedUpdate() override;
+		void ProcessAdditionsAndRemovals() override;
 		void OnGui(SDL_Window* pWindow) override;
 		void Draw() const override;
 

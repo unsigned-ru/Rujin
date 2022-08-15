@@ -34,9 +34,18 @@ void rujin::SceneProvider::Update()
 
 void rujin::SceneProvider::FixedUpdate()
 {
+	LOG_DEBUG("Fixed Update");
 	for (const auto& scene : m_Scenes)
 	{
 		scene->FixedUpdate();
+	}
+}
+
+void rujin::SceneProvider::ProcessAdditionsAndRemovals()
+{
+	for (const auto& scene : m_Scenes)
+	{
+		scene->ProcessAdditionsAndRemovals();
 	}
 }
 

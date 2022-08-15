@@ -25,8 +25,11 @@ enum class LogLevel : uint32_t
 #define LOG_ERROR_(fmt, ...)  Logger::LogError(Logger::LogString{fmt, __FILE__, __LINE__, true}, __VA_ARGS__)
 
 #define ASSERT(ptr) if (!(ptr)) {LOG_ERROR("ASSERTION FAILED:" #ptr " was nullptr\n"); return;}
+#define ASSERT_RV(ptr, rv) if (!(ptr)) {LOG_ERROR("ASSERTION FAILED:" #ptr " was nullptr\n"); return rv;}
 #define ASSERT_MSG(ptr, msg) if (!(ptr)) {LOG_ERROR(msg); return;}
+#define ASSERT_MSG_RV(ptr, rv, msg) if (!(ptr)) {LOG_ERROR(msg); return rv;}
 #define ASSERT_MSG_(ptr, fmt, ...) if (!(ptr)) { LOG_ERROR_(fmt, ...); return; }
+#define ASSERT_MSG_RV_(ptr, rv, fmt, ...) if (!(ptr)) { LOG_ERROR_(fmt, ...); return rv; }
 #pragma endregion
 
 class Logger

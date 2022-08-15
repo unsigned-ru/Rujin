@@ -1,131 +1,120 @@
-﻿
+﻿#ifndef DEFFERED_REMOVAL_VECTOR_H
+#define DEFFERED_REMOVAL_VECTOR_H
+
+
 #include <functional>
 #include <stack>
+#include <memory>
+#include <utility>
 
-template<typename ElementType>
-class DeferredRemovalVector
+template<typename ElementType, typename PointerType>
+class DeferredVector
 {
 public:
-	explicit DeferredRemovalVector() = default;
-	explicit DeferredRemovalVector(const std::vector<ElementType>& vec)
+	explicit DeferredVector() = default;
+	explicit DeferredVector(const std::vector<ElementType>& vec)
 		: m_Elements(vec)
 	{}
 
 	std::vector<ElementType>& GetVector() { return m_Elements; }
 	const std::vector<ElementType>& GetVector() const { return m_Elements; }
+	const std::vector<ElementType>& GetElementsToAdd() const { return m_ElementsToAdd; }
 
-	std::vector<typename std::vector<ElementType>::iterator>&  GetElementsToRemove() { return m_ElementsToRemove; }
-	const std::vector<typename std::vector<ElementType>::iterator>&  GetElementsToRemove() const { return m_ElementsToRemove; }
+	std::vector<PointerType>&  GetElementsToRemove() { return m_ElementsToRemove; }
+	const std::vector<PointerType>&  GetElementsToRemove() const { return m_ElementsToRemove; }
 
-	bool IsIterating() { return m_Iterating.empty();  }
-	
-	void SetIterating(const bool isIterating)
+	void ProcessAdditions()
 	{
-		if (isIterating)
+		/*Pending additions*/
+		if constexpr (!std::is_pointer_v<ElementType>)
 		{
-			m_Iterating.push(true);
+			if(std::is_same_v<std::decay_t<ElementType>, std::unique_ptr<typename std::decay_t<ElementType>::element_type>>)
+			{
+				for (auto& element : m_ElementsToAdd)
+				{
+					m_Elements.push_back(std::move(element));
+					m_OnAddedCallback(m_Elements.at(m_Elements.size() -1));
+				}
+			}
 		}
-		else if (!m_Iterating.empty())
+		else
 		{
-			m_Iterating.pop();
+			for (auto& element : m_ElementsToAdd)
+			{
+				m_Elements.push_back(element);
+				m_OnAddedCallback(element);
+			}
+		}
 
-			if (m_Iterating.empty())
-				RemovePending();
-		}
+		m_ElementsToAdd.clear();
 	}
 
-	void RemovePending()
+	void ProcessRemovals()
 	{
-		for (auto it : m_ElementsToRemove)
-			m_Elements.erase(it);
+		/*Pending removal*/
+		//remove...
+		for (PointerType pElementToRemove : m_ElementsToRemove)
+		{
+			m_OnRemoveCallback(pElementToRemove);
 
+			if constexpr (std::is_pointer<ElementType>())
+			{
+				m_Elements.erase(std::find_if(m_Elements.begin(), m_Elements.end(), [pElementToRemove](ElementType element) { return element == pElementToRemove; }));
+			}
+			else
+			{
+				m_Elements.erase(std::find_if(m_Elements.begin(), m_Elements.end(), [pElementToRemove](ElementType& element) { return element.get() == pElementToRemove; }));
+			}
+		}
+
+		//clear
 		m_ElementsToRemove.clear();
 	}
 
-	void RemoveIf(const std::function<bool(const ElementType&)>& fn)
-	{
-		auto it = std::find_if(m_Elements.begin(), m_Elements.end(), fn);
 
-		if (IsIterating())
-			//pend removal.
-			m_ElementsToRemove.emplace_back(it);
-		else
-			//remove instantly.
-			m_Elements.erase(it);
-	}
-
-
-#pragma region Pointer functions.
-
-	void Remove(ElementType pElementToRemove) requires std::is_pointer_v<ElementType>
+	void PendRemove(ElementType pElementToRemove) requires std::is_pointer_v<ElementType>
 	{
 		if (!pElementToRemove) return;
 
-		if (IsIterating())
-			//pend removal.
-			m_ElementsToRemove.emplace_back(std::find(m_Elements.begin(), m_Elements.end(), pElementToRemove));
+		m_ElementsToRemove.emplace_back(pElementToRemove);
+	}
+
+	void PendRemove(PointerType elementToRemove) requires !std::is_pointer_v<ElementType>
+	{
+		m_ElementsToRemove.emplace_back(elementToRemove);
+	}
+
+	void PendPushBack(ElementType elementToAdd)
+	{
+		if constexpr (!std::is_pointer_v<ElementType>)
+		{
+			if constexpr (std::is_same_v<std::decay_t<ElementType>, std::unique_ptr<typename std::decay_t<ElementType>::element_type>>)
+				m_ElementsToAdd.emplace_back(std::move(elementToAdd));
+		}
 		else
-			//remove instantly.
-			m_Elements.erase(std::find(m_Elements.begin(), m_Elements.end(), pElementToRemove));
+		{
+			m_ElementsToAdd.push_back(elementToAdd);
+		}
 	}
 
-	//const for-each
-	template<typename UnaryPredicate>
-	requires std::is_pointer_v<ElementType> && std::is_invocable_v<UnaryPredicate, ElementType>
-	void Iterate(UnaryPredicate&& fn) const
+	void SetElementAddedCallback(const std::function<void(std::conditional_t<std::is_pointer_v<ElementType>, ElementType, ElementType&>)>& callback)
 	{
-		for (const ElementType element : m_Elements)
-			fn(element);
+		m_OnAddedCallback = callback;
 	}
 
-	//for-each
-	template<typename UnaryPredicate>
-	requires std::is_pointer_v<ElementType> && std::is_invocable_v<UnaryPredicate, ElementType>
-	void Iterate(UnaryPredicate&& fn)
+	void SetElementRemovedCallback(const std::function<void(PointerType)>& callback)
 	{
-		SetIterating(true);
-		for (ElementType element : m_Elements)
-			fn(element);
-		SetIterating(false);
+		m_OnRemoveCallback = callback;
 	}
-#pragma endregion
-
-#pragma region reference functions.
-	void Remove(const ElementType& pElementToRemove) requires !std::is_pointer_v<ElementType>
-	{
-		if (IsIterating())
-			//pend removal.
-			m_ElementsToRemove.emplace_back(std::find(m_Elements.begin(), m_Elements.end(), pElementToRemove));
-		else
-			//remove instantly.
-			m_Elements.erase(std::find(m_Elements.begin(), m_Elements.end(), pElementToRemove));
-	}
-
-	//const foreach
-	template<typename UnaryPredicate>
-	requires !std::is_pointer_v<ElementType> && std::is_invocable_v<UnaryPredicate, ElementType>
-	void Iterate(UnaryPredicate&& fn) const
-	{
-		for (const ElementType& element : m_Elements)
-			fn(element);
-	}
-
-	//foreach
-	template<typename UnaryPredicate>
-	requires !std::is_pointer_v<ElementType> && std::is_invocable_v<UnaryPredicate, ElementType>
-	void Iterate(UnaryPredicate&& fn)
-	{
-		SetIterating(true);
-		for (ElementType& element : m_Elements)
-			fn(element);
-		SetIterating(false);
-	}
-
-#pragma endregion
 
 private:
+	std::vector<PointerType> m_ElementsToRemove{};
+	std::vector<ElementType> m_ElementsToAdd{};
 	std::vector<ElementType> m_Elements{};
-	std::vector<typename std::vector<ElementType>::iterator> m_ElementsToRemove{};
 
-	std::stack<bool> m_Iterating{};
+	std::function<void(std::conditional_t<std::is_pointer_v<ElementType>, ElementType, ElementType&>)> m_OnAddedCallback = [](std::conditional_t<std::is_pointer_v<ElementType>, ElementType, ElementType&>) {};
+	std::function<void(PointerType)> m_OnRemoveCallback = [](PointerType ) {};
 };
+
+
+#endif // Include Guard: DEFFERED_REMOVAL_VECTOR_H
