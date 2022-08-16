@@ -70,6 +70,10 @@ namespace rujin
 		{
 		}
 
+		explicit Rect(const glm::tvec2<T>& pos, const glm::vec2& size, const glm::vec2& pivot = { 0.5f, 0.5f })
+			: Rect(pos.x - size.x * pivot.x, pos.y - size.y * pivot.y, size.x, size.y)
+		{}
+
 		struct Vertices
 		{
 			Vertices() = default;

@@ -6,6 +6,11 @@
 #include "ServiceLocator.h"
 #include "Rutils/Math.h"
 
+TankAimingComponent::TankAimingComponent(float bulletSpawnDistance)
+	: m_BulletSpawnDistance(bulletSpawnDistance)
+{
+}
+
 void TankAimingComponent::AimAt(const glm::vec2& direction)
 {
 	Transform& transform = GameObject()->GetTransform();
@@ -20,7 +25,7 @@ void TankAimingComponent::AimAt(const glm::vec2& direction)
 void TankAimingComponent::GetBulletSocket(Position& pos, Rotation& rot, glm::vec2& barrelDirection) const
 {
 	const Transform& transform = m_pGameObject->GetTransform();
-	const glm::vec2 socketOffset = rutils::Rotate({ s_BulletSpawnDistance, 0.f }, transform.GetRotation());
+	const glm::vec2 socketOffset = rutils::Rotate({ m_BulletSpawnDistance, 0.f }, transform.GetRotation());
 
 	pos = transform.GetPosition() + socketOffset;
 	rot = atan2f(socketOffset.y, socketOffset.x);

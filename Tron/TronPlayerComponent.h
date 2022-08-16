@@ -8,10 +8,7 @@ class TankComponent;
 
 namespace rujin
 {
-	class TextureRenderComponent;
-	class CollisionQuadTree;
 	class InputService;
-	class BoxColliderComponent;
 }
 
 class TronPlayerComponent : public rujin::Component

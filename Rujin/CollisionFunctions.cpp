@@ -53,6 +53,10 @@ bool rujin::collision::IsIntersecting(const glm::vec2& p1, const glm::vec2& p2, 
 	const float tNear{ max(min(x1,x2),min(y1,y2)) };
 	const float tFar{ min(max(x1,x2), max(y1,y2)) };
 
+	//TODO: properly solve this
+	if (isnan(tNear) || isnan(tFar) || tNear == std::numeric_limits<float>::infinity() || tFar == std::numeric_limits<float>::infinity())
+		return false;
+
 	if (tNear > tFar)
 		return false;
 

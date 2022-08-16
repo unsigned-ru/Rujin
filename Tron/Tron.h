@@ -1,6 +1,8 @@
 ﻿#ifndef TRON_H
 #define TRON_H
 
+#include "AStar.h"
+#include "GridGraph.h"
 #include "IGame.h"
 
 #pragma region Forward Declarations
@@ -17,6 +19,8 @@ namespace rujin
 class Tron final : public rujin::IGame
 {
 public:
+	explicit Tron() = default;
+	~Tron() override;
 	void Configure(settings::InitParams& params) override;
 	void Load() override;
 
@@ -29,6 +33,10 @@ private:
 	const float m_CellSize = 25.f;
 	const glm::ivec2 m_GridDimensions{ 29, 26 };
 	const float m_BoundsColliderSize{ 30.f };
+
+	/* Pathfinding */
+	graph::GridGraph<graph::GridTerrainNode, graph::GraphConnection>* m_pGridGraph;
+	AStar<graph::GridTerrainNode, graph::GraphConnection>* m_pAStar;
 };
 
 

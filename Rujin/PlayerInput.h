@@ -13,6 +13,12 @@ namespace rujin
 	{
 	public:
 		explicit PlayerInput(PlayerIndex playerIndex);
+		~PlayerInput();
+
+		PlayerInput(const PlayerInput&) = delete;
+		PlayerInput(PlayerInput&&) noexcept = delete;
+		PlayerInput& operator=(const PlayerInput&) = delete;
+		PlayerInput& operator=(PlayerInput&&) noexcept = delete;
 
 		void Update();
 

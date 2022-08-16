@@ -233,6 +233,7 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClInclude Include="..\3rdParty\imgui-1.86\imstb_rectpack.h" />
     <ClInclude Include="..\3rdParty\imgui-1.86\imstb_textedit.h" />
     <ClInclude Include="..\3rdParty\imgui-1.86\imstb_truetype.h" />
+    <ClInclude Include="AStar.h" />
     <ClInclude Include="BaseInputProvider.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="BoxColliderComponent.h" />
@@ -247,11 +248,19 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClInclude Include="FMOD_AudioProvider.h" />
     <ClInclude Include="FpsComponent.h" />
     <ClInclude Include="GamepadInputSession.h" />
+    <ClInclude Include="GraphEnums.h" />
+    <ClInclude Include="GraphNodeTypes.h" />
+    <ClInclude Include="GraphVisuals.h" />
+    <ClInclude Include="GridGraph.h" />
+    <ClInclude Include="GraphConnectionTypes.h" />
+    <ClInclude Include="HeuristicFunctions.h" />
+    <ClInclude Include="IGraph.h" />
     <ClInclude Include="KeyboardAndMouseInputSession.h" />
     <ClInclude Include="CollisionQuadTree.h" />
     <ClInclude Include="ProjectileMovementComponent.h" />
     <ClInclude Include="RenderService.h" />
     <ClInclude Include="Rutils\Math.h" />
+    <ClInclude Include="Rutils\String.h" />
     <ClInclude Include="SceneService.h" />
     <ClInclude Include="ResourceService.h" />
     <ClInclude Include="Rutils\StandardColors.h" />
@@ -381,10 +390,17 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClCompile Include="ColliderComponent.cpp" />
     <ClCompile Include="CollisionFunctions.cpp" />
     <ClCompile Include="FMOD_AudioProvider.cpp" />
+    <ClCompile Include="GraphConnectionTypes.cpp" />
     <ClCompile Include="InputSession.cpp" />
     <ClCompile Include="KeyboardAndMouseInputSession.cpp" />
     <ClCompile Include="CollisionQuadTree.cpp" />
     <ClCompile Include="ProjectileMovementComponent.cpp" />
+    <ClCompile Include="Rutils\String.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="StatefullObject.cpp" />
     <ClCompile Include="XInputKeyboardAndMouseSession.cpp" />
     <ClCompile Include="PlayerInput.cpp" />

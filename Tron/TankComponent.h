@@ -16,7 +16,19 @@ class TankMovementComponent;
 class TankComponent final : public Component
 {
 public:
-	explicit TankComponent(float maxHealth, TankMovementComponent* pTankMovement, TankAimingComponent* pTankAiming, TextureRenderComponent* pTankBodyRenderer, TextureRenderComponent* pTankTurretRenderer, BoxColliderComponent* pTankCollider);
+	explicit TankComponent
+	(
+		TankMovementComponent* pTankMovement,
+		TankAimingComponent* pTankAiming,
+		TextureRenderComponent* pTankBodyRenderer,
+		TextureRenderComponent* pTankTurretRenderer,
+		BoxColliderComponent* pTankCollider,
+		const Recti& bulletSourceRect,
+		float maxHealth = 100.f,
+		float bulletSpeed = 300.f,
+		float bulletDamage = 25.f,
+		uint8_t bulletBounces = 5
+	);
 
 	TankMovementComponent* GetMovement() const;
 	TankAimingComponent* GetAiming() const;
@@ -27,7 +39,6 @@ public:
 	BoxColliderComponent* GetColliderComponent() const;
 
 	void Shoot();
-
 	void TakeDamage(float damage);
 
 private:
@@ -39,14 +50,14 @@ private:
 
 	BoxColliderComponent* m_pBoxCollider = nullptr;
 
-	const uint8_t m_MaxBounces{ 5 };
-	const float m_BulletSpeed{ 200.f };
-	const float m_BulletDamage{ 25.f };
+	const Recti m_BulletSrcRect;
+
+	const uint8_t m_BulletBounces;
+	const float m_BulletSpeed;
+	const float m_BulletDamage;
 
 	const float m_MaxHealth;
 	float m_CurrentHealth;
-
-	inline static uint32_t s_BulletCount{ 1 };
 };
 
 #endif // Include Guard: TANK_COMPONENT_H

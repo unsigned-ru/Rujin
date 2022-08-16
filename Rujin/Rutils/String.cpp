@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "String.h"
 #include <algorithm>
 #include <sstream>
@@ -88,4 +86,9 @@ std::vector<std::string> rutils::SplitStringByDelimiters(const std::string& stri
 	}
 
 	return arguments;
+}
+
+bool rutils::StartsWith(const std::string& s, const std::string& startsWith)
+{
+	return s.rfind(startsWith, 0) != std::string::npos;
 }

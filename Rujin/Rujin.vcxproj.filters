@@ -72,6 +72,15 @@
     <Filter Include="Collision">
       <UniqueIdentifier>{6eed073a-9cc5-47bd-874c-4e5f7b30e937}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Pathfinding">
+      <UniqueIdentifier>{e8cdbb6c-9af4-4a19-be24-c269e423ac33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pathfinding\Graph">
+      <UniqueIdentifier>{c82577db-9916-456c-aa94-0182945aabbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pathfinding\AStar">
+      <UniqueIdentifier>{09d3abb1-0140-4ef2-a86d-d6c93194f637}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RujinPCH.h" />
@@ -273,6 +282,31 @@
     <ClInclude Include="CollisionLayers.h">
       <Filter>Collision</Filter>
     </ClInclude>
+    <ClInclude Include="GraphEnums.h">
+      <Filter>Pathfinding\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphNodeTypes.h">
+      <Filter>Pathfinding\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphVisuals.h">
+      <Filter>Pathfinding\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="GridGraph.h">
+      <Filter>Pathfinding\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphConnectionTypes.h">
+      <Filter>Pathfinding\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="IGraph.h">
+      <Filter>Pathfinding\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="HeuristicFunctions.h">
+      <Filter>Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="AStar.h">
+      <Filter>Pathfinding\AStar</Filter>
+    </ClInclude>
+    <ClInclude Include="Rutils\String.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Rujin.cpp">
@@ -407,6 +441,12 @@
     </ClCompile>
     <ClCompile Include="ProjectileMovementComponent.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphConnectionTypes.cpp">
+      <Filter>Pathfinding\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="Rutils\String.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

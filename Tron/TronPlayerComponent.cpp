@@ -93,19 +93,19 @@ void TronPlayerComponent::HandleMovement(const InputService& input)
 	{
 		if (inputIntensity > 0)
 			//we want to move right
-			m_pTank->GetMovement()->MoveRight(inputIntensity, deltaTime);
+			m_pTank->GetMovement()->MoveRight(abs(inputIntensity), deltaTime);
 		else
 			//we want to move left
-			m_pTank->GetMovement()->MoveLeft(inputIntensity, deltaTime);
+			m_pTank->GetMovement()->MoveLeft(abs(inputIntensity), deltaTime);
 	}
 	else if (input.IsAxisActionTriggered(m_PlayerIdx, static_cast<uint32_t>(AxisAction::MoveUp), &inputIntensity))
 	{
 		if (inputIntensity > 0)
 			//we want to move up
-			m_pTank->GetMovement()->MoveUp(inputIntensity, deltaTime);
+			m_pTank->GetMovement()->MoveUp(abs(inputIntensity), deltaTime);
 		else
 			//we want to move down
-			m_pTank->GetMovement()->MoveDown(inputIntensity, deltaTime);
+			m_pTank->GetMovement()->MoveDown(abs(inputIntensity), deltaTime);
 	}
 }
 

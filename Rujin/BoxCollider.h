@@ -22,7 +22,7 @@ namespace rujin
 
 		Rectf GetRect() const;
 
-		CollisionResult IsOverlapping(const Collider* pOther) override;
+		CollisionResult IsOverlapping(const Collider* pOther) const override;
 		void ResolveOverlap(const CollisionResult& result) override;
 
 	private:

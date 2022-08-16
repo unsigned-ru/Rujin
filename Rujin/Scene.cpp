@@ -5,6 +5,8 @@
 #include "CollisionQuadTree.h"
 #include "Rujin.h"
 
+#include <ranges>
+
 using namespace rujin;
 
 unsigned int Scene::m_IdCounter = 0;
@@ -30,14 +32,6 @@ Scene::Scene(const std::string& name, const Rectf& collisionTreeBounds, Camera* 
 			pObj->SetScene(this);
 			pObj->GetTransform().UpdateSelfAndChildren();
 			pObj->Start();
-		}
-	);
-
-	m_GameObjects.SetElementRemovedCallback
-	(
-		[](const GameObject* pObj)
-		{
-			LOG_DEBUG_("Sucessfully Removed GO: {}", pObj->GetName());
 		}
 	);
 }
@@ -88,7 +82,6 @@ void Scene::FixedUpdate()
 
 void Scene::ProcessAdditionsAndRemovals()
 {
-	LOG_DEBUG("Processing removals and additions");
 	m_InactiveGameObjects.ProcessRemovals();
 	m_ActiveGameObjects.ProcessRemovals();
 	m_GameObjects.ProcessRemovals();
@@ -148,6 +141,37 @@ void Scene::RemoveGameObject(GameObject* gameObject)
 		m_InactiveGameObjects.PendRemove(gameObject);
 
 	m_GameObjects.PendRemove(std::ranges::find_if(m_GameObjects.GetVector(), [gameObject](const std::unique_ptr<GameObject>& pObject) { return pObject.get() == gameObject; })->get());
+}
+
+GameObject* Scene::GetRootGameObjectByPredicate(const std::function<bool(GameObject*)>& predicate)
+{
+	const auto it = std::ranges::find_if(m_GameObjects.GetVector(), [&predicate](const std::unique_ptr<GameObject>& pObj) { return predicate(pObj.get()); });
+
+	if (it == m_GameObjects.GetVector().end())
+		return nullptr;
+
+	return it->get();
+}
+
+std::vector<GameObject*> Scene::GetAllRootGameObjectsByPredicate(const std::function<bool(GameObject*)>& predicate)
+{
+	std::vector<GameObject*> rv{};
+
+	for (const std::unique_ptr<GameObject>& pObj : m_GameObjects.GetVector())
+		if (GameObject* rawPtr = pObj.get(); predicate(rawPtr))
+			rv.emplace_back(rawPtr);
+
+	return rv;
+}
+
+void Scene::SetPathfinder(Pathfinder<graph::GridTerrainNode, graph::GraphConnection>* pPathfinder)
+{
+	m_pPathfinder = pPathfinder;
+}
+
+Pathfinder<graph::GridTerrainNode, graph::GraphConnection>* Scene::GetPathfinder()
+{
+	return m_pPathfinder;
 }
 
 DeferredVector<GameObject*, GameObject*>& Scene::GetEnabledGameObjects()

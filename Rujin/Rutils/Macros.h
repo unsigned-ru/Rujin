@@ -19,9 +19,7 @@
 
 #pragma endregion
 
-#define SAFE_DELETE(ptr)\
-		delete (ptr);\
-		(ptr) = nullptr;
+#define SAFE_DELETE(p) if (p) { delete (p); (p) = nullptr; }
 
 #ifdef PX_PHYSX_COMMON_API
 #define PX_SAFE_RELEASE(pInterface)\

@@ -12,6 +12,11 @@ rujin::PlayerInput::PlayerInput(const PlayerIndex playerIndex)
 {
 }
 
+rujin::PlayerInput::~PlayerInput()
+{
+	delete m_pInputSession;
+}
+
 void rujin::PlayerInput::Update()
 {
 	if (!m_pInputSession)

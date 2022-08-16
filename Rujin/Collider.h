@@ -20,7 +20,7 @@ namespace rujin
 		Collider& operator=(const Collider&) = delete;
 		Collider& operator=(Collider&&) noexcept = delete;
 
-		virtual CollisionResult IsOverlapping(const Collider* pOther) = 0;
+		virtual CollisionResult IsOverlapping(const Collider* pOther) const = 0;
 		virtual void ResolveOverlap(const CollisionResult& result) = 0;
 
 		const glm::vec2& GetPivot() const;

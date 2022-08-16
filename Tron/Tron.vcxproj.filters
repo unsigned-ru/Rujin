@@ -38,6 +38,12 @@
     <ClCompile Include="TankBulletComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="TankAIController.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TronPCH.h">
@@ -65,6 +71,12 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="TankBulletComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="TankAIController.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

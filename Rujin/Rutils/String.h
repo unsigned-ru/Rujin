@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <algorithm>
 
 #define STRINGSTREAM_STRING(text) static_cast<std::stringstream&&>(std::stringstream{} << text).str()
 
@@ -18,6 +17,7 @@ namespace rutils
     std::string LoadFileData(const std::string& path);
     std::vector<std::string> SplitStringByDelimiters(const std::string& string, const std::string& delimiter);
 
+    bool StartsWith(const std::string& s, const std::string& startsWith);
 
     //template<typename iterator>
     //std::string Join(iterator begin, iterator end, std::string delimiter = ", ")

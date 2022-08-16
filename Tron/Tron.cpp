@@ -6,6 +6,7 @@
 #include "BoxColliderComponent.h"
 #include "FMOD_AudioProvider.h"
 #include "GameObject.h"
+#include "HeuristicFunctions.h"
 #include "InputService.h"
 #include "ResourceProvider.h"
 #include "Rujin.h"
@@ -17,8 +18,14 @@
 #include "TextureRenderComponent.h"
 #include "TronPlayerComponent.h"
 #include "TankMovementComponent.h"
+#include "TankAIController.h"
 
 using namespace rujin;
+
+Tron::~Tron()
+{
+	delete m_pGridGraph;
+}
 
 void Tron::Configure(settings::InitParams& params)
 {
@@ -46,8 +53,15 @@ void Tron::Load()
 		pScene->AddGameObject(go);
 	}
 
+	//create pathfinding 
+	m_pGridGraph = new graph::GridGraph<graph::GridTerrainNode, graph::GraphConnection>(m_GridStart, m_GridDimensions.x, m_GridDimensions.y, m_CellSize, false, false);
+
 	/* Generate Level Grid */
 	GenerateLevelGridFromTexture(pScene, "../Data/Levels/Level1.png");
+
+	//Set pathfinding based on grid
+	m_pAStar = new AStar(m_pGridGraph, heuristic_functions::Chebyshev);
+	pScene->SetPathfinder(m_pAStar);
 
 	/* Create surrounding colliders (so player can't move outside of bounds...*/
 	CreateLevelBoundsColliders(pScene);
@@ -56,33 +70,141 @@ void Tron::Load()
 	{
 		GameObject* playerGO = new GameObject("Player1");
 
-		auto* pBodyRenderer = playerGO->AddComponent(new TextureRenderComponent(resourceService.LoadTexture("Textures/Spritesheet.png"), {0.5f, 0.5f}, Recti{0, 0, 50, 50}));
-		auto* pTankCollider = playerGO->AddComponent(new BoxColliderComponent({ 50, 50 }, false));
-		auto* pTankMovement = playerGO->AddComponent(new TankMovementComponent());
+		auto* pBodyRenderer = playerGO->AddComponent
+		(
+			new TextureRenderComponent
+			(
+				resourceService.LoadTexture("Textures/Spritesheet.png"), 
+				{0.5f, 0.5f},
+				Recti{0, 0, 50, 50}
+			)
+		);
+
+		auto* pTankCollider = playerGO->AddComponent
+		(
+			new BoxColliderComponent({ 50, 50 }, false)
+		);
+
+		auto* pTankMovement = playerGO->AddComponent
+		(
+			new TankMovementComponent()
+		);
 
 #ifdef _DEBUG
 		playerGO->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
 #endif //_DEBUG
 
 		//calc position
-		playerGO->GetTransform().SetPosition({ (m_GridStart.x + m_GridDimensions.x * m_CellSize) / 2.f, (m_GridStart.y + m_GridDimensions.y * m_CellSize) / 2.f });
+		playerGO->GetTransform().SetPosition
+		(
+			glm::vec2
+			{
+				(m_GridStart.x + m_CellSize),
+				(m_GridStart.y + m_CellSize) 
+			}
+		);
 
-		/* Add Turret */
+		/* Turret Start */
 		GameObject* Turret = new GameObject("Turret");
-		auto* pTankAimingComponent = Turret->AddComponent(new TankAimingComponent());
-		auto* pTurretRenderer = Turret->AddComponent(new TextureRenderComponent(resourceService.LoadTexture("Textures/Spritesheet.png"), {0.2f, 0.5f}, Recti{0, 50, 45, 21}));
+
+		auto* pTankAimingComponent = Turret->AddComponent
+		(
+			new TankAimingComponent()
+		);
+
+		auto* pTurretRenderer = Turret->AddComponent
+		(
+			new TextureRenderComponent
+			(
+				resourceService.LoadTexture("Textures/Spritesheet.png"), 
+				{0.2f, 0.5f}, 
+				Recti{0, 50, 45, 21}
+			)
+		);
+
 		Turret->GetTransform().AddLocalPosition({ -8.f, 0.f });
 		playerGO->AddChild(Turret);
-		/* Turret added*/
+		/* Turret End */
 
-		auto* pTank = playerGO->AddComponent(new TankComponent(100.f, pTankMovement, pTankAimingComponent, pBodyRenderer, pTurretRenderer, pTankCollider));
-		//ServiceLocator::GetService<InputService>().RegisterPlayer();
+		auto* pTank = playerGO->AddComponent
+		(
+			new TankComponent
+			(
+				pTankMovement, 
+				pTankAimingComponent, 
+				pBodyRenderer, 
+				pTurretRenderer, 
+				pTankCollider,
+				Recti{ 50, 50, 19, 14 }
+			)
+		);
+
 		playerGO->AddComponent(new TronPlayerComponent(pTank));
 
 		pScene->AddGameObject(playerGO);
 	}
 
-	
+
+	/* Create Enemy*/
+	{
+		GameObject* pEnemyGO = new GameObject("Enemy_Tank");
+
+		auto* pBodyRenderer = pEnemyGO->AddComponent
+		(
+			new TextureRenderComponent
+			(
+				resourceService.LoadTexture("Textures/Spritesheet.png"),
+				{ 0.5f, 0.5f },
+				Recti{ 100, 0, 50, 50 }
+			)
+		);
+
+		auto* pTankCollider = pEnemyGO->AddComponent
+		(
+			new BoxColliderComponent({ 50, 50 }, false)
+		);
+
+		auto* pTankMovement = pEnemyGO->AddComponent
+		(
+			new TankMovementComponent()
+		);
+
+#ifdef _DEBUG
+		pEnemyGO->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
+#endif //_DEBUG
+
+		//calc position
+		pEnemyGO->GetTransform().SetPosition
+		(
+			glm::vec2
+			{
+				(m_GridStart.x + m_GridDimensions.x * m_CellSize) / 2.f,
+				(m_GridStart.y + m_GridDimensions.y * m_CellSize) / 2.f
+			}
+		);
+
+		auto* pTankAimingComponent = pEnemyGO->AddComponent
+		(
+			new TankAimingComponent(45.f)
+		);
+
+		auto* pTank = pEnemyGO->AddComponent
+		(
+			new TankComponent
+			(
+				pTankMovement,
+				pTankAimingComponent,
+				pBodyRenderer,
+				nullptr,
+				pTankCollider,
+				Recti{ 50, 50 + 2 * 15, 19, 15 }
+			)
+		);
+
+		pEnemyGO->AddComponent(new TankAIController(pTank));
+
+		pScene->AddGameObject(pEnemyGO);
+	}
 }
 
 void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelTexturePath)
@@ -144,6 +266,12 @@ void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelT
 #endif //_DEBUG
 
 				pScene->AddGameObject(go);
+
+				//Mark this cell as wall in the pathfinding graph
+				const int nodeIdx = m_pGridGraph->GetIndex(x, y);
+				m_pGridGraph->GetNode(nodeIdx)->SetTerrainType(graph::TerrainType::Wall);
+				m_pGridGraph->RemoveConnectionsToAdjacentNodes(nodeIdx);
+				m_pGridGraph->AddConnectionsToAdjacentCells(nodeIdx);
 			}
 		}
 	}

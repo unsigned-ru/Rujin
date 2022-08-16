@@ -39,7 +39,7 @@ rujin::Rectf rujin::BoxCollider::GetRect() const
 	return rv;
 }
 
-rujin::CollisionResult rujin::BoxCollider::IsOverlapping(const Collider* pOther)
+rujin::CollisionResult rujin::BoxCollider::IsOverlapping(const Collider* pOther) const
 {
 	CollisionResult rv{};
 

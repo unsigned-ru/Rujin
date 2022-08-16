@@ -19,10 +19,7 @@ rujin::BaseInputProvider::BaseInputProvider()
 	m_PlayerIndexQueue = std::priority_queue<PlayerIndex, std::vector<PlayerIndex>, std::greater<PlayerIndex>>(tempArr.begin(), tempArr.end());
 }
 
-rujin::BaseInputProvider::~BaseInputProvider()
-{
-	delete m_pKeyboardSession;
-};
+rujin::BaseInputProvider::~BaseInputProvider() = default;
 
 void rujin::BaseInputProvider::Start()
 {
@@ -50,7 +47,7 @@ rujin::PlayerIndex rujin::BaseInputProvider::RegisterPlayer()
 	m_PlayerIndexQueue.pop();
 
 	//Create player and add to map
-	m_Players.insert_or_assign(playerIndex, PlayerInput(playerIndex));
+	m_Players.emplace(playerIndex, playerIndex);
 
 	return playerIndex;
 }

@@ -8,13 +8,13 @@ class TankComponent;
 class TankAimingComponent : public Component
 {
 public:
-	explicit TankAimingComponent() = default;
+	explicit TankAimingComponent(float bulletSpawnDistance = 50.f);
 
 	void AimAt(const glm::vec2& direction);
 	void GetBulletSocket(Position& pos, Rotation& rot, glm::vec2& barrelDirection) const;
 
 private:
-	inline static constexpr float s_BulletSpawnDistance{ 50.f };
+	const float m_BulletSpawnDistance{ 50.f };
 };
 
 

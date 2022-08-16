@@ -1,6 +1,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include "AStar.h"
 #include "GameObject.h"
 
 namespace rujin
@@ -29,6 +30,12 @@ namespace rujin
 		void AddGameObject(GameObject* gameObject);
 		void RemoveGameObject(GameObject* gameObject);
 
+		GameObject* GetRootGameObjectByPredicate(const std::function<bool(GameObject*)>& predicate);
+		std::vector<GameObject*> GetAllRootGameObjectsByPredicate(const std::function<bool(GameObject*)>& predicate);
+
+		void SetPathfinder(Pathfinder<graph::GridTerrainNode, graph::GraphConnection>* pPathfinder);
+		Pathfinder<graph::GridTerrainNode, graph::GraphConnection>* GetPathfinder();
+
 		DeferredVector<GameObject*, GameObject*>& GetEnabledGameObjects();
 		DeferredVector<GameObject*, GameObject*>& GetDisabledGameObjects();
 
@@ -53,6 +60,8 @@ namespace rujin
 
 		Camera* m_pActiveCamera;
 		Camera* m_pDefaultCamera = nullptr;
+
+		Pathfinder<graph::GridTerrainNode, graph::GraphConnection>* m_pPathfinder;
 
 		bool m_IsStarted = false;
 
