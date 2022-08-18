@@ -1,5 +1,5 @@
 ﻿#include "TronPCH.h"
-#include "TankMovementComponent.h"
+#include "TronMovementComponent.h"
 
 #include "BoxCollider.h"
 #include "BoxColliderComponent.h"
@@ -10,13 +10,12 @@
 #include "ServiceLocator.h"
 #include "TankComponent.h"
 
-
-void TankMovementComponent::Start()
+TronMovementComponent::TronMovementComponent(BoxColliderComponent* pMovementCollider)
+	: m_pMovementCollider(pMovementCollider)
 {
-	ASSERT_MSG(m_pTank, "This component needs a TankComponent.");
 }
 
-void TankMovementComponent::Move(Direction dir, float inputIntensity, float deltaTime)
+void TronMovementComponent::Move(Direction dir, float inputIntensity, float deltaTime)
 {
 	switch (dir)
 	{
@@ -35,7 +34,7 @@ void TankMovementComponent::Move(Direction dir, float inputIntensity, float delt
 	}
 }
 
-void TankMovementComponent::MoveRight(const float inputIntensity, const float deltaTime)
+void TronMovementComponent::MoveRight(const float inputIntensity, const float deltaTime)
 {
 	//if we aren't facing right.
 	if (m_FacingDirection != Direction::RIGHT)
@@ -72,7 +71,7 @@ void TankMovementComponent::MoveRight(const float inputIntensity, const float de
 	}
 }
 
-void TankMovementComponent::MoveLeft(const float inputIntensity, const float deltaTime)
+void TronMovementComponent::MoveLeft(const float inputIntensity, const float deltaTime)
 {
 	//if we aren't facing left
 	if (m_FacingDirection != Direction::LEFT)
@@ -110,7 +109,7 @@ void TankMovementComponent::MoveLeft(const float inputIntensity, const float del
 	}
 }
 
-void TankMovementComponent::MoveUp(const float inputIntensity, const float deltaTime)
+void TronMovementComponent::MoveUp(const float inputIntensity, const float deltaTime)
 {
 	//if we aren't facing up.
 	if (m_FacingDirection != Direction::UP)
@@ -149,7 +148,7 @@ void TankMovementComponent::MoveUp(const float inputIntensity, const float delta
 	}
 }
 
-void TankMovementComponent::MoveDown(const float inputIntensity, const float deltaTime)
+void TronMovementComponent::MoveDown(const float inputIntensity, const float deltaTime)
 {
 	//if we aren't facing down
 	if (m_FacingDirection != Direction::DOWN)
@@ -190,7 +189,7 @@ void TankMovementComponent::MoveDown(const float inputIntensity, const float del
 	}
 }
 
-void TankMovementComponent::Move_Unchecked(Direction dir, float inputIntensity, float deltaTime)
+void TronMovementComponent::Move_Unchecked(Direction dir, float inputIntensity, float deltaTime)
 {
 	switch (dir)
 	{
@@ -210,32 +209,32 @@ void TankMovementComponent::Move_Unchecked(Direction dir, float inputIntensity, 
 }
 
 
-void TankMovementComponent::MoveRight_Unchecked(const float inputIntensity, const float deltaTime)
+void TronMovementComponent::MoveRight_Unchecked(const float inputIntensity, const float deltaTime)
 {
 	SetFacingDirection(Direction::RIGHT);
 	GameObject()->GetTransform().AddLocalPosition(glm::vec2{ inputIntensity * m_MoveSpeed * deltaTime,  0 });
 }
 
-void TankMovementComponent::MoveLeft_Unchecked(const float inputIntensity, const float deltaTime)
+void TronMovementComponent::MoveLeft_Unchecked(const float inputIntensity, const float deltaTime)
 {
 	SetFacingDirection(Direction::LEFT);
 	GameObject()->GetTransform().AddLocalPosition(glm::vec2{ -inputIntensity * m_MoveSpeed * deltaTime,  0 });
 }
 
-void TankMovementComponent::MoveUp_Unchecked(const float inputIntensity, const float deltaTime)
+void TronMovementComponent::MoveUp_Unchecked(const float inputIntensity, const float deltaTime)
 {
 	SetFacingDirection(Direction::UP);
 	GameObject()->GetTransform().AddLocalPosition(glm::vec2{ 0.f,  inputIntensity * m_MoveSpeed * deltaTime });
 }
 
-void TankMovementComponent::MoveDown_Unchecked(const float inputIntensity, const float deltaTime)
+void TronMovementComponent::MoveDown_Unchecked(const float inputIntensity, const float deltaTime)
 {
 	SetFacingDirection(Direction::DOWN);
 	GameObject()->GetTransform().AddLocalPosition(glm::vec2{ 0, -inputIntensity * m_MoveSpeed * deltaTime });
 }
 
 
-bool TankMovementComponent::CanMoveInDirection(Direction dir) const
+bool TronMovementComponent::CanMoveInDirection(Direction dir) const
 {
 	switch (dir)
 	{
@@ -252,10 +251,10 @@ bool TankMovementComponent::CanMoveInDirection(Direction dir) const
 	return false;
 }
 
-bool TankMovementComponent::CanMoveRight() const
+bool TronMovementComponent::CanMoveRight() const
 {
 	//raycast from bottomRight to topRight + 1 pixel to the right
-	const BoxCollider* pCollider = m_pTank->GetColliderComponent()->GetCollider();
+	const BoxCollider* pCollider = m_pMovementCollider->GetCollider();
 	const Rectf::Vertices colliderVertices = pCollider->GetRect().GetVertices();
 
 	const glm::vec2 p1
@@ -273,10 +272,10 @@ bool TankMovementComponent::CanMoveRight() const
 	return !GameObject()->GetScene()->GetCollisionQuadTree()->Raycast(p1, p2, { pCollider }, nullptr);
 }
 
-bool TankMovementComponent::CanMoveLeft() const
+bool TronMovementComponent::CanMoveLeft() const
 {
 	//raycast from bottomLeft to topleft + 1 pixel to the left
-	const BoxCollider* pCollider = m_pTank->GetColliderComponent()->GetCollider();
+	const BoxCollider* pCollider = m_pMovementCollider->GetCollider();
 	const Rectf::Vertices colliderVertices = pCollider->GetRect().GetVertices();
 
 	const glm::vec2 p1
@@ -294,10 +293,10 @@ bool TankMovementComponent::CanMoveLeft() const
 	return !GameObject()->GetScene()->GetCollisionQuadTree()->Raycast(p1, p2, { pCollider }, nullptr);
 }
 
-bool TankMovementComponent::CanMoveUp() const
+bool TronMovementComponent::CanMoveUp() const
 {
 	//raycast from topLeft to topRight + 1 pixel up.
-	const BoxCollider* pCollider = m_pTank->GetColliderComponent()->GetCollider();
+	const BoxCollider* pCollider = m_pMovementCollider->GetCollider();
 	const Rectf::Vertices colliderVertices = pCollider->GetRect().GetVertices();
 
 	const glm::vec2 p1
@@ -315,10 +314,10 @@ bool TankMovementComponent::CanMoveUp() const
 	return !GameObject()->GetScene()->GetCollisionQuadTree()->Raycast(p1, p2, { pCollider }, nullptr);
 }
 
-bool TankMovementComponent::CanMoveDown() const
+bool TronMovementComponent::CanMoveDown() const
 {
 	//raycast from bottomLeft to borromRight + 1 pixel down
-	const BoxCollider* pCollider = m_pTank->GetColliderComponent()->GetCollider();
+	const BoxCollider* pCollider = m_pMovementCollider->GetCollider();
 	const Rectf::Vertices colliderVertices = pCollider->GetRect().GetVertices();
 
 	const glm::vec2 p1
@@ -335,19 +334,19 @@ bool TankMovementComponent::CanMoveDown() const
 	return !GameObject()->GetScene()->GetCollisionQuadTree()->Raycast(p1, p2, { pCollider }, nullptr);
 }
 
-Direction TankMovementComponent::GetFacingDirection() const
+Direction TronMovementComponent::GetFacingDirection() const
 {
 	return m_FacingDirection;
 }
 
 
-void TankMovementComponent::Draw() const
+void TronMovementComponent::Draw() const
 {
 #ifdef _DEBUG 
 	RenderService& rs = ServiceLocator::GetService<RenderService>();
 	//ray 1
 	{
-		const Rectf::Vertices colliderVertices = m_pTank->GetColliderComponent()->GetCollider()->GetRect().GetVertices();
+		const Rectf::Vertices colliderVertices = m_pMovementCollider->GetCollider()->GetRect().GetVertices();
 
 		const glm::vec2 p1
 		{
@@ -366,7 +365,7 @@ void TankMovementComponent::Draw() const
 
 	//ray 2
 	{
-		const Rectf::Vertices colliderVertices = m_pTank->GetColliderComponent()->GetCollider()->GetRect().GetVertices();
+		const Rectf::Vertices colliderVertices = m_pMovementCollider->GetCollider()->GetRect().GetVertices();
 
 		const glm::vec2 p1
 		{
@@ -385,7 +384,7 @@ void TankMovementComponent::Draw() const
 
 	//ray3
 	{
-		const Rectf::Vertices colliderVertices = m_pTank->GetColliderComponent()->GetCollider()->GetRect().GetVertices();
+		const Rectf::Vertices colliderVertices = m_pMovementCollider->GetCollider()->GetRect().GetVertices();
 
 		const glm::vec2 p1
 		{
@@ -404,7 +403,7 @@ void TankMovementComponent::Draw() const
 
 	//ray4
 	{
-		const Rectf::Vertices colliderVertices = m_pTank->GetColliderComponent()->GetCollider()->GetRect().GetVertices();
+		const Rectf::Vertices colliderVertices = m_pMovementCollider->GetCollider()->GetRect().GetVertices();
 
 		const glm::vec2 p1
 		{
@@ -423,7 +422,7 @@ void TankMovementComponent::Draw() const
 #endif
 }
 
-void TankMovementComponent::SetFacingDirection(Direction newDirection)
+void TronMovementComponent::SetFacingDirection(Direction newDirection)
 {
 	if (m_FacingDirection == newDirection)
 		return;
@@ -447,9 +446,4 @@ void TankMovementComponent::SetFacingDirection(Direction newDirection)
 	}
 
 	GameObject()->GetTransform().SetLocalRotation(rotation);
-}
-
-void TankMovementComponent::SetTank(TankComponent* pTank)
-{
-	m_pTank = pTank;
 }

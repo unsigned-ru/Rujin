@@ -1,6 +1,8 @@
 ﻿#ifndef TANK_COMPONENT_H
 #define TANK_COMPONENT_H
 
+#include <chrono>
+
 #include "Component.h"
 #include "BoxColliderComponent.h"
 
@@ -10,27 +12,27 @@ namespace rujin
 }
 
 class TankAimingComponent;
+class TronMovementComponent;
 
-class TankMovementComponent;
 
 class TankComponent final : public Component
 {
 public:
 	explicit TankComponent
 	(
-		TankMovementComponent* pTankMovement,
+		TronMovementComponent* pTankMovement,
 		TankAimingComponent* pTankAiming,
 		TextureRenderComponent* pTankBodyRenderer,
 		TextureRenderComponent* pTankTurretRenderer,
 		BoxColliderComponent* pTankCollider,
 		const Recti& bulletSourceRect,
-		float maxHealth = 100.f,
 		float bulletSpeed = 300.f,
 		float bulletDamage = 25.f,
-		uint8_t bulletBounces = 5
+		uint32_t shootingCooldown = 1'000u,
+		uint8_t bulletBounces = 5u
 	);
 
-	TankMovementComponent* GetMovement() const;
+	TronMovementComponent* GetMovement() const;
 	TankAimingComponent* GetAiming() const;
 
 	TextureRenderComponent* GetBodyRenderer() const;
@@ -38,17 +40,17 @@ public:
 
 	BoxColliderComponent* GetColliderComponent() const;
 
+	bool CanShoot() const;
 	void Shoot();
-	void TakeDamage(float damage);
 
 private:
-	TankMovementComponent* m_pTankMovement = nullptr;
-	TankAimingComponent* m_pTankAiming = nullptr;
+	TronMovementComponent* m_pMovement = nullptr;
+	TankAimingComponent* m_pAiming = nullptr;
 
-	TextureRenderComponent* m_pTankBodyRenderer = nullptr;
-	TextureRenderComponent* m_pTankTurretRenderer = nullptr;
+	TextureRenderComponent* m_pBodyRenderer = nullptr;
+	TextureRenderComponent* m_pTurretRenderer = nullptr;
 
-	BoxColliderComponent* m_pBoxCollider = nullptr;
+	BoxColliderComponent* m_pBodyCollider = nullptr;
 
 	const Recti m_BulletSrcRect;
 
@@ -56,8 +58,10 @@ private:
 	const float m_BulletSpeed;
 	const float m_BulletDamage;
 
-	const float m_MaxHealth;
-	float m_CurrentHealth;
+	const uint32_t m_ShootingCooldown;
+
+	using TimePoint = std::chrono::time_point<std::chrono::steady_clock>;
+	TimePoint m_LastShotTime = std::chrono::high_resolution_clock::now();
 };
 
 #endif // Include Guard: TANK_COMPONENT_H

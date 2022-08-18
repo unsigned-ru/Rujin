@@ -7,7 +7,8 @@
 #include "FMOD_AudioProvider.h"
 #include "GameObject.h"
 #include "HeuristicFunctions.h"
-#include "InputService.h"
+#include "RecognizerAIController.h"
+#include "RecognizerComponent.h"
 #include "ResourceProvider.h"
 #include "Rujin.h"
 #include "Scene.h"
@@ -17,7 +18,7 @@
 #include "TankComponent.h"
 #include "TextureRenderComponent.h"
 #include "TronPlayerComponent.h"
-#include "TankMovementComponent.h"
+#include "TronMovementComponent.h"
 #include "TankAIController.h"
 
 using namespace rujin;
@@ -87,7 +88,7 @@ void Tron::Load()
 
 		auto* pTankMovement = playerGO->AddComponent
 		(
-			new TankMovementComponent()
+			new TronMovementComponent(pTankCollider)
 		);
 
 #ifdef _DEBUG
@@ -145,7 +146,7 @@ void Tron::Load()
 	}
 
 
-	/* Create Enemy*/
+	/* Create Enemy Tank*/
 	{
 		GameObject* pEnemyGO = new GameObject("Enemy_Tank");
 
@@ -166,7 +167,7 @@ void Tron::Load()
 
 		auto* pTankMovement = pEnemyGO->AddComponent
 		(
-			new TankMovementComponent()
+			new TronMovementComponent(pTankCollider)
 		);
 
 #ifdef _DEBUG
@@ -202,6 +203,59 @@ void Tron::Load()
 		);
 
 		pEnemyGO->AddComponent(new TankAIController(pTank));
+
+		pScene->AddGameObject(pEnemyGO);
+	}
+
+	/* Create Enemy Recognizer*/
+	{
+		GameObject* pEnemyGO = new GameObject("Enemy_Recognizer");
+
+		auto* pBodyRenderer = pEnemyGO->AddComponent
+		(
+			new TextureRenderComponent
+			(
+				resourceService.LoadTexture("Textures/Spritesheet.png"),
+				{ 0.5f, 0.5f },
+				Recti{ 150, 0, 50, 50 }
+			)
+		);
+
+		auto* pCollider = pEnemyGO->AddComponent
+		(
+			new BoxColliderComponent({ 50, 50 }, false)
+		);
+
+		auto* pTankMovement = pEnemyGO->AddComponent
+		(
+			new TronMovementComponent(pCollider)
+		);
+
+#ifdef _DEBUG
+		pEnemyGO->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
+#endif //_DEBUG
+
+		//calc position
+		pEnemyGO->GetTransform().SetPosition
+		(
+			glm::vec2
+			{
+				(m_GridStart.x + m_GridDimensions.x * m_CellSize) - m_CellSize,
+				(m_GridStart.y + m_GridDimensions.y * m_CellSize) - m_CellSize
+			}
+		);
+
+		auto* pRecognizer = pEnemyGO->AddComponent
+		(
+			new RecognizerComponent
+			(
+				pTankMovement,
+				pBodyRenderer,
+				pCollider
+			)
+		);
+
+		pEnemyGO->AddComponent(new RecognizerAIController(pRecognizer));
 
 		pScene->AddGameObject(pEnemyGO);
 	}

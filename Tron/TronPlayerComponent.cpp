@@ -7,7 +7,7 @@
 #include "ServiceLocator.h"
 #include "TankAimingComponent.h"
 #include "TankComponent.h"
-#include "TankMovementComponent.h"
+#include "TronMovementComponent.h"
 #include "TextureRenderComponent.h"
 
 
@@ -87,7 +87,7 @@ PlayerIndex TronPlayerComponent::GetPlayerIndex() const
 void TronPlayerComponent::HandleMovement(const InputService& input)
 {
 	float inputIntensity;
-	const float deltaTime = Rujin::Get()->GetDeltaTime();
+	const float deltaTime = Rujin::Get()->GetFixedUpdateDeltaTime();
 
 	if (input.IsAxisActionTriggered(m_PlayerIdx, static_cast<uint32_t>(AxisAction::MoveRight), &inputIntensity))
 	{

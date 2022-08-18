@@ -1,35 +1,41 @@
 ﻿#ifndef TANK_AI_CONTROLLER_H
 #define TANK_AI_CONTROLLER_H
 #include "Component.h"
-#include <vector>
+#include "EnemyAIController.h"
 
-namespace rujin
+namespace rujin::graph
 {
-	namespace graph
-	{
-		class GridTerrainNode;
-	}
+	class GridTerrainNode;
 }
 
 class TankComponent;
 
-class TankAIController : public rujin::Component
+class TankAIController final : public EnemyAIController
 {
 public:
 	explicit TankAIController(TankComponent* pTank);
 
 	void Start() override;
 	void FixedUpdate() override;
-	void Draw() const override;
+
+	enum class State
+	{
+		MoveToClosestPlayer,
+		Shoot
+	};
 
 private:
+	void MoveToClosestPlayer();
 
-	void HandleMovement();
+	void ExecuteCurrentState();
+	void HandleStateTransitions();
 
+	State m_State{ State::MoveToClosestPlayer };
 	std::vector<rujin::GameObject*> m_Players{};
+
 	TankComponent* m_pTank = nullptr;
 
-	std::vector<graph::GridTerrainNode*> m_Path{};
+	const float m_MaxShootDistance{ 700.f };
 };
 
 

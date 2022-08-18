@@ -5,13 +5,13 @@
 
 #include "CollisionFunctions.h"
 #include "GameObject.h"
-#include "RenderService.h"
 #include "Scene.h"
-#include "ServiceLocator.h"
 #include "TankComponent.h"
-#include "TankMovementComponent.h"
+#include "TronMovementComponent.h"
 #include "TronPlayerComponent.h"
 #include "Rutils/String.h"
+
+
 
 TankAIController::TankAIController(TankComponent* pTank)
 	: m_pTank(pTank)
@@ -35,51 +35,86 @@ void TankAIController::FixedUpdate()
 {
 	Component::FixedUpdate();
 
-	HandleMovement();
-}
-
-void TankAIController::Draw() const
-{
-	Component::Draw();
-
-	auto& rs = ServiceLocator::GetService<RenderService>();
-	rs.SetColor({ 0.f, 1.f, 1.f, 1.f });
-	for (auto* node : m_Path)
+	/* Sort players by distance ascending. idx 0 = closest player*/
 	{
-		auto pos = static_cast<AStar<graph::GridTerrainNode, graph::GraphConnection>*>(GameObject()->GetScene()->GetPathfinder())->GetGraph()->GetNodeWorldPos(node);
-		
-		rs.DrawPoint(pos, 10);
+		const Position& currentPos = GameObject()->GetTransform().GetPosition();
+		std::ranges::sort(m_Players, [&currentPos](rujin::GameObject* a, rujin::GameObject* b) { return distance2(currentPos, a->GetTransform().GetPosition()) < distance2(currentPos, b->GetTransform().GetPosition()); });
 	}
-	rs.SetColor();
+
+	ExecuteCurrentState();
+	HandleStateTransitions();
+
 }
 
-void TankAIController::HandleMovement()
+void TankAIController::ExecuteCurrentState()
 {
-	//get closest player
-	//sort by distance
-	const Position & currentPos = GameObject()->GetTransform().GetPosition();
-	std::ranges::sort(m_Players, [&currentPos](rujin::GameObject* a, rujin::GameObject* b) { return distance2(currentPos, a->GetTransform().GetPosition()) < distance2(currentPos, b->GetTransform().GetPosition()); });
+	switch (m_State)
+	{
+	case State::MoveToClosestPlayer:
+		MoveToClosestPlayer();
+		break;
+	case State::Shoot:
+		m_pTank->Shoot();
+		break;
+	}
+}
 
+void TankAIController::HandleStateTransitions()
+{
+	switch (m_State)
+	{
+		case State::MoveToClosestPlayer:
+		{
+			if
+			(
+				IsInRange(m_Players[0], m_MaxShootDistance) &&
+				GetDirectionToObject(m_Players[0]) == m_pTank->GetMovement()->GetFacingDirection() &&
+				IsInLineOfSight(m_Players[0], { m_pTank->GetColliderComponent()->GetCollider() })
+			)
+			{
+				m_State = State::Shoot;
+			}
+			break;
+		}
+		case State::Shoot:
+		{
+			if
+			(
+				!IsInRange(m_Players[0], m_MaxShootDistance) ||
+				GetDirectionToObject(m_Players[0]) != m_pTank->GetMovement()->GetFacingDirection() ||
+				!IsInLineOfSight(m_Players[0], { m_pTank->GetColliderComponent()->GetCollider() })
+			)
+			{
+				m_State = State::MoveToClosestPlayer;
+			}
+		}
+	}
+}
+
+void TankAIController::MoveToClosestPlayer()
+{
 	rujin::GameObject* pClosestPlayer = m_Players[0];
 
 	//get pathfinding
 	auto* pPathFinding = GameObject()->GetScene()->GetPathfinder();
-	m_Path = pPathFinding->FindPath(currentPos, pClosestPlayer->GetTransform().GetPosition());
+	std::vector<graph::GridTerrainNode*> path = pPathFinding->FindPath
+	(
+		GameObject()->GetTransform().GetPosition(), pClosestPlayer->GetTransform().GetPosition()
+	);
 
 	const Rectf colliderRect = m_pTank->GetColliderComponent()->GetCollider()->GetRect();
 
 	//find first node that doesn't overlap our rect.
-	auto it = std::find_if
+	auto it = std::ranges::find_if
 	(
-		m_Path.begin(),
-		m_Path.end(),
+		path,
 		[&colliderRect, &pPathFinding](graph::GridTerrainNode* pNode)
 		{
 			return !collision::IsInside(pPathFinding->GetGraph()->GetNodeWorldPos(pNode), colliderRect);
 		}
 	);
 
-	if (it == m_Path.end())
+	if (it == path.end())
 		return;
 
 	glm::vec2 moveDir = normalize(pPathFinding->GetGraph()->GetNodeWorldPos(*it) - GameObject()->GetTransform().GetPosition());
@@ -108,51 +143,51 @@ void TankAIController::HandleMovement()
 
 		switch (dir.first)
 		{
-			case Direction::LEFT:
-			{
-				pTankMovement->MoveLeft(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
-				return;
-			}
-			case Direction::UP:
-			{
-				pTankMovement->MoveUp(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
-				return;
-			}
-			case Direction::RIGHT:
-			{
-				pTankMovement->MoveRight(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
-				return;
-			}
-			case Direction::DOWN:
-			{
-				pTankMovement->MoveDown(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
-				return;
-			}
+		case Direction::LEFT:
+		{
+			pTankMovement->MoveLeft(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
+			return;
+		}
+		case Direction::UP:
+		{
+			pTankMovement->MoveUp(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
+			return;
+		}
+		case Direction::RIGHT:
+		{
+			pTankMovement->MoveRight(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
+			return;
+		}
+		case Direction::DOWN:
+		{
+			pTankMovement->MoveDown(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
+			return;
+		}
 		}
 	}
 
 	//we can't move in the direction we want to, execute the checked version
 	switch (movementDirs[0].first)
 	{
-		case Direction::LEFT:
-		{
-			pTankMovement->MoveLeft(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
-			break;
-		}
-		case Direction::UP:
-		{
-			pTankMovement->MoveUp(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
-			break;
-		}
-		case Direction::RIGHT:
-		{
-			pTankMovement->MoveRight(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
-			break;
-		}
-		case Direction::DOWN:
-		{
-			pTankMovement->MoveDown(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
-			break;
-		}
+	case Direction::LEFT:
+	{
+		pTankMovement->MoveLeft(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
+		break;
+	}
+	case Direction::UP:
+	{
+		pTankMovement->MoveUp(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
+		break;
+	}
+	case Direction::RIGHT:
+	{
+		pTankMovement->MoveRight(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
+		break;
+	}
+	case Direction::DOWN:
+	{
+		pTankMovement->MoveDown(1.f, Rujin::Get()->GetFixedUpdateDeltaTime());
+		break;
+	}
 	}
 }

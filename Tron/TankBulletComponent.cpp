@@ -29,21 +29,11 @@ void TankBulletComponent::FixedUpdate()
 
 void TankBulletComponent::OnOverlap(const CollisionResult& result)
 {
-	
-	if (TankComponent* pTank = result.other->GetComponent()->GameObject()->GetComponent<TankComponent>())
+	const class GameObject* pGameObject = result.other->GetComponent()->GameObject();
+
+	//hitting a wall...
+	if (pGameObject->HasTag("Wall"))
 	{
-		//we hit a tank
-		pTank->TakeDamage(m_Damage);
-
-		//remove gameobject
-		m_pGameObject->Destroy();
-
-	}
-	else
-	{
-		if (m_HitWallThisFrame)
-			return;
-
 		const glm::vec2& velocity = m_pProjectileMovement->GetVelocity();
 		//we hit something else.
 		switch (result.collisionDirection)
@@ -54,15 +44,29 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 			break;
 		case Direction::UP: //intentional fall-through
 		case Direction::DOWN:
-			m_pProjectileMovement->SetVelocity({ velocity.x, velocity.y * -1.f});
+			m_pProjectileMovement->SetVelocity({ velocity.x, velocity.y * -1.f });
 			break;
 		}
-
-		m_HitWallThisFrame = true;
 
 		if (++m_CurrentBounces > m_MaxBounces)
 		{
 			m_pGameObject->Destroy();
 		}
+
+		return;
+	}
+
+	if (m_pOwningTank->GameObject()->HasTag("Player") && pGameObject->HasTag("Enemy"))
+	{
+		//player bullet hit enemy bullet.
+
+		m_pGameObject->Destroy();
+	}
+
+	else if(m_pOwningTank->GameObject()->HasTag("Enemy") && pGameObject->HasTag("Player"))
+	{
+		//Enemy bullet hit Player
+
+		m_pGameObject->Destroy();
 	}
 }

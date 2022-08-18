@@ -26,7 +26,7 @@
     <ClCompile Include="TronPlayerComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="TankMovementComponent.cpp">
+    <ClCompile Include="TronMovementComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="TankComponent.cpp">
@@ -41,7 +41,16 @@
     <ClCompile Include="TankAIController.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyComponent.cpp">
+    <ClCompile Include="RecognizerAIController.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyAIController.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="RecognizerComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="HealthComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -52,16 +61,10 @@
     <ClInclude Include="Tron.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="..\Rujin\GameEvents.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="TronPlayerComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="InputEvents.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="TankMovementComponent.h">
+    <ClInclude Include="TronMovementComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="TankComponent.h">
@@ -76,7 +79,20 @@
     <ClInclude Include="TankAIController.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="EnemyComponent.h">
+    <ClInclude Include="RecognizerAIController.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyAIController.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="InputEvents.h" />
+    <ClInclude Include="RecognizerComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="HealthComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEvents.h">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>

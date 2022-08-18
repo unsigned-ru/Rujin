@@ -2,21 +2,15 @@
 #define TANK_MOVEMENT_COMPONENT_H
 #include "Component.h"
 
-class TankComponent;
-class TronPlayerComponent;
-
 namespace rujin
 {
 	class BoxColliderComponent;
-	class TextureRenderComponent;
 }
 
-class TankMovementComponent final : public Component
+class TronMovementComponent final : public Component
 {
 public:
-	explicit TankMovementComponent() = default;
-
-	void Start() override;
+	explicit TronMovementComponent(BoxColliderComponent* pMovementCollider);
 
 	void Move(Direction dir, float inputIntensity, float deltaTime);
 
@@ -45,10 +39,7 @@ public:
 	Direction GetFacingDirection() const;
 
 private:
-	friend class TankComponent;
-	void SetTank(TankComponent* pTank);
-
-	TankComponent* m_pTank = nullptr;
+	BoxColliderComponent* m_pMovementCollider = nullptr;
 
 	Direction m_FacingDirection{ Direction::UP };
 

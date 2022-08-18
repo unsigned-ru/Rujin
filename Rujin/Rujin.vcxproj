@@ -244,7 +244,8 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClInclude Include="CollisionLayers.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DefferedRemovalVector.h" />
-    <ClInclude Include="EventData.h" />
+    <ClInclude Include="EnumBitmask.h" />
+    <ClInclude Include="EngineEvents.h" />
     <ClInclude Include="FMOD_AudioProvider.h" />
     <ClInclude Include="FpsComponent.h" />
     <ClInclude Include="GamepadInputSession.h" />

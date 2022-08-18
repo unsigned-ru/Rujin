@@ -201,13 +201,16 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EnemyComponent.cpp" />
+    <ClCompile Include="EnemyAIController.cpp" />
+    <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="RecognizerAIController.cpp" />
+    <ClCompile Include="RecognizerComponent.cpp" />
     <ClCompile Include="TankAIController.cpp" />
     <ClCompile Include="TankAimingComponent.cpp" />
     <ClCompile Include="TankBulletComponent.cpp" />
     <ClCompile Include="TankComponent.cpp" />
-    <ClCompile Include="TankMovementComponent.cpp" />
+    <ClCompile Include="TronMovementComponent.cpp" />
     <ClCompile Include="Tron.cpp" />
     <ClCompile Include="TronPCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -220,14 +223,17 @@
     <ClCompile Include="TronPlayerComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Rujin\GameEvents.h" />
-    <ClInclude Include="EnemyComponent.h" />
+    <ClInclude Include="EnemyAIController.h" />
+    <ClInclude Include="GameEvents.h" />
+    <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="InputEvents.h" />
+    <ClInclude Include="RecognizerAIController.h" />
+    <ClInclude Include="RecognizerComponent.h" />
     <ClInclude Include="TankAIController.h" />
     <ClInclude Include="TankAimingComponent.h" />
     <ClInclude Include="TankBulletComponent.h" />
     <ClInclude Include="TankComponent.h" />
-    <ClInclude Include="TankMovementComponent.h" />
+    <ClInclude Include="TronMovementComponent.h" />
     <ClInclude Include="Tron.h" />
     <ClInclude Include="TronPCH.h" />
     <ClInclude Include="TronPlayerComponent.h" />

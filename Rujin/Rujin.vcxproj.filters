@@ -195,9 +195,6 @@
     <ClInclude Include="StatefullObject.h">
       <Filter>Game Loop</Filter>
     </ClInclude>
-    <ClInclude Include="EventData.h">
-      <Filter>Events\ObserverPattern\Interface</Filter>
-    </ClInclude>
     <ClInclude Include="Rutils\DeltaTimer.h">
       <Filter>Rutils</Filter>
     </ClInclude>
@@ -307,6 +304,12 @@
       <Filter>Pathfinding\AStar</Filter>
     </ClInclude>
     <ClInclude Include="Rutils\String.h" />
+    <ClInclude Include="EnumBitmask.h">
+      <Filter>Rutils</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineEvents.h">
+      <Filter>Events\ObserverPattern</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Rujin.cpp">

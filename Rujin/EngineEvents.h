@@ -1,5 +1,7 @@
-#ifndef EVENT_DATA_H
-#define EVENT_DATA_H
+#ifndef ENGINE_EVENTS_H
+#define ENGINE_EVENTS_H
+
+#include <cstdint>
 
 namespace rujin
 {

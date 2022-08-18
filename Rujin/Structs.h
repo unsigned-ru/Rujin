@@ -1,7 +1,8 @@
 ﻿#ifndef STRUCTS_H
 #define STRUCTS_H
-#include <array>
+#include "EnumBitmask.h"
 
+#include <array>
 namespace rujin
 {
 	enum class TransformChanged : uint32_t
@@ -11,15 +12,8 @@ namespace rujin
 		ROTATION = 0x02,
 		SCALE = 0x04,
 	};
-	inline TransformChanged operator|(TransformChanged& lhs, TransformChanged rhs)
-	{
-		return static_cast<TransformChanged>(static_cast<uint32_t>(lhs) | static_cast<uint32_t>(rhs));
-	}
-	inline TransformChanged& operator|=(TransformChanged& lhs, TransformChanged rhs)
-	{
-		lhs = lhs | rhs;
-		return lhs;
-	}
+	ENABLE_BITMASK_OPERATORS(TransformChanged);
+
 
 	enum class VSyncMode : int { ON = 1, OFF = 0, ADAPTIVE = -1 };
 	enum class Direction {LEFT, UP, RIGHT, DOWN};
@@ -39,6 +33,28 @@ namespace rujin
 			default:
 				return dir;
 		}
+	}
+
+	inline Direction VectorToDirection(const glm::vec2& dirVec)
+	{
+		Direction rv;
+
+		if (abs(dirVec.x) > abs(dirVec.y))
+		{
+			if (dirVec.x > 0.f)
+				rv = Direction::RIGHT;
+			else
+				rv = Direction::LEFT;
+		}
+		else
+		{
+			if (dirVec.y > 0.f)
+				rv = Direction::UP;
+			else
+				rv = Direction::DOWN;
+		}
+
+		return rv;
 	}
 
 	struct WindowContext

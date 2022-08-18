@@ -250,6 +250,78 @@ bool rujin::CollisionQuadTree::Raycast(const glm::vec2& p1, const glm::vec2& p2,
 	return false;
 }
 
+bool rujin::CollisionQuadTree::RaycastByLayer(const glm::vec2& p1, const glm::vec2& p2, CollisionLayer layer, const std::vector<const Collider*>& ignore, glm::vec2* pIntesection, const Collider** ppHitCollider)
+{
+	std::vector<const Collider*> possibleIntersections{};
+
+	//get all colliders inside of intersecting cells.
+	Search(p1, p2, possibleIntersections);
+
+	//remove those that do not belong to the specified layer
+	auto removeIt = std::remove_if
+	(
+		possibleIntersections.begin(),
+		possibleIntersections.end(),
+		[layer](const Collider* pCollider)
+		{
+			return pCollider->GetCollisionLayer() != layer;
+		}
+	);
+
+	possibleIntersections.erase(removeIt, possibleIntersections.end());
+
+	//sort them by distance to the starting point.
+	std::ranges::sort
+	(
+		possibleIntersections,
+		[&p1](const Collider* c1, const Collider* c2)
+		{
+			return distance2(p1, c1->GetComponent()->GameObject()->GetTransform().GetPosition()) < distance2(p1, c2->GetComponent()->GameObject()->GetTransform().GetPosition());
+		}
+	);
+
+
+	//now that we have sorted them by distance, check for intersections and return on first interstection!
+	for (const Collider* pPossibleCollider : possibleIntersections)
+	{
+		if (const BoxCollider* pPossibleBoxCollider = dynamic_cast<const BoxCollider*>(pPossibleCollider); pPossibleBoxCollider)
+		{
+			if (std::ranges::find(ignore, pPossibleCollider) != ignore.end())
+				continue; //ignore the colliders in the ignore vector.
+
+			const Rectf colliderRect = pPossibleBoxCollider->GetRect();
+			float nearT{};
+
+			// if both points are inside of collider...
+			if (collision::IsInside(p1, colliderRect) && collision::IsInside(p2, colliderRect))
+			{
+				if (ppHitCollider)
+					*ppHitCollider = pPossibleBoxCollider;
+
+				return true;
+			}
+
+			//if we intersect
+			if (collision::IsIntersecting(p1, p2, true, colliderRect, &nearT))
+			{
+				if (pIntesection)
+					//calculate intersection point.
+					(*pIntesection) = p1 + (p2 - p1) * nearT;
+
+				if (ppHitCollider)
+					*ppHitCollider = pPossibleBoxCollider;
+
+				return true;
+			}
+		}
+		else
+			LOG_WARNING("Unimplemented Collider detected. Did you forget to implement?");
+	}
+
+	return false;
+}
+
+
 void rujin::CollisionQuadTree::DrawDebug() const
 {
 	if(m_Children[0])

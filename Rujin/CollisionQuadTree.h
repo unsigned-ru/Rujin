@@ -1,5 +1,6 @@
 #ifndef COLLISION_QUAD_TREE_H
 #define COLLISION_QUAD_TREE_H
+#include "CollisionLayers.h"
 #include "DefferedRemovalVector.h"
 #include "IObserver.h"
 #include "Structs.h"
@@ -32,11 +33,23 @@ namespace rujin
 		 * \brief Returns the first hit collider
 		 * \param p1 Start point of line.
 		 * \param p2 End point of line.
+		 * \param ignore Vector of colliders to ignore.
 		 * \param pIntesection [OUT] The point where the collider and ray intersected.
 		 * \param ppHitCollider [OUT] The collider that was hit.
 		 * \return true if any collider was hit, false if none was hit.
 		 */
 		bool Raycast(const glm::vec2& p1, const glm::vec2& p2, const std::vector<const Collider*>& ignore = {}, glm::vec2* pIntesection = nullptr, const Collider** ppHitCollider = nullptr);
+		/**
+		 * \brief Returns the first hit collider
+		 * \param p1 Start point of line.
+		 * \param p2 End point of line.
+		 * \param layer Collision layer to query
+		 * \param ignore Vector of colliders to ignore.
+		 * \param pIntesection [OUT] The point where the collider and ray intersected.
+		 * \param ppHitCollider [OUT] The collider that was hit.
+		 * \return true if any collider was hit, false if none was hit.
+		 */
+		bool RaycastByLayer(const glm::vec2& p1, const glm::vec2& p2, CollisionLayer layer, const std::vector<const Collider*>& ignore = {}, glm::vec2* pIntesection = nullptr, const Collider** ppHitCollider = nullptr);
 
 		void DrawDebug() const;
 

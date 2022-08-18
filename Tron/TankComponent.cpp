@@ -10,75 +10,63 @@
 #include "ServiceLocator.h"
 #include "TankAimingComponent.h"
 #include "TankBulletComponent.h"
-#include "TankMovementComponent.h"
+#include "TronMovementComponent.h"
 #include "TextureRenderComponent.h"
 
 
 TankComponent::TankComponent
 (
-	TankMovementComponent* pTankMovement,
+	TronMovementComponent* pTankMovement,
 	TankAimingComponent* pTankAiming, 
 	TextureRenderComponent* pTankBodyRenderer,
 	TextureRenderComponent* pTankTurretRenderer,
 	BoxColliderComponent* pTankCollider,
 	const Recti& bulletSourceRect,
-	float maxHealth,
 	float bulletSpeed,
 	float bulletDamage,
+	uint32_t shootingCooldown,
 	uint8_t bulletBounces
 )
-	: m_pTankMovement(pTankMovement)
-	, m_pTankAiming(pTankAiming)
-	, m_pTankBodyRenderer(pTankBodyRenderer)
-	, m_pTankTurretRenderer(pTankTurretRenderer)
-	, m_pBoxCollider(pTankCollider)
+	: m_pMovement(pTankMovement)
+	, m_pAiming(pTankAiming)
+	, m_pBodyRenderer(pTankBodyRenderer)
+	, m_pTurretRenderer(pTankTurretRenderer)
+	, m_pBodyCollider(pTankCollider)
 	, m_BulletSrcRect(bulletSourceRect)
 	, m_BulletBounces(bulletBounces)
 	, m_BulletSpeed(bulletSpeed)
 	, m_BulletDamage(bulletDamage)
-	, m_MaxHealth(maxHealth)
+	, m_ShootingCooldown(shootingCooldown)
 {
 
-	ASSERT_MSG(m_pTankMovement, "This component requires a TankMovementComponent.");
-	ASSERT_MSG(m_pTankAiming, "This component requires a TankAimingComponent.");
-	ASSERT_MSG(m_pTankBodyRenderer, "This component requires a TextureRenderComponent for the body.");
-	ASSERT_MSG(m_pBoxCollider, "This component requires a BoxColliderComponent.");
-
-	m_pTankMovement->SetTank(this);
+	ASSERT_MSG(m_pMovement, "This component requires a TronMovementComponent.");
+	ASSERT_MSG(m_pAiming, "This component requires a TankAimingComponent.");
+	ASSERT_MSG(m_pBodyRenderer, "This component requires a TextureRenderComponent for the body.");
+	ASSERT_MSG(m_pBodyCollider, "This component requires a BoxColliderComponent.");
 }
 
-TankMovementComponent* TankComponent::GetMovement() const
-{
-	return m_pTankMovement;
-}
+TronMovementComponent* TankComponent::GetMovement() const { return m_pMovement;}
+TankAimingComponent* TankComponent::GetAiming() const { return m_pAiming;}
+TextureRenderComponent* TankComponent::GetBodyRenderer() const { return m_pBodyRenderer;}
+TextureRenderComponent* TankComponent::GetTurretRenderer() const { return m_pTurretRenderer;}
+BoxColliderComponent* TankComponent::GetColliderComponent() const { return m_pBodyCollider; }
 
-TankAimingComponent* TankComponent::GetAiming() const
+bool TankComponent::CanShoot() const
 {
-	return m_pTankAiming;
-}
-
-TextureRenderComponent* TankComponent::GetBodyRenderer() const
-{
-	return m_pTankBodyRenderer;
-}
-
-TextureRenderComponent* TankComponent::GetTurretRenderer() const
-{
-	return m_pTankTurretRenderer;
-}
-
-BoxColliderComponent* TankComponent::GetColliderComponent() const
-{
-	return m_pBoxCollider;
+	return std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now() - m_LastShotTime).count() > m_ShootingCooldown;
 }
 
 void TankComponent::Shoot()
 {
+	//check if we can shoot yet
+	if (!CanShoot())
+		return;
+
 	//get bullet spawn position and rotation from socket.
 	Position bulletSpawnPos;
 	Rotation bulletSpawnRot;
 	glm::vec2 bulletDirection;
-	m_pTankAiming->GetBulletSocket(bulletSpawnPos, bulletSpawnRot, bulletDirection);
+	m_pAiming->GetBulletSocket(bulletSpawnPos, bulletSpawnRot, bulletDirection);
 
 	
 	//create bullet rect
@@ -102,7 +90,6 @@ void TankComponent::Shoot()
 			LOG_WARNING("Unimplemented Collider detected. Did you forget to implement?");
 	}
 
-
 	auto* pBulletGO = new rujin::GameObject(GameObject()->GetName() + "_Bullet");
 	pBulletGO->AddComponent(new BoxColliderComponent({ 15, 15 }, false, glm::vec2{ 0.5f, 0.5f }, CollisionLayer::Bullet));
  	pBulletGO->AddComponent(new ProjectileMovementComponent(bulletDirection * m_BulletSpeed));
@@ -113,9 +100,5 @@ void TankComponent::Shoot()
 	pBulletGO->GetTransform().SetLocalRotation(bulletSpawnRot);
 
 	GameObject()->GetScene()->AddGameObject(pBulletGO);
-}
-
-void TankComponent::TakeDamage(float damage)
-{
-	m_CurrentHealth -= damage;
+	m_LastShotTime = std::chrono::high_resolution_clock::now();
 }

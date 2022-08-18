@@ -28,7 +28,7 @@ namespace rujin
 			{
 				{ CollisionLayer::BlockAll, CollisionResponse::Block },
 				{ CollisionLayer::OverlapAll, CollisionResponse::Block },
-				{ CollisionLayer::Bullet, CollisionResponse::Block },
+				{ CollisionLayer::Bullet, CollisionResponse::Ignore },
 			}
 		},
 		{
