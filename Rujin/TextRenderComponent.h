@@ -11,9 +11,9 @@ namespace rujin
 	{
 	public:
 		explicit TextRenderComponent() = default;
-		explicit TextRenderComponent(const std::shared_ptr<Font>& pFont, const glm::vec4& color = glm::vec4{1.f, 1.f, 1.f, 1.f});
+		explicit TextRenderComponent(const std::shared_ptr<Font>& pFont, const glm::vec4& color = glm::vec4{1.f, 1.f, 1.f, 1.f}, const glm::vec2& pivot = { 0.f, 0.5f });
 
-		void Start() override;
+		void LateStart() override;
 		void Update() override;
 		void Draw() const override;
 

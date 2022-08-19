@@ -14,6 +14,8 @@ namespace prefabs
 	GameObject* CreateEnemyTank();
 
 	GameObject* CreateEnemyRecognizer();
+
+	GameObject* CreatePlayerHUD(const std::string& name, TronPlayerComponent* pPlayer);
 }
 
 #endif // Include Guard: PREFABS_H

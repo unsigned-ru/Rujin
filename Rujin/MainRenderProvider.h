@@ -26,7 +26,7 @@ namespace rujin
 		MainRenderProvider& operator=(MainRenderProvider&&) noexcept = delete;
 
 		void Render() const override;
-		void RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot, const Recti* srcRect = nullptr, bool isXFlipped = false, bool isYFlipped = false) const override;
+		void RenderTexture(const Texture& texture, const Position& position, const Rotation rot = { 0.f }, const Scale& scale = { 1.f, 1.f }, const glm::vec2& pivot = { 0.5f, 0.5f }, const Recti* srcRect = nullptr, bool isFlippedX = false, bool isFlippedY = false) const override;
 
 #pragma region Primitive Drawing
 		void SetColor(const glm::vec4& color) const override;

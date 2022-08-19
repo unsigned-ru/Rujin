@@ -78,6 +78,10 @@ void Tron::Load()
 		);
 
 		pScene->AddGameObject(playerGO);
+
+		GameObject* pPlayerHUD = prefabs::CreatePlayerHUD("Player1_HUD", playerGO->GetComponent<TronPlayerComponent>());
+		pPlayerHUD->GetTransform().SetPosition({0.f, Rujin::Get()->GetWindowContext().windowSize.y});
+		pScene->AddGameObject(pPlayerHUD);
 	}
 
 

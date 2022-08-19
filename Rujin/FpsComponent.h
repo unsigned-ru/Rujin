@@ -4,20 +4,20 @@
 
 namespace rujin
 {
-	class TextComponent;
+	class TextRenderComponent;
 
 
 	class FpsComponent final : public Component
 	{
 	public:
-		explicit FpsComponent(TextComponent* pTextComponent);
+		explicit FpsComponent(TextRenderComponent* pTextRenderer);
 
 		void Start() override;
 		void Update() override;
 
 
 	private:
-		TextComponent* m_pTextComponent;
+		TextRenderComponent* m_pTextRenderer;
 
 		float m_UpdateInterval{1.f};
 		float m_FpsTimer{0.f};

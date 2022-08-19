@@ -3,20 +3,24 @@
 
 
 #include "EngineEvents.h"
-#include "HealthComponent.h"
 
 #include <cstdint>
+
+class TronPlayerComponent;
+class HealthComponent;
 
 namespace game_event
 {
 	enum class Identifier : uint32_t
 	{
-		OnDamageTaken = static_cast<uint32_t>(rujin::event::Identifier::LAST_ENGINE_EVENT),
+		OnDamageTaken = static_cast<uint32_t>(event::Identifier::LAST_ENGINE_EVENT),
 		OnHealingTaken,
-		OnDie
+		OnDie,
+		OnScoreChanged,
+		OnLivesChanged
 	};
 
-	struct OnDamageTaken_t final : rujin::event::Data
+	struct OnDamageTaken_t final : event::Data
 	{
 		explicit OnDamageTaken_t(HealthComponent* pHealth, uint32_t damageDone, rujin::GameObject* pSource)
 			: pHealth(pHealth)
@@ -26,10 +30,10 @@ namespace game_event
 
 		HealthComponent* pHealth;
 		uint32_t damageDone;
-		rujin::GameObject* pSource;
+		GameObject* pSource;
 	};
 
-	struct OnHealingTaken_t final : rujin::event::Data
+	struct OnHealingTaken_t final : event::Data
 	{
 		explicit OnHealingTaken_t(HealthComponent* pHealth, uint32_t healingDone, rujin::GameObject* pSource)
 			: pHealth(pHealth)
@@ -42,7 +46,7 @@ namespace game_event
 		rujin::GameObject* pSource;
 	};
 
-	struct OnDie_t final : rujin::event::Data
+	struct OnDie_t final : event::Data
 	{
 		explicit OnDie_t(HealthComponent* pHealth, rujin::GameObject* pKilledBy)
 			: pHealth(pHealth)
@@ -51,6 +55,28 @@ namespace game_event
 
 		HealthComponent* pHealth;
 		rujin::GameObject* pKilledBy;
+	};
+
+	struct OnLivesChanged_t final : event::Data
+	{
+		explicit OnLivesChanged_t(TronPlayerComponent* pPlayer, uint8_t newLives)
+			: pPlayer(pPlayer)
+			, newLives(newLives)
+		{}
+
+		TronPlayerComponent* pPlayer;
+		uint8_t newLives;
+	};
+
+	struct OnScoreChanged_t final : event::Data
+	{
+		explicit OnScoreChanged_t(TronPlayerComponent* pPlayer, uint32_t newScore)
+			: pPlayer(pPlayer)
+			, newScore(newScore)
+		{}
+
+		TronPlayerComponent* pPlayer;
+		uint32_t newScore;
 	};
 }
 

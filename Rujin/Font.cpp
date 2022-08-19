@@ -12,7 +12,7 @@ rujin::Font::Font(const std::string& fullPath, const uint32_t size)
 	m_Font = TTF_OpenFont(m_FullPath.c_str(), size);
 
 	if (m_Font == nullptr)
-		LOG_ERROR_("Failed to load font: {}", SDL_GetError());
+		LOG_ERROR_("Failed to load font: {}", TTF_GetError());
 }
 
 rujin::Font::~Font()

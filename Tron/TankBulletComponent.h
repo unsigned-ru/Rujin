@@ -16,6 +16,7 @@ public:
 	explicit TankBulletComponent(TankComponent* pOwner, uint8_t maxBounces, float bulletSpeed, uint32_t damage);
 private:
 	void Start() override;
+	void FixedUpdate() override;
 	void OnOverlap(const CollisionResult&) override;
 
 	const uint8_t m_MaxBounces;
@@ -27,6 +28,8 @@ private:
 	ProjectileMovementComponent* m_pProjectileMovement = nullptr;
 
 	TankComponent* m_pOwningTank;
+
+	bool m_HasHitPlayerThisFrame{ false };
 };
 
 

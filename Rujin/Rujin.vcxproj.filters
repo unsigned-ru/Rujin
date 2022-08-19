@@ -307,6 +307,9 @@
     <ClInclude Include="EngineEvents.h">
       <Filter>Events\ObserverPattern</Filter>
     </ClInclude>
+    <ClInclude Include="GridTextureRenderComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Rujin.cpp">
@@ -444,6 +447,9 @@
     </ClCompile>
     <ClCompile Include="Rutils\String.cpp">
       <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GridTextureRenderComponent.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

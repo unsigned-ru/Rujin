@@ -1,13 +1,29 @@
 ﻿#ifndef PLAYER_HUD_COMPONENT_H
 #define PLAYER_HUD_COMPONENT_H
 #include "Component.h"
-#include "TextRenderComponent.h"
+#include "IObserver.h"
 
+class TronPlayerComponent;
 
-class PlayerHUDComponent : public Component
+namespace rujin
+{
+	class GridTextureRenderComponent;
+	class TextRenderComponent;
+}
+
+class PlayerHUDComponent : public Component, public event::IObserver
 {
 public:
-	PlayerHUDComponent(TextRenderComponent* pTextRenderComponent, )
+	explicit PlayerHUDComponent(TronPlayerComponent* pPlayer, GridTextureRenderComponent* pLivesRenderer, TextRenderComponent* pScoreRenderer);
+
+	void LateStart() override;
+
+private:
+	void OnNotify(const uint32_t identifier, const event::Data* pEventData) override;
+
+	TronPlayerComponent* m_pPlayer;
+	GridTextureRenderComponent* m_pLivesRenderer;
+	TextRenderComponent* m_pScoreRenderer;
 };
 
 

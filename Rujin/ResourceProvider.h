@@ -23,8 +23,6 @@ namespace rujin
 	//	  https://stackoverflow.com/questions/2502394/the-cost-of-passing-by-shared-ptr
 
 #pragma region Forward Declarations
-	class Texture;
-	class Font;
 	class AudioClip;
 
 	namespace settings

@@ -7,18 +7,17 @@
 
 #include "ServiceLocator.h"
 #include "Texture.h"
-#include "Transform.h"
 
 rujin::TextureRenderComponent::TextureRenderComponent(const std::shared_ptr<Texture>& texture, const glm::vec2& pivot, const Recti& sourceRect)
 	: m_pTexture(texture)
 	, m_Pivot(pivot)
-{
-	SetSourceRect(sourceRect);
-}
+	, m_SourceRect(sourceRect)
+{}
 
 void rujin::TextureRenderComponent::LateStart()
 {
 	assert(m_pTexture);
+	SetSourceRect(m_SourceRect); //to ensure correct.
 }
 
 void rujin::TextureRenderComponent::Draw() const

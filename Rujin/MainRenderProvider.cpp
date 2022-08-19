@@ -1,6 +1,8 @@
 #include "RujinPCH.h"
 #include "MainRenderProvider.h"
 
+#include <SDL_image.h>
+
 #include "imgui.h"
 #include "Rujin.h"
 #include "backends/imgui_impl_opengl2.h"
@@ -10,8 +12,6 @@
 #include "ServiceLocator.h"
 
 #include "Texture.h"
-#include "Transform.h"
-
 int GetOpenGLDriverIndex()
 {
 	auto openglIndex = -1;
@@ -66,6 +66,7 @@ rujin::MainRenderProvider::MainRenderProvider()
 	glClear(GL_COLOR_BUFFER_BIT);
 	m_WindowInfo.glClearColor = initParams.glClearColor;
 
+
 	//initialize ImGui
 	LOG_DEBUG("Hooking ImGUI...");
 	IMGUI_CHECKVERSION();
@@ -110,7 +111,7 @@ void rujin::MainRenderProvider::Render() const
 	SDL_GL_SwapWindow(m_WindowInfo.pWindow);
 }
 
-void rujin::MainRenderProvider::RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot, const Recti* srcRect, bool isXFlipped, bool isYFlipped) const
+void rujin::MainRenderProvider::RenderTexture(const Texture& texture, const Position& position, const Rotation rot, const Scale& scale, const glm::vec2& pivot, const Recti* srcRect, bool isFlippedX, bool isFlippedY) const
 {
 	const glm::ivec2& texSize = texture.GetSize();
 
@@ -139,10 +140,6 @@ void rujin::MainRenderProvider::RenderTexture(const Texture& texture, const Tran
 		srcSize = glm::ivec2{ srcRect->width, srcRect->height};
 	}
 
-	const Position& pos = transform.GetPosition();
-	const Rotation rot = transform.GetRotation();
-	const Scale& scale = transform.GetScale();
-
 	//create dest rect
 	Rectf destRect;
 	destRect.width = srcSize.x * scale.x;
@@ -150,15 +147,15 @@ void rujin::MainRenderProvider::RenderTexture(const Texture& texture, const Tran
 
 	const glm::vec2 pivotOffset{ destRect.width * pivot.x, destRect.height * pivot.y };
 
-	destRect.left = pos.x - pivotOffset.x;
-	destRect.bottom = pos.y - pivotOffset.y;
+	destRect.left = position.x - pivotOffset.x;
+	destRect.bottom = position.y - pivotOffset.y;
 
 	//perform transform tranformations
 	glPushMatrix();
-	glTranslatef(pos.x, pos.y, 0);
+	glTranslatef(position.x, position.y, 0);
 	glRotatef(glm::degrees(rot), 0.f, 0.f, 1.f);
-	glScalef(scale.x * (isXFlipped ? -1.f : 1.f), scale.y * (isYFlipped ? -1.f : 1.f), 1.f);
-	glTranslatef(-pos.x, -pos.y, 0);
+	glScalef(scale.x * (isFlippedX ? -1.f : 1.f), scale.y * (isFlippedY ? -1.f : 1.f), 1.f);
+	glTranslatef(-position.x, -position.y, 0);
 
 	//Create vertex info
 	const Margins vertexInfo{ destRect.left, destRect.left + destRect.width, destRect.bottom + destRect.height, destRect.bottom };

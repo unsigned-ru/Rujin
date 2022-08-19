@@ -39,6 +39,7 @@ Scene::Scene(const std::string& name, const Rectf& collisionTreeBounds, Camera* 
 Scene::~Scene()
 {
 	delete m_pDefaultCamera;
+	delete m_pPathfinder;
 }
 
 void Scene::Start()

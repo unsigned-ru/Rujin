@@ -15,17 +15,19 @@ namespace rujin
 	class ResourceService;
 }
 
-rujin::TextRenderComponent::TextRenderComponent(const std::shared_ptr<Font>& pFont, const glm::vec4& color)
-	: m_Color(color)
+rujin::TextRenderComponent::TextRenderComponent(const std::shared_ptr<Font>& pFont, const glm::vec4& color, const glm::vec2& pivot)
+	: TextureRenderComponent(nullptr, pivot)
+	, m_Color(color)
 	, m_pFont(pFont)
-{
-}
+{}
 
-void rujin::TextRenderComponent::Start()
+void rujin::TextRenderComponent::LateStart()
 {
 	assert(m_pFont);
 
-	TextureRenderComponent::Start();
+	UpdateTexture();
+
+	TextureRenderComponent::LateStart();
 }
 
 void rujin::TextRenderComponent::Update()
@@ -64,7 +66,10 @@ void rujin::TextRenderComponent::SetColor(const glm::vec4& color)
 
 void rujin::TextRenderComponent::UpdateTexture()
 {
-	ServiceLocator::GetService<ResourceService>().GetStringTexture(m_Text, m_pFont);
+	const auto newTexture = ServiceLocator::GetService<ResourceService>().GetStringTexture(m_Text, m_pFont);
+	SetTexture(newTexture);
+
+	m_IsDirty = false;
 }
 
 bool rujin::TextRenderComponent::IsDirty() const

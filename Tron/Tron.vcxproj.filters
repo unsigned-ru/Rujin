@@ -98,14 +98,12 @@
     <ClInclude Include="HealthComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="GameEvents.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="Prefabs.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="PlayerHUDComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
+    <ClInclude Include="GameEvents.h" />
   </ItemGroup>
 </Project>

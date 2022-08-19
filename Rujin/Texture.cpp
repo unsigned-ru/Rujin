@@ -56,18 +56,10 @@ void rujin::Texture::CreateFromSurface(const SDL_Surface* pSurface)
 	switch (pSurface->format->BytesPerPixel)
 	{
 	case 3:
-		if (pSurface->format->Rmask == 0x000000ff)
-		{
-			pixelFormat = GL_RGB;
-		}
-
+		pixelFormat = GL_RGB;
 		break;
 	case 4:
-		if (pSurface->format->Rmask == 0x000000ff)
-		{
-			pixelFormat = GL_RGBA;
-		}
-
+		pixelFormat = GL_RGBA;
 		break;
 	default:
 		LOG_ERROR_("unknown pixel format, BytesPerPixel: {}\nUse 32 bit or 24 bit images.", pSurface->format->BytesPerPixel);

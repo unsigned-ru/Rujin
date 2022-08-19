@@ -2,12 +2,12 @@
 #include "FpsComponent.h"
 
 #include "Rujin.h"
-#include "TextComponent.h"
+#include "TextRenderComponent.h"
 #include <cassert>
 
 
-rujin::FpsComponent::FpsComponent(TextComponent* pTextComponent)
-	: m_pTextComponent(pTextComponent)
+rujin::FpsComponent::FpsComponent(TextRenderComponent* pTextRenderer)
+	: m_pTextRenderer(pTextRenderer)
 {
 }
 
@@ -15,10 +15,10 @@ void rujin::FpsComponent::Start()
 {
 	Component::Start();
 
-	assert(m_pTextComponent);
+	assert(m_pTextRenderer);
 
 	//assign initial fps value
-	m_pTextComponent->SetText("00 FPS");
+	m_pTextRenderer->SetText("00 FPS");
 }
 
 void rujin::FpsComponent::Update()
@@ -35,6 +35,6 @@ void rujin::FpsComponent::Update()
 		m_FpsTimer -= m_UpdateInterval;
 
 		//update the text component only when we need to
-		m_pTextComponent->SetText(std::to_string(m_Fps) + " FPS");
+		m_pTextRenderer->SetText(std::to_string(m_Fps) + " FPS");
 	}
 }

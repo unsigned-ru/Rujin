@@ -2,10 +2,10 @@
 #define RENDER_SERVICE_H
 
 #include "Service.h"
+#include "Transform.h"
 
 namespace rujin
 {
-	class Transform;
 	class Texture;
 
 	class RenderService : public Service
@@ -20,7 +20,11 @@ namespace rujin
 		RenderService& operator=(RenderService&&) noexcept = delete;
 
 		virtual void Render() const = 0;
-		virtual void RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot, const Recti* srcRect = nullptr, bool isFlippedX = false, bool isFlippedY = false) const = 0;
+		virtual void RenderTexture(const Texture& texture, const Position& position, const Rotation rot = { 0.f }, const Scale& scale = { 1.f, 1.f }, const glm::vec2& pivot = { 0.5f, 0.5f }, const Recti* srcRect = nullptr, bool isFlippedX = false, bool isFlippedY = false) const = 0;
+		void RenderTexture(const Texture& texture, const Transform& transform, const glm::vec2& pivot = { 0.5f, 0.5f }, const Recti* srcRect = nullptr, bool isFlippedX = false, bool isFlippedY = false) const
+		{
+			RenderTexture(texture, transform.GetPosition(), transform.GetRotation(), transform.GetScale(), pivot, srcRect, isFlippedX, isFlippedY);
+		}
 
 #pragma region Primitive Drawing
 

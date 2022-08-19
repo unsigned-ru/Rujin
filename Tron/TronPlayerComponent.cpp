@@ -14,7 +14,8 @@
 
 
 TronPlayerComponent::TronPlayerComponent(TankComponent* pTank, PlayerIndex playerIndex)
-	: m_PlayerIdx(playerIndex)
+	: Subject({})
+	, m_PlayerIdx(playerIndex)
 	, m_pTank(pTank)
 {
 	/* Register player*/
@@ -89,6 +90,8 @@ PlayerIndex TronPlayerComponent::GetPlayerIndex() const
 
 uint8_t TronPlayerComponent::GetLives() const { return m_Lives; }
 
+uint32_t TronPlayerComponent::GetScore() const { return m_Score; }
+
 void TronPlayerComponent::HandleMovement(const InputService& input)
 {
 	float inputIntensity;
@@ -156,8 +159,12 @@ void TronPlayerComponent::OnNotify(const uint32_t identifier, const event::Data*
 			//set our health back to max
 			pTankHealth->SetHealth(pTankHealth->GetMaxHealth());
 
-			//randomize position
+			//randomize position1
 			GameObject()->GetTransform().SetLocalPosition(Rujin::Get()->GetGame<Tron>()->GetRandomSpawnLocation());
+
+			//notify LivesChanged
+			const game_event::OnLivesChanged_t livesChangedEvent{ this, m_Lives };
+			Notify(static_cast<uint32_t>(game_event::Identifier::OnLivesChanged), &livesChangedEvent);
 		}
 		else
 		{

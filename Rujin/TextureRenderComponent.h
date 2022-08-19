@@ -1,11 +1,14 @@
 #ifndef TEXTURE_RENDER_COMPONENT_H
 #define TEXTURE_RENDER_COMPONENT_H
 #include "Component.h"
+#include "Texture.h"
+
+#include "Structs.h"
+
+#include <memory>
 
 namespace rujin
 {
-	class Texture;
-
 	class TextureRenderComponent : public Component
 	{
 	public:
@@ -26,12 +29,12 @@ namespace rujin
 
 		const glm::vec2& GetPivot() const { return m_Pivot; }
 
-	private:
+	protected:
 		std::shared_ptr<Texture> m_pTexture{};
 		glm::vec2 m_Pivot = { .5f, .5f };
 		Recti m_SourceRect{};
-		bool m_IsFlippedX{false};
-		bool m_IsFlippedY{false};
+		bool m_IsFlippedX{ false };
+		bool m_IsFlippedY{ false };
 	};
 }
 

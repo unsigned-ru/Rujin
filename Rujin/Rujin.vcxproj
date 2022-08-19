@@ -260,6 +260,7 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClInclude Include="CollisionQuadTree.h" />
     <ClInclude Include="ProjectileMovementComponent.h" />
     <ClInclude Include="RenderService.h" />
+    <ClInclude Include="GridTextureRenderComponent.h" />
     <ClInclude Include="Rutils\Math.h" />
     <ClInclude Include="Rutils\String.h" />
     <ClInclude Include="SceneService.h" />
@@ -395,6 +396,7 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClCompile Include="KeyboardAndMouseInputSession.cpp" />
     <ClCompile Include="CollisionQuadTree.cpp" />
     <ClCompile Include="ProjectileMovementComponent.cpp" />
+    <ClCompile Include="GridTextureRenderComponent.cpp" />
     <ClCompile Include="Rutils\String.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
