@@ -5,6 +5,8 @@
 #include "Component.h"
 
 
+class HealthComponent;
+
 namespace rujin
 {
 	class TextureRenderComponent;
@@ -21,22 +23,24 @@ public:
 		TronMovementComponent* pMovement,
 		TextureRenderComponent* pBodyRenderer,
 		BoxColliderComponent* pCollider,
-		uint32_t attackDamage = 25.f,
+		HealthComponent* pHealth,
+		uint32_t attackDamage = 1u,
 		uint32_t attackCooldown = 1'000u
 	);
 
 	TronMovementComponent* GetMovement() const;
 	TextureRenderComponent* GetBodyRenderer() const;
 	BoxColliderComponent* GetColliderComponent() const;
+	HealthComponent* GetHealthComponent() const;
 
 	bool CanAttack() const;
-	void Attack(class GameObject* pObjectToAttack);
+	void Attack(const class GameObject* pObjectToAttack);
 
 private:
 	TronMovementComponent* m_pMovementComp = nullptr;
 	TextureRenderComponent* m_pBodyRenderer = nullptr;
 	BoxColliderComponent* m_pBoxCollider = nullptr;
-
+	HealthComponent* m_pHealth = nullptr;
 
 	const uint32_t m_AttackDamage;
 	const uint32_t m_AttackingCooldown;

@@ -7,6 +7,8 @@
 #include "FMOD_AudioProvider.h"
 #include "GameObject.h"
 #include "HeuristicFunctions.h"
+#include "InputService.h"
+#include "Prefabs.h"
 #include "RecognizerAIController.h"
 #include "RecognizerComponent.h"
 #include "ResourceProvider.h"
@@ -39,7 +41,7 @@ void Tron::Load()
 	//AudioService& audioService = ServiceLocator::GetService<AudioService>();
 	ResourceService& resourceService = ServiceLocator::GetService<ResourceService>();
 	SceneService& sceneService = ServiceLocator::GetService<SceneService>();
-
+	InputService& input = ServiceLocator::GetService<InputService>();
 	/* Load required audio...*/
 	//...
 
@@ -69,31 +71,7 @@ void Tron::Load()
 
 	/* Create player 1*/
 	{
-		GameObject* playerGO = new GameObject("Player1");
-
-		auto* pBodyRenderer = playerGO->AddComponent
-		(
-			new TextureRenderComponent
-			(
-				resourceService.LoadTexture("Textures/Spritesheet.png"), 
-				{0.5f, 0.5f},
-				Recti{0, 0, 50, 50}
-			)
-		);
-
-		auto* pTankCollider = playerGO->AddComponent
-		(
-			new BoxColliderComponent({ 50, 50 }, false)
-		);
-
-		auto* pTankMovement = playerGO->AddComponent
-		(
-			new TronMovementComponent(pTankCollider)
-		);
-
-#ifdef _DEBUG
-		playerGO->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
-#endif //_DEBUG
+		GameObject* playerGO = prefabs::CreatePlayerTank("Player1", input.RegisterPlayer());
 
 		//calc position
 		playerGO->GetTransform().SetPosition
@@ -105,75 +83,15 @@ void Tron::Load()
 			}
 		);
 
-		/* Turret Start */
-		GameObject* Turret = new GameObject("Turret");
-
-		auto* pTankAimingComponent = Turret->AddComponent
-		(
-			new TankAimingComponent()
-		);
-
-		auto* pTurretRenderer = Turret->AddComponent
-		(
-			new TextureRenderComponent
-			(
-				resourceService.LoadTexture("Textures/Spritesheet.png"), 
-				{0.2f, 0.5f}, 
-				Recti{0, 50, 45, 21}
-			)
-		);
-
-		Turret->GetTransform().AddLocalPosition({ -8.f, 0.f });
-		playerGO->AddChild(Turret);
-		/* Turret End */
-
-		auto* pTank = playerGO->AddComponent
-		(
-			new TankComponent
-			(
-				pTankMovement, 
-				pTankAimingComponent, 
-				pBodyRenderer, 
-				pTurretRenderer, 
-				pTankCollider,
-				Recti{ 50, 50, 19, 14 }
-			)
-		);
-
-		playerGO->AddComponent(new TronPlayerComponent(pTank));
-
 		pScene->AddGameObject(playerGO);
 	}
 
 
 	/* Create Enemy Tank*/
 	{
-		GameObject* pEnemyGO = new GameObject("Enemy_Tank");
+		GameObject* pEnemyGO = prefabs::CreateEnemyTank();
 
-		auto* pBodyRenderer = pEnemyGO->AddComponent
-		(
-			new TextureRenderComponent
-			(
-				resourceService.LoadTexture("Textures/Spritesheet.png"),
-				{ 0.5f, 0.5f },
-				Recti{ 100, 0, 50, 50 }
-			)
-		);
-
-		auto* pTankCollider = pEnemyGO->AddComponent
-		(
-			new BoxColliderComponent({ 50, 50 }, false)
-		);
-
-		auto* pTankMovement = pEnemyGO->AddComponent
-		(
-			new TronMovementComponent(pTankCollider)
-		);
-
-#ifdef _DEBUG
-		pEnemyGO->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
-#endif //_DEBUG
-
+	
 		//calc position
 		pEnemyGO->GetTransform().SetPosition
 		(
@@ -183,57 +101,13 @@ void Tron::Load()
 				(m_GridStart.y + m_GridDimensions.y * m_CellSize) / 2.f
 			}
 		);
-
-		auto* pTankAimingComponent = pEnemyGO->AddComponent
-		(
-			new TankAimingComponent(45.f)
-		);
-
-		auto* pTank = pEnemyGO->AddComponent
-		(
-			new TankComponent
-			(
-				pTankMovement,
-				pTankAimingComponent,
-				pBodyRenderer,
-				nullptr,
-				pTankCollider,
-				Recti{ 50, 50 + 2 * 15, 19, 15 }
-			)
-		);
-
-		pEnemyGO->AddComponent(new TankAIController(pTank));
-
+		
 		pScene->AddGameObject(pEnemyGO);
 	}
 
 	/* Create Enemy Recognizer*/
 	{
-		GameObject* pEnemyGO = new GameObject("Enemy_Recognizer");
-
-		auto* pBodyRenderer = pEnemyGO->AddComponent
-		(
-			new TextureRenderComponent
-			(
-				resourceService.LoadTexture("Textures/Spritesheet.png"),
-				{ 0.5f, 0.5f },
-				Recti{ 150, 0, 50, 50 }
-			)
-		);
-
-		auto* pCollider = pEnemyGO->AddComponent
-		(
-			new BoxColliderComponent({ 50, 50 }, false)
-		);
-
-		auto* pTankMovement = pEnemyGO->AddComponent
-		(
-			new TronMovementComponent(pCollider)
-		);
-
-#ifdef _DEBUG
-		pEnemyGO->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
-#endif //_DEBUG
+		GameObject* pEnemyGO = prefabs::CreateEnemyRecognizer();
 
 		//calc position
 		pEnemyGO->GetTransform().SetPosition
@@ -244,18 +118,6 @@ void Tron::Load()
 				(m_GridStart.y + m_GridDimensions.y * m_CellSize) - m_CellSize
 			}
 		);
-
-		auto* pRecognizer = pEnemyGO->AddComponent
-		(
-			new RecognizerComponent
-			(
-				pTankMovement,
-				pBodyRenderer,
-				pCollider
-			)
-		);
-
-		pEnemyGO->AddComponent(new RecognizerAIController(pRecognizer));
 
 		pScene->AddGameObject(pEnemyGO);
 	}

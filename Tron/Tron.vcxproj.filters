@@ -53,6 +53,9 @@
     <ClCompile Include="HealthComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="Prefabs.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TronPCH.h">
@@ -94,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="GameEvents.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Prefabs.h">
+      <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

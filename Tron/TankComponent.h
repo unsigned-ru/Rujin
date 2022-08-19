@@ -6,6 +6,8 @@
 #include "Component.h"
 #include "BoxColliderComponent.h"
 
+class HealthComponent;
+
 namespace rujin
 {
 	class TextureRenderComponent;
@@ -25,9 +27,10 @@ public:
 		TextureRenderComponent* pTankBodyRenderer,
 		TextureRenderComponent* pTankTurretRenderer,
 		BoxColliderComponent* pTankCollider,
+		HealthComponent* pHealthComponent,
 		const Recti& bulletSourceRect,
-		float bulletSpeed = 300.f,
-		float bulletDamage = 25.f,
+		float bulletSpeed = 700.f,
+		uint32_t bulletDamage = 1u,
 		uint32_t shootingCooldown = 1'000u,
 		uint8_t bulletBounces = 5u
 	);
@@ -39,6 +42,8 @@ public:
 	TextureRenderComponent* GetTurretRenderer() const;
 
 	BoxColliderComponent* GetColliderComponent() const;
+
+	HealthComponent* GetHealthComponent() const;
 
 	bool CanShoot() const;
 	void Shoot();
@@ -52,11 +57,13 @@ private:
 
 	BoxColliderComponent* m_pBodyCollider = nullptr;
 
+	HealthComponent* m_pHealth = nullptr;
+
 	const Recti m_BulletSrcRect;
 
 	const uint8_t m_BulletBounces;
 	const float m_BulletSpeed;
-	const float m_BulletDamage;
+	const uint32_t m_BulletDamage;
 
 	const uint32_t m_ShootingCooldown;
 

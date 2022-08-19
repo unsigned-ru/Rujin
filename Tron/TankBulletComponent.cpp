@@ -4,10 +4,11 @@
 #include "Collider.h"
 #include "ColliderComponent.h"
 #include "GameObject.h"
+#include "HealthComponent.h"
 #include "ProjectileMovementComponent.h"
 #include "TankComponent.h"
 
-TankBulletComponent::TankBulletComponent(TankComponent* pOwner, uint8_t maxBounces, float bulletSpeed, float damage)
+TankBulletComponent::TankBulletComponent(TankComponent* pOwner, uint8_t maxBounces, float bulletSpeed, uint32_t damage)
 	: m_MaxBounces(maxBounces)
 	, m_BulletSpeed(bulletSpeed)
 	, m_Damage(damage)
@@ -20,11 +21,6 @@ void TankBulletComponent::Start()
 	m_pProjectileMovement = GameObject()->GetComponent<ProjectileMovementComponent>();
 	ASSERT_MSG(m_pProjectileMovement, "This component requires a ProjectileMovementComponent to be present on the GameObject.");
 	ASSERT_MSG(GameObject()->GetComponent<BoxColliderComponent>(), "This component requires a BoxColliderComponent to be present on the GameObject.");
-}
-
-void TankBulletComponent::FixedUpdate()
-{
-	m_HitWallThisFrame = false;
 }
 
 void TankBulletComponent::OnOverlap(const CollisionResult& result)
@@ -58,7 +54,11 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 
 	if (m_pOwningTank->GameObject()->HasTag("Player") && pGameObject->HasTag("Enemy"))
 	{
-		//player bullet hit enemy bullet.
+		//player bullet hit enemy.
+		if (HealthComponent* pHealth = pGameObject->GetComponent<HealthComponent>(); pHealth)
+		{
+			pHealth->TakeDamage(m_Damage, m_pOwningTank->GameObject());
+		}
 
 		m_pGameObject->Destroy();
 	}
@@ -66,6 +66,10 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 	else if(m_pOwningTank->GameObject()->HasTag("Enemy") && pGameObject->HasTag("Player"))
 	{
 		//Enemy bullet hit Player
+		if (HealthComponent* pHealth = pGameObject->GetComponent<HealthComponent>(); pHealth)
+		{
+			pHealth->TakeDamage(m_Damage, m_pOwningTank->GameObject());
+		}
 
 		m_pGameObject->Destroy();
 	}

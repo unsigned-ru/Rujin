@@ -2,6 +2,7 @@
 #define TRON_PLAYER_COMPONENT_H
 #include "Component.h"
 #include "InputStructs.h"
+#include "IObserver.h"
 
 
 class TankComponent;
@@ -11,10 +12,10 @@ namespace rujin
 	class InputService;
 }
 
-class TronPlayerComponent : public rujin::Component
+class TronPlayerComponent : public Component, public event::IObserver
 {
 public:
-	explicit TronPlayerComponent(TankComponent* pTank);
+	explicit TronPlayerComponent(TankComponent* pTank, PlayerIndex playerIndex);
 
 	void Start() override;
 	void FixedUpdate() override;
@@ -25,6 +26,9 @@ public:
 private:
 	void HandleMovement(const InputService& input);
 	void HandleAiming(const InputService& input);
+
+private:
+	void OnNotify(const uint32_t identifier, const event::Data* pEventData) override;
 
 	const PlayerIndex m_PlayerIdx;
 

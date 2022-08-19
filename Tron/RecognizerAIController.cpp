@@ -152,7 +152,7 @@ void RecognizerAIController::ExecuteCurrentState()
 		MoveToClosestPlayer();
 		break;
 	case State::Attack:
-		//TODO: attack
+		m_pRecognizer->Attack(m_Players[0]);
 		break;
 	}
 }

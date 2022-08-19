@@ -44,7 +44,7 @@ namespace rujin::graph
 		void SetConnectionCost(int from, int to, float cost);
 
 		int GetNrOfNodes() const { return m_Nodes.size(); }
-		int GetNrOfActiveNodes() const; // TODO: add comment
+		int GetNrOfActiveNodes() const;
 		int GetNrOfConnections() const;
 		bool IsDirectionalGraph() const { return m_IsDirectionalGraph; }
 		bool IsEmpty() const { return m_Nodes.empty(); }

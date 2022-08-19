@@ -2,17 +2,18 @@
 #include "TronPlayerComponent.h"
 
 #include "GameObject.h"
+#include "HealthComponent.h"
 #include "InputEvents.h"
 #include "InputService.h"
 #include "ServiceLocator.h"
 #include "TankAimingComponent.h"
 #include "TankComponent.h"
 #include "TronMovementComponent.h"
-#include "TextureRenderComponent.h"
+#include "GameEvents.h"
 
 
-TronPlayerComponent::TronPlayerComponent(TankComponent* pTank)
-	: m_PlayerIdx(ServiceLocator::GetService<InputService>().RegisterPlayer())
+TronPlayerComponent::TronPlayerComponent(TankComponent* pTank, PlayerIndex playerIndex)
+	: m_PlayerIdx(playerIndex)
 	, m_pTank(pTank)
 {
 	/* Register player*/
@@ -61,6 +62,8 @@ TronPlayerComponent::TronPlayerComponent(TankComponent* pTank)
 void TronPlayerComponent::Start()
 {
 	ASSERT_MSG(m_pTank, "This component requires a TankComponent.");
+
+	m_pTank->GetHealthComponent()->AddObserver(this);
 }
 
 void TronPlayerComponent::FixedUpdate()
@@ -132,6 +135,20 @@ void TronPlayerComponent::HandleAiming(const InputService& input)
 	{
 		LOG_DEBUG_("Aiming direction: [{}, {}]", aimingDirection.x, aimingDirection.y);
 		m_pTank->GetAiming()->AimAt(aimingDirection);
+	}
+}
+
+void TronPlayerComponent::OnNotify(const uint32_t identifier, const event::Data* pEventData)
+{
+	if (identifier == static_cast<uint32_t>(game_event::Identifier::OnDie))
+	{
+		const auto* onDieData = static_cast<const game_event::OnDie_t*>(pEventData);
+
+		//make sure it is us that has died...
+		if (onDieData->pHealth != m_pTank->GetHealthComponent())
+			return;
+
+		GameObject()->Destroy();
 	}
 }
 

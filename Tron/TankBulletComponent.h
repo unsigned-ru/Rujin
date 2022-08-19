@@ -13,18 +13,14 @@ namespace rujin
 class TankBulletComponent final : public Component
 {
 public:
-	explicit TankBulletComponent(TankComponent* pOwner, uint8_t maxBounces, float bulletSpeed, float damage);
+	explicit TankBulletComponent(TankComponent* pOwner, uint8_t maxBounces, float bulletSpeed, uint32_t damage);
 private:
 	void Start() override;
-	void FixedUpdate() override;
 	void OnOverlap(const CollisionResult&) override;
 
 	const uint8_t m_MaxBounces;
 	const float m_BulletSpeed;
-	const float m_Damage;
-
-	bool m_HitWallThisFrame = false;
-	bool m_HitTankThisFrame = false;
+	const uint32_t m_Damage;
 
 	uint8_t m_CurrentBounces{};
 

@@ -21,9 +21,10 @@ TankComponent::TankComponent
 	TextureRenderComponent* pTankBodyRenderer,
 	TextureRenderComponent* pTankTurretRenderer,
 	BoxColliderComponent* pTankCollider,
+	HealthComponent* pHealth,
 	const Recti& bulletSourceRect,
 	float bulletSpeed,
-	float bulletDamage,
+	uint32_t bulletDamage,
 	uint32_t shootingCooldown,
 	uint8_t bulletBounces
 )
@@ -32,6 +33,7 @@ TankComponent::TankComponent
 	, m_pBodyRenderer(pTankBodyRenderer)
 	, m_pTurretRenderer(pTankTurretRenderer)
 	, m_pBodyCollider(pTankCollider)
+	, m_pHealth(pHealth)
 	, m_BulletSrcRect(bulletSourceRect)
 	, m_BulletBounces(bulletBounces)
 	, m_BulletSpeed(bulletSpeed)
@@ -50,6 +52,7 @@ TankAimingComponent* TankComponent::GetAiming() const { return m_pAiming;}
 TextureRenderComponent* TankComponent::GetBodyRenderer() const { return m_pBodyRenderer;}
 TextureRenderComponent* TankComponent::GetTurretRenderer() const { return m_pTurretRenderer;}
 BoxColliderComponent* TankComponent::GetColliderComponent() const { return m_pBodyCollider; }
+HealthComponent* TankComponent::GetHealthComponent() const { return m_pHealth; }
 
 bool TankComponent::CanShoot() const
 {
