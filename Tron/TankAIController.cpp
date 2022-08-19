@@ -19,7 +19,7 @@ TankAIController::TankAIController(TankComponent* pTank)
 
 void TankAIController::Start()
 {
-	Component::Start();
+	EnemyAIController::Start();
 
 	//find the players
 	m_Players = GameObject()->GetScene()->GetAllRootGameObjectsByPredicate
@@ -33,7 +33,7 @@ void TankAIController::Start()
 
 void TankAIController::FixedUpdate()
 {
-	Component::FixedUpdate();
+	EnemyAIController::FixedUpdate();
 
 	/* Sort players by distance ascending. idx 0 = closest player*/
 	{
@@ -43,7 +43,6 @@ void TankAIController::FixedUpdate()
 
 	ExecuteCurrentState();
 	HandleStateTransitions();
-
 }
 
 void TankAIController::ExecuteCurrentState()

@@ -6,7 +6,7 @@ namespace rujin
 {
 	class Texture;
 
-	class TextureRenderComponent final : public Component
+	class TextureRenderComponent : public Component
 	{
 	public:
 		explicit TextureRenderComponent() = default;
@@ -29,7 +29,7 @@ namespace rujin
 	private:
 		std::shared_ptr<Texture> m_pTexture{};
 		glm::vec2 m_Pivot = { .5f, .5f };
-		Recti m_SourceRect;
+		Recti m_SourceRect{};
 		bool m_IsFlippedX{false};
 		bool m_IsFlippedY{false};
 	};

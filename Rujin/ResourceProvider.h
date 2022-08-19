@@ -44,11 +44,16 @@ namespace rujin
 		ResourceProvider& operator=(const ResourceProvider&) = delete;
 		ResourceProvider& operator=(ResourceProvider&&) noexcept = delete;
 
-		std::shared_ptr<Texture> LoadTexture(const std::string& file) override;
-		std::shared_ptr<Font> LoadFont(const std::string& file, uint32_t size) override;
+		std::shared_ptr<Texture> GetStringTexture(const std::string& text, const std::string& fontFile, uint32_t fontSize) override;
+		std::shared_ptr<Texture> GetStringTexture(const std::string& text, std::shared_ptr<Font>& pFont) override;
+		std::shared_ptr<Texture> GetTexture(const std::string& file) override;
+		std::shared_ptr<Font> GetFont(const std::string& file, uint32_t size) override;
+		
+
 	private:
-		std::unordered_map<std::string, std::weak_ptr<Font>> m_FontDict;
-		std::unordered_map<std::string, std::weak_ptr<Texture>> m_TextureDict;
+		std::unordered_map<std::string, std::weak_ptr<Font>> m_FontDict{};
+		std::unordered_map<std::string, std::weak_ptr<Texture>> m_TextureDict{};
+		std::unordered_map<std::string, std::weak_ptr<Texture>> m_StringTextureDict{};
 	};
 }
 

@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "InputStructs.h"
 #include "IObserver.h"
+#include "Subject.h"
 
 
 class TankComponent;
@@ -19,9 +20,10 @@ public:
 
 	void Start() override;
 	void FixedUpdate() override;
-	void Draw() const override;
+
 
 	PlayerIndex GetPlayerIndex() const;
+	uint8_t GetLives() const;
 
 private:
 	void HandleMovement(const InputService& input);
@@ -33,6 +35,7 @@ private:
 	const PlayerIndex m_PlayerIdx;
 
 	TankComponent* m_pTank = nullptr;
+	uint8_t m_Lives = 3u;
 };
 
 

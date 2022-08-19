@@ -18,6 +18,7 @@ const rujin::Position& rujin::Transform::GetPosition() const
 	return m_GlobalPosition;
 }
 
+//Bug: When updating global position twice a frame it might bug out bcs it is using the parents old global transform.
 void rujin::Transform::SetPosition(const rujin::Position& pos)
 {
 	//localOffset for global = newGlobal - global

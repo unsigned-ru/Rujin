@@ -1,17 +1,19 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
-struct SDL_Texture;
+#include <SDL_ttf.h>
+
 namespace rujin
 {
-	//TODO: is not RAII.
 	/**
-	 * Simple RAII wrapper for an SDL_Texture
+	 * Simple RAII wrapper for an OpenGL Texture
 	 */
 	class Texture final
 	{
 	public:
-		explicit Texture(GLuint textureId, const glm::ivec2& size);
-		
+		explicit Texture(const std::string& path);
+		explicit Texture(const std::string& text, TTF_Font* pFont);
+		explicit Texture(const SDL_Surface* pSurface);
+
 		~Texture();
 
 		Texture(const Texture &) = delete;
@@ -25,6 +27,10 @@ namespace rujin
 	protected:
 		GLuint m_TextureId{};
 		glm::ivec2 m_Size{};
+
+		void CreateFromImage(const std::string& path);
+		void CreateFromString(const std::string& text, TTF_Font* pFont);
+		void CreateFromSurface(const SDL_Surface* pSurface);
 	};
 }
 

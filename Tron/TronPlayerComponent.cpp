@@ -10,6 +10,7 @@
 #include "TankComponent.h"
 #include "TronMovementComponent.h"
 #include "GameEvents.h"
+#include "Tron.h"
 
 
 TronPlayerComponent::TronPlayerComponent(TankComponent* pTank, PlayerIndex playerIndex)
@@ -56,18 +57,21 @@ TronPlayerComponent::TronPlayerComponent(TankComponent* pTank, PlayerIndex playe
 		static_cast<uint32_t>(InputAction::Shoot),
 		InputActionKeybinds{ ButtonState::Released, VK_SPACE, GamepadButton::RIGHT_TRIGGER }
 	);
-
 }
 
 void TronPlayerComponent::Start()
 {
-	ASSERT_MSG(m_pTank, "This component requires a TankComponent.");
+	Component::Start();
 
+	GameObject()->AddTag("Player");
 	m_pTank->GetHealthComponent()->AddObserver(this);
 }
 
 void TronPlayerComponent::FixedUpdate()
 {
+	if (!m_pTank)
+		return;
+
 	const InputService& input = ServiceLocator::GetService<InputService>();
 
 	HandleMovement(input);
@@ -78,14 +82,12 @@ void TronPlayerComponent::FixedUpdate()
 		m_pTank->Shoot();
 }
 
-void TronPlayerComponent::Draw() const
-{
-}
-
 PlayerIndex TronPlayerComponent::GetPlayerIndex() const
 {
 	return m_PlayerIdx;
 }
+
+uint8_t TronPlayerComponent::GetLives() const { return m_Lives; }
 
 void TronPlayerComponent::HandleMovement(const InputService& input)
 {
@@ -145,10 +147,22 @@ void TronPlayerComponent::OnNotify(const uint32_t identifier, const event::Data*
 		const auto* onDieData = static_cast<const game_event::OnDie_t*>(pEventData);
 
 		//make sure it is us that has died...
-		if (onDieData->pHealth != m_pTank->GetHealthComponent())
+		auto* pTankHealth = m_pTank->GetHealthComponent();
+		if (onDieData->pHealth != pTankHealth)
 			return;
 
-		GameObject()->Destroy();
+		if (m_Lives-- > 0)
+		{
+			//set our health back to max
+			pTankHealth->SetHealth(pTankHealth->GetMaxHealth());
+
+			//randomize position
+			GameObject()->GetTransform().SetLocalPosition(Rujin::Get()->GetGame<Tron>()->GetRandomSpawnLocation());
+		}
+		else
+		{
+			//... We fully died, game over.
+		}
 	}
 }
 

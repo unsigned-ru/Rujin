@@ -7,6 +7,8 @@ class EnemyAIController : public Component
 public:
 	EnemyAIController() = default;
 
+	void Start() override;
+
 protected:
 	bool IsInRange(rujin::GameObject* pObj, const float range) const;
 	bool IsInLineOfSight(rujin::GameObject* pObj, const std::vector<const Collider*>& ignore) const;

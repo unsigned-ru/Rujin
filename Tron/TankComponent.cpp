@@ -96,7 +96,7 @@ void TankComponent::Shoot()
 	auto* pBulletGO = new rujin::GameObject(GameObject()->GetName() + "_Bullet");
 	pBulletGO->AddComponent(new BoxColliderComponent({ 15, 15 }, false, glm::vec2{ 0.5f, 0.5f }, CollisionLayer::Bullet));
  	pBulletGO->AddComponent(new ProjectileMovementComponent(bulletDirection * m_BulletSpeed));
-	pBulletGO->AddComponent(new TextureRenderComponent(ServiceLocator::GetService<ResourceService>().LoadTexture("Textures/Spritesheet.png"), {0.5f, 0.5f}, m_BulletSrcRect));
+	pBulletGO->AddComponent(new TextureRenderComponent(ServiceLocator::GetService<ResourceService>().GetTexture("Textures/Spritesheet.png"), {0.5f, 0.5f}, m_BulletSrcRect));
 	pBulletGO->AddComponent(new TankBulletComponent(this, m_BulletBounces, m_BulletSpeed, m_BulletDamage));
 
 	pBulletGO->GetTransform().SetPosition(bulletSpawnPos);

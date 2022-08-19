@@ -24,7 +24,7 @@ GameObject* prefabs::CreatePlayerTank(const std::string& name, rujin::PlayerInde
 	(
 		new TextureRenderComponent
 		(
-			resources.LoadTexture("Textures/Spritesheet.png"),
+			resources.GetTexture("Textures/Spritesheet.png"),
 			{ 0.5f, 0.5f },
 			Recti{ (playerIdx % 2) * 50, 0, 50, 50}
 		)
@@ -56,7 +56,7 @@ GameObject* prefabs::CreatePlayerTank(const std::string& name, rujin::PlayerInde
 	(
 		new TextureRenderComponent
 		(
-			resources.LoadTexture("Textures/Spritesheet.png"),
+			resources.GetTexture("Textures/Spritesheet.png"),
 			{ 0.2f, 0.5f },
 			Recti{ 0, 50 + (playerIdx % 2) * 21, 45, 21 }
 		)
@@ -97,7 +97,7 @@ GameObject* prefabs::CreateEnemyTank()
 	(
 		new TextureRenderComponent
 		(
-			resources.LoadTexture("Textures/Spritesheet.png"),
+			resources.GetTexture("Textures/Spritesheet.png"),
 			{ 0.5f, 0.5f },
 			Recti{ 100, 0, 50, 50 }
 		)
@@ -151,7 +151,7 @@ GameObject* prefabs::CreateEnemyRecognizer()
 	(
 		new TextureRenderComponent
 		(
-			resources.LoadTexture("Textures/Spritesheet.png"),
+			resources.GetTexture("Textures/Spritesheet.png"),
 			{ 0.5f, 0.5f },
 			Recti{ 150, 0, 50, 50 }
 		)

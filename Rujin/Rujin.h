@@ -3,6 +3,8 @@
 #include "Singleton.h"
 #include "Structs.h"
 
+#include <random>
+
 struct SDL_Window;
 namespace rujin
 {
@@ -40,7 +42,16 @@ namespace rujin
 		float GetFixedUpdateDeltaTime() const { return m_FixedUpdateTimestep; }
 		float GetTotalTime() const { return m_TotalTime; }
 
+
+		std::default_random_engine& GetRandomEngine();
+
 		void SetVSync(VSyncMode vsyncMode);
+
+		template<typename Game>
+		Game* GetGame() const requires std::is_base_of_v<IGame, Game>
+		{
+			return dynamic_cast<Game*>(m_pGame);
+		}
 
 	private:
 		friend class Singleton<Rujin>;
@@ -57,6 +68,8 @@ namespace rujin
 		float m_FixedUpdateTimestep;
 		float m_DeltaTime{};
 		float m_TotalTime{};
+
+		std::default_random_engine m_RandomEngine{};
 
 		IGame* m_pGame = nullptr;
 	};

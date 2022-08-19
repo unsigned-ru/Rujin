@@ -56,6 +56,9 @@
     <ClCompile Include="Prefabs.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerHUDComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TronPCH.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="Prefabs.h">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerHUDComponent.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -38,8 +38,48 @@ rujin::ResourceProvider::ResourceProvider()
 	LOG_DEBUG("Resource Manager Initialized!");
 }
 
-//TODO: make RAII instead.
-std::shared_ptr<rujin::Texture> rujin::ResourceProvider::LoadTexture(const std::string& file)
+std::shared_ptr<rujin::Texture> rujin::ResourceProvider::GetStringTexture(const std::string& text, const std::string& fontFile, uint32_t fontSize)
+{
+	//check if we remember loading this texture before
+	const std::string keyValue = fmt::format("{}_{}_{}", text, fontFile, fontSize);
+	if (const auto it = m_StringTextureDict.find(keyValue); it != m_StringTextureDict.end() && !it->second.expired())
+	{
+		//we found a remembered weak pointer to the texture
+		//weak pointer is still valid
+		//we can return a shared pointer to the already existing resource, we don't have to load in a new one.
+		return it->second.lock();
+	}
+
+	//get font first...
+	auto pFont = GetFont(m_DataPath + fontFile, fontSize);
+
+	//Get by font
+	return GetStringTexture(text, pFont);
+}
+
+std::shared_ptr<rujin::Texture> rujin::ResourceProvider::GetStringTexture(const std::string& text, std::shared_ptr<Font>& pFont)
+{
+	//check if we remember loading this texture before
+	const std::string keyValue = fmt::format("{}_{}_{}", text, pFont->GetFullPath(), pFont->GetSize());
+
+	if (const auto it = m_StringTextureDict.find(keyValue); it != m_StringTextureDict.end() && !it->second.expired())
+	{
+		//we found a remembered weak pointer to the texture
+		//weak pointer is still valid
+		//we can return a shared pointer to the already existing resource, we don't have to load in a new one.
+		return it->second.lock();
+	}
+
+	//we haven't loaded in this texture before, or it is expired.
+	auto rv = std::make_shared<Texture>(text, pFont->GetFont());
+
+	//remember we loaded in this texture...
+	m_StringTextureDict[keyValue] = rv;
+
+	return rv;
+}
+
+std::shared_ptr<rujin::Texture> rujin::ResourceProvider::GetTexture(const std::string& file)
 {
 	const auto fullPath = m_DataPath + file;
 
@@ -54,79 +94,8 @@ std::shared_ptr<rujin::Texture> rujin::ResourceProvider::LoadTexture(const std::
 	}
 
 	//we haven't loaded in the texture before.
-
-	// Load image at specified path
-	
-	SDL_Surface* pSurface = IMG_Load(fullPath.c_str());
-	if (pSurface == nullptr)
-	{
-		LOG_ERROR_("Error when calling IMG_Load : {}", SDL_GetError());
-		return nullptr;
-	}
-
-
-	// Get pixel format information and translate to OpenGl format
-	GLenum pixelFormat{ GL_RGB };
-	switch (pSurface->format->BytesPerPixel)
-	{
-	case 3:
-		if (pSurface->format->Rmask == 0x000000ff)
-		{
-			pixelFormat = GL_RGB;
-		}
-		
-		break;
-	case 4:
-		if (pSurface->format->Rmask == 0x000000ff)
-		{
-			pixelFormat = GL_RGBA;
-		}
-		
-		break;
-	default:
-		LOG_ERROR_("unknown pixel format, BytesPerPixel: {}\nUse 32 bit or 24 bit images.", pSurface->format->BytesPerPixel);
-		return nullptr;
-	}
-
-	//Generate an array of textures.  We only want one texture (one element array), so trick
-	//it by treating "texture" as array of length one.
-	GLuint texId;
-	glGenTextures(1, &texId);
-
-	//Select (bind) the texture we just generated as the current 2D texture OpenGL is using/modifying.
-	//All subsequent changes to OpenGL's texturing state for 2D textures will affect this texture.
-	glBindTexture(GL_TEXTURE_2D, texId);
-
-	// check for errors. Can happen if a texture is created while a static pointer is being initialized, even before the call to the main function.
-	GLenum e = glGetError();
-	if (e != GL_NO_ERROR)
-		LOG_ERROR_(R"(Texture::CreateFromSurface, error binding textures, Error id = {}
-			Can happen if a texture is created before performing the initialization code (e.g. a static Texture object)
-			There might be a white rectangle instead of the image.)", e);
-
-	// Specify the texture's data.  
-	glTexImage2D
-	(
-		GL_TEXTURE_2D,
-		0,
-		GL_RGBA,
-		pSurface->w,
-		pSurface->h,
-		0,
-		pixelFormat,
-		GL_UNSIGNED_BYTE,
-		pSurface->pixels
-	);
-
-	//Scaling behavior
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	//make the texture obj
-	auto rv = std::make_shared<Texture>(texId, glm::ivec2{ pSurface->w, pSurface->h });
-
-	// Free loaded surface
-	SDL_FreeSurface(pSurface);
+	//Create the texture
+	auto rv = std::make_shared<Texture>(fullPath);
 
 	//remember we loaded in this texture, store a weak_ptr
 	m_TextureDict[file] = rv;
@@ -134,7 +103,7 @@ std::shared_ptr<rujin::Texture> rujin::ResourceProvider::LoadTexture(const std::
 	return rv;
 }
 
-std::shared_ptr<rujin::Font> rujin::ResourceProvider::LoadFont(const std::string& file, uint32_t size)
+std::shared_ptr<rujin::Font> rujin::ResourceProvider::GetFont(const std::string& file, uint32_t size)
 {
 	const auto fullPath = m_DataPath + file;
 

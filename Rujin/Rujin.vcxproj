@@ -279,7 +279,6 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClInclude Include="Rutils\Macros.h" />
     <ClInclude Include="Service.h" />
     <ClInclude Include="Structs.h" />
-    <ClInclude Include="TextComponent.h" />
     <ClInclude Include="TextRenderComponent.h" />
     <ClInclude Include="TextureRenderComponent.h" />
     <ClInclude Include="Transform.h" />
@@ -435,7 +434,6 @@ xcopy "$(SolutionDir)3rdParty\FMOD\studio\lib\$(PlatformTarget)\*.dll" "$(Output
     <ClCompile Include="FpsComponent.cpp" />
     <ClCompile Include="XInputGamepadSession.cpp" />
     <ClCompile Include="Structs.cpp" />
-    <ClCompile Include="TextComponent.cpp" />
     <ClCompile Include="TextRenderComponent.cpp" />
     <ClCompile Include="TextureRenderComponent.cpp" />
     <ClCompile Include="Transform.cpp" />

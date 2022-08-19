@@ -17,7 +17,7 @@ RecognizerAIController::RecognizerAIController(RecognizerComponent* pRecognizer)
 
 void RecognizerAIController::Start()
 {
-	Component::Start();
+	EnemyAIController::Start();
 
 	//find the players
 	m_Players = GameObject()->GetScene()->GetAllRootGameObjectsByPredicate
@@ -31,7 +31,7 @@ void RecognizerAIController::Start()
 
 void RecognizerAIController::FixedUpdate()
 {
-	Component::FixedUpdate();
+	EnemyAIController::FixedUpdate();
 
 	/* Sort players by distance ascending. idx 0 = closest player*/
 	{

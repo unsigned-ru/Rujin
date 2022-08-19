@@ -8,6 +8,12 @@
 #include "GameObject.h"
 #include "Scene.h"
 
+void EnemyAIController::Start()
+{
+	Component::Start();
+
+	GameObject()->AddTag("Enemy");
+}
 
 bool EnemyAIController::IsInRange(rujin::GameObject* pObj, const float range) const
 {

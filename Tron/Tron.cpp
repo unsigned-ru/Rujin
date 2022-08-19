@@ -9,19 +9,13 @@
 #include "HeuristicFunctions.h"
 #include "InputService.h"
 #include "Prefabs.h"
-#include "RecognizerAIController.h"
-#include "RecognizerComponent.h"
 #include "ResourceProvider.h"
 #include "Rujin.h"
 #include "Scene.h"
 #include "SceneProvider.h"
 #include "ServiceLocator.h"
-#include "TankAimingComponent.h"
 #include "TankComponent.h"
 #include "TextureRenderComponent.h"
-#include "TronPlayerComponent.h"
-#include "TronMovementComponent.h"
-#include "TankAIController.h"
 
 using namespace rujin;
 
@@ -52,7 +46,7 @@ void Tron::Load()
 	///* Create Circuit background */
 	{
 		GameObject* go = new GameObject("Circuit_BG");
-		go->AddComponent(new TextureRenderComponent(resourceService.LoadTexture("Textures/Circuit.png"), {0.f, 0.f}));
+		go->AddComponent(new TextureRenderComponent(resourceService.GetTexture("Textures/Circuit.png"), {0.f, 0.f}));
 		pScene->AddGameObject(go);
 	}
 
@@ -122,6 +116,13 @@ void Tron::Load()
 		pScene->AddGameObject(pEnemyGO);
 	}
 }
+ 
+const glm::vec2& Tron::GetRandomSpawnLocation() const
+{
+	static std::uniform_int_distribution<uint16_t> dist(0u, static_cast<uint16_t>(m_SpawnLocations.size()) - 1u);
+	const uint16_t idx = dist(Rujin::Get()->GetRandomEngine());
+	return m_SpawnLocations.at(idx);
+}
 
 void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelTexturePath)
 {
@@ -151,11 +152,11 @@ void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelT
 
 			//calculated red color of target pixel (ptr arithmetic: +1 = green, +1 = blue)  
 			const Uint8 pixelColor =
-				*(
-					(Uint8*)pLevelTex->pixels +
-					pLevelTex->pitch + (pLevelTex->h - 2) * pLevelTex->pitch - (y * pLevelTex->pitch) +
-					x * pLevelTex->format->BytesPerPixel
-					);
+			*(
+				(Uint8*)pLevelTex->pixels +
+				pLevelTex->pitch + (pLevelTex->h - 2) * pLevelTex->pitch - (y * pLevelTex->pitch) +
+				x * pLevelTex->format->BytesPerPixel
+			);
 
 			if (pixelColor == 255)
 			{
@@ -164,16 +165,16 @@ void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelT
 				go->GetTransform().SetPosition(pos);
 
 				//Floor texture renderer
-				go->AddComponent(new TextureRenderComponent(resources.LoadTexture("Textures/Spritesheet.png"), { 0.f, 0.f }, floorSourceRect));
+				go->AddComponent(new TextureRenderComponent(resources.GetTexture("Textures/Spritesheet.png"), { 0.f, 0.f }, floorSourceRect));
 
 				pScene->AddGameObject(go);
 			}
 			else
 			{
-				//pixel is black, spawn a wall at the grid cell.
+				//pixel is black, spawn a Wall at the grid cell.
 				GameObject* go = new GameObject(fmt::format("Grid-{}_{}.Wall", x, y));
 				go->GetTransform().SetPosition(pos);
-				go->AddTag("wall");
+				go->AddTag("Wall");
 				//invisible box collider.
 				go->AddComponent(new BoxColliderComponent({ m_CellSize, m_CellSize }, true, { 0.f, 0.f }));
 
@@ -183,7 +184,7 @@ void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelT
 
 				pScene->AddGameObject(go);
 
-				//Mark this cell as wall in the pathfinding graph
+				//Mark this cell as Wall in the pathfinding graph
 				const int nodeIdx = m_pGridGraph->GetIndex(x, y);
 				m_pGridGraph->GetNode(nodeIdx)->SetTerrainType(graph::TerrainType::Wall);
 				m_pGridGraph->RemoveConnectionsToAdjacentNodes(nodeIdx);
@@ -192,6 +193,8 @@ void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelT
 		}
 	}
 	SDL_FreeSurface(pLevelTex);
+
+	GenerateSpawnLocations();
 }
 
 void Tron::CreateLevelBoundsColliders(Scene* pScene)
@@ -212,7 +215,7 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 				{ 1.f, 0.f }
 			)
 		);
-		go->AddTag("wall");
+		go->AddTag("Wall");
 
 #ifdef _DEBUG
 			go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
@@ -236,7 +239,7 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 				{ 0.f, 0.f }
 			)
 		);
-		go->AddTag("wall");
+		go->AddTag("Wall");
 
 #ifdef _DEBUG
 		go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
@@ -261,7 +264,7 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 			)
 		);
 
-		go->AddTag("wall");
+		go->AddTag("Wall");
 
 #ifdef _DEBUG
 		go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
@@ -286,7 +289,7 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 			)
 		);
 
-		go->AddTag("wall");
+		go->AddTag("Wall");
 
 #ifdef _DEBUG
 		go->GetComponent<BoxColliderComponent>()->EnableDebugDrawing();
@@ -299,4 +302,27 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 
 	pScene->AddGameObject(pLevelCollidersGO);
 
+}
+
+void Tron::GenerateSpawnLocations()
+{
+	//TODO: can optimize
+	for (uint8_t y = 0; y < m_GridDimensions.y - 2; ++y)
+	{
+		for (uint8_t x = 0; x < m_GridDimensions.x - 2; ++x)
+		{
+			//if this, right, top, and topright cells aren't walls... then it is a spawn location!
+			if
+			(
+				m_pGridGraph->GetNode(x,y)->GetTerrainType() == graph::TerrainType::Road &&			//this
+				m_pGridGraph->GetNode(x+1,y)->GetTerrainType() == graph::TerrainType::Road &&		//right
+				m_pGridGraph->GetNode(x,y + 1)->GetTerrainType() == graph::TerrainType::Road &&		//top
+				m_pGridGraph->GetNode(x + 1,y + 1)->GetTerrainType() == graph::TerrainType::Road	//top-right
+			)
+			{
+				//add the middle of the 4 cells as spawn position
+				m_SpawnLocations.emplace_back(m_GridStart.x + (x + 1) * m_CellSize, m_GridStart.y + (y + 1) * m_CellSize);
+			}
+		}
+	}
 }

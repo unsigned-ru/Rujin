@@ -1,43 +1,74 @@
 #include "RujinPCH.h"
+
 #include "TextRenderComponent.h"
 
-#include "TextComponent.h"
-#include "TextureRenderComponent.h"
-#include "GameObject.h"
+#include <SDL_ttf.h>
+#include <cassert>
 
-using namespace rujin;
+#include "FpsComponent.h"
+#include "RenderService.h"
+#include "ResourceService.h"
+#include "ServiceLocator.h"
 
-TextRenderComponent::TextRenderComponent(TextComponent* const pTextComponent, TextureRenderComponent* const pTextureRenderComponent)
-	: m_pTextComponent(pTextComponent)
-	, m_pTextureRenderComponent(pTextureRenderComponent)
+namespace rujin
+{
+	class ResourceService;
+}
+
+rujin::TextRenderComponent::TextRenderComponent(const std::shared_ptr<Font>& pFont, const glm::vec4& color)
+	: m_Color(color)
+	, m_pFont(pFont)
 {
 }
 
-void TextRenderComponent::Start()
+void rujin::TextRenderComponent::Start()
 {
-	Component::Start();
+	assert(m_pFont);
 
-	if (!m_pTextComponent)
-		m_pTextComponent = GameObject()->GetComponent<TextComponent>();
-
-	if (!m_pTextureRenderComponent)
-		m_pTextureRenderComponent = GameObject()->GetComponent<TextureRenderComponent>();
-
-	assert(m_pTextComponent && m_pTextureRenderComponent);
-
-	//setup an initial texture
-	m_pTextureRenderComponent->SetTexture(m_pTextComponent->GenerateTexture());
+	TextureRenderComponent::Start();
 }
 
-void TextRenderComponent::Update()
+void rujin::TextRenderComponent::Update()
 {
-	Component::Update();
+	if (m_IsDirty)
+		UpdateTexture();
 
-	if (m_pTextComponent->IsDirty())
-		m_pTextureRenderComponent->SetTexture(m_pTextComponent->GenerateTexture());
+	TextureRenderComponent::Update();
 }
 
-TextComponent* TextRenderComponent::GetText() const
+void rujin::TextRenderComponent::Draw() const
 {
-	return m_pTextComponent;
+	const auto& rs = ServiceLocator::GetService<RenderService>();
+	rs.SetColor(m_Color);
+	TextureRenderComponent::Draw();
+	rs.SetColor();
 }
+
+// This implementation uses the "dirty flag" pattern
+void rujin::TextRenderComponent::SetText(const std::string& text)
+{
+	m_Text = text;
+	m_IsDirty = true;
+}
+
+void rujin::TextRenderComponent::SetFont(const std::shared_ptr<rujin::Font>& font)
+{
+	m_pFont = font;
+	m_IsDirty = true;
+}
+
+void rujin::TextRenderComponent::SetColor(const glm::vec4& color)
+{
+	m_Color = color;
+}
+
+void rujin::TextRenderComponent::UpdateTexture()
+{
+	ServiceLocator::GetService<ResourceService>().GetStringTexture(m_Text, m_pFont);
+}
+
+bool rujin::TextRenderComponent::IsDirty() const
+{
+	return m_IsDirty;
+}
+

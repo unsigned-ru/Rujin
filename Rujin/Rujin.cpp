@@ -152,6 +152,11 @@ void rujin::Rujin::Run()
 	Destroy();
 }
 
+std::default_random_engine& rujin::Rujin::GetRandomEngine()
+{
+	return m_RandomEngine;
+}
+
 void rujin::Rujin::SetVSync(VSyncMode vsyncMode)
 {
 	if (SDL_GL_SetSwapInterval(static_cast<int>(vsyncMode)) == 0)

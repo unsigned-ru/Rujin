@@ -90,7 +90,7 @@
     <ClInclude Include="FpsComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="TextComponent.h">
+    <ClInclude Include="TextRenderComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="TextureRenderComponent.h">
@@ -155,9 +155,6 @@
     </ClInclude>
     <ClInclude Include="ServiceLocator.h">
       <Filter>Services</Filter>
-    </ClInclude>
-    <ClInclude Include="TextRenderComponent.h">
-      <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="Service.h">
       <Filter>Services</Filter>
@@ -321,7 +318,7 @@
     <ClCompile Include="FpsComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="TextComponent.cpp">
+    <ClCompile Include="TextRenderComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="TextureRenderComponent.cpp">
@@ -365,9 +362,6 @@
     </ClCompile>
     <ClCompile Include="..\3rdParty\imgui-1.86\backends\imgui_impl_opengl2.cpp">
       <Filter>ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="TextRenderComponent.cpp">
-      <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="RujinPCH.cpp" />
     <ClCompile Include="Rutils\General.cpp">
