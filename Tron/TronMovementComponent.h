@@ -10,7 +10,7 @@ namespace rujin
 class TronMovementComponent final : public Component
 {
 public:
-	explicit TronMovementComponent(BoxColliderComponent* pMovementCollider);
+	explicit TronMovementComponent(BoxColliderComponent* pMovementCollider, float moveSpeed = 100.f);
 
 	void Move(Direction dir, float inputIntensity, float deltaTime);
 
@@ -43,9 +43,9 @@ private:
 
 	Direction m_FacingDirection{ Direction::UP };
 
-	inline static constexpr float m_MoveSpeed{ 200.f };
+	const float m_MoveSpeed;
 	inline static constexpr float s_WallCheckOffset{ 1.f };
-	inline static constexpr float s_WallCheckLengthReduction{ 2.f };
+	inline static constexpr float s_WallCheckLengthReduction{ 1.f };
 };
 
 #endif // Include Guard: TANK_MOVEMENT_COMPONENT_H

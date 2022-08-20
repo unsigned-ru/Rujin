@@ -352,6 +352,7 @@ void GameObject::SetScene(Scene* pScene)
 
 GameObject::GameObject(const std::string& name)
 	: IGameLoopObject()
+	, Subject({})
 	, m_Name(name)
 {
 }

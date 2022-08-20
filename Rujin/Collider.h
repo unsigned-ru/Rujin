@@ -21,7 +21,7 @@ namespace rujin
 		Collider& operator=(Collider&&) noexcept = delete;
 
 		virtual CollisionResult IsOverlapping(const Collider* pOther) const = 0;
-		virtual void ResolveOverlap(const CollisionResult& result) = 0;
+		virtual void ResolveOverlap(const CollisionResult& result) const = 0;
 
 		const glm::vec2& GetPivot() const;
 		void SetPivot(const glm::vec2& pivot);

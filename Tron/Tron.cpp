@@ -4,6 +4,7 @@
 #include <SDL_image.h>
 
 #include "BoxColliderComponent.h"
+#include "EnemyListComponent.h"
 #include "FMOD_AudioProvider.h"
 #include "GameObject.h"
 #include "HeuristicFunctions.h"
@@ -14,15 +15,11 @@
 #include "Scene.h"
 #include "SceneProvider.h"
 #include "ServiceLocator.h"
+#include "SpawnLocationListComponent.h"
 #include "TankComponent.h"
 #include "TextureRenderComponent.h"
 
 using namespace rujin;
-
-Tron::~Tron()
-{
-	delete m_pGridGraph;
-}
 
 void Tron::Configure(settings::InitParams& params)
 {
@@ -32,33 +29,54 @@ void Tron::Configure(settings::InitParams& params)
 
 void Tron::Load()
 {
-	//AudioService& audioService = ServiceLocator::GetService<AudioService>();
+	//SceneService& sceneService = ServiceLocator::GetService<SceneService>();
+
+	LoadLevel1();
+	LoadLevel2();
+	LoadLevel3();
+
+
+}
+
+const glm::ivec2& Tron::GetGridDimensions() const
+{
+	return m_GridDimensions;
+}
+
+void Tron::LoadLevel1()
+{
 	ResourceService& resourceService = ServiceLocator::GetService<ResourceService>();
 	SceneService& sceneService = ServiceLocator::GetService<SceneService>();
 	InputService& input = ServiceLocator::GetService<InputService>();
-	/* Load required audio...*/
-	//...
 
 	/* Create scene with collision field with the size of the screen. */
 	const auto& windowSize = Rujin::Get()->GetWindowContext().windowSize;
-	Scene* pScene = sceneService.CreateScene("Tron Demo Scene", Rectf{0, 0, static_cast<float>(windowSize.x), static_cast<float>(windowSize.y)});
+	Scene* pScene = sceneService.CreateScene("Level1", Rectf{ 0, 0, static_cast<float>(windowSize.x), static_cast<float>(windowSize.y) });
+
+	GameObject* pManagerObj = new GameObject("Manager");
+	pManagerObj->AddComponent(new EnemyListComponent());
+	auto* pSpawnList = pManagerObj->AddComponent(new SpawnLocationListComponent());
+	pScene->AddGameObject(pManagerObj);
 
 	///* Create Circuit background */
 	{
 		GameObject* go = new GameObject("Circuit_BG");
-		go->AddComponent(new TextureRenderComponent(resourceService.GetTexture("Textures/Circuit.png"), {0.f, 0.f}));
+		go->AddComponent(new TextureRenderComponent(resourceService.GetTexture("Textures/Circuit.png"), { 0.f, 0.f }));
 		pScene->AddGameObject(go);
 	}
 
 	//create pathfinding 
-	m_pGridGraph = new graph::GridGraph<graph::GridTerrainNode, graph::GraphConnection>(m_GridStart, m_GridDimensions.x, m_GridDimensions.y, m_CellSize, false, false);
+	auto pGridGraph = new graph::GridGraph<graph::GridTerrainNode, graph::GraphConnection>(m_GridStart, m_GridDimensions.x, m_GridDimensions.y, m_CellSize, false, false);
 
 	/* Generate Level Grid */
-	GenerateLevelGridFromTexture(pScene, "../Data/Levels/Level1.png");
+	GenerateLevelGridFromTexture(pScene, "../Data/Levels/Level1.png", pGridGraph);
 
 	//Set pathfinding based on grid
-	m_pAStar = new AStar(m_pGridGraph, heuristic_functions::Chebyshev);
-	pScene->SetPathfinder(m_pAStar);
+	auto pAStar = new AStar(pGridGraph, heuristic_functions::Chebyshev);
+	pScene->SetPathfinder(pAStar);
+
+	//generate spawnlocations after generating level grid.
+	pSpawnList->GenerateSpawnLocations(pGridGraph);
 
 	/* Create surrounding colliders (so player can't move outside of bounds...*/
 	CreateLevelBoundsColliders(pScene);
@@ -73,23 +91,37 @@ void Tron::Load()
 			glm::vec2
 			{
 				(m_GridStart.x + m_CellSize),
-				(m_GridStart.y + m_CellSize) 
+				(m_GridStart.y + m_CellSize)
 			}
 		);
 
 		pScene->AddGameObject(playerGO);
 
 		GameObject* pPlayerHUD = prefabs::CreatePlayerHUD("Player1_HUD", playerGO->GetComponent<TronPlayerComponent>());
-		pPlayerHUD->GetTransform().SetPosition({0.f, Rujin::Get()->GetWindowContext().windowSize.y});
+		pPlayerHUD->GetTransform().SetPosition({ 0.f, Rujin::Get()->GetWindowContext().windowSize.y });
 		pScene->AddGameObject(pPlayerHUD);
 	}
 
 
+	/* Create random teleporter */
+	{
+		auto* go = prefabs::CreateRandomTeleporter("RandomTeleporter");
+		go->GetTransform().SetPosition({ m_GridStart.x + (m_GridDimensions.x * m_CellSize) / 2.f, m_GridStart.y + (m_GridDimensions.y * m_CellSize) / 2.f });
+		pScene->AddGameObject(go);
+	}
+
+	pScene->AddGameObject(pManagerObj);
+
+	SpawnLevel1Enemies(pScene);
+}
+
+void Tron::SpawnLevel1Enemies(Scene* pScene)
+{
 	/* Create Enemy Tank*/
 	{
 		GameObject* pEnemyGO = prefabs::CreateEnemyTank();
 
-	
+
 		//calc position
 		pEnemyGO->GetTransform().SetPosition
 		(
@@ -99,7 +131,7 @@ void Tron::Load()
 				(m_GridStart.y + m_GridDimensions.y * m_CellSize) / 2.f
 			}
 		);
-		
+
 		pScene->AddGameObject(pEnemyGO);
 	}
 
@@ -120,15 +152,224 @@ void Tron::Load()
 		pScene->AddGameObject(pEnemyGO);
 	}
 }
- 
-const glm::vec2& Tron::GetRandomSpawnLocation() const
+
+void Tron::LoadLevel2()
 {
-	static std::uniform_int_distribution<uint16_t> dist(0u, static_cast<uint16_t>(m_SpawnLocations.size()) - 1u);
-	const uint16_t idx = dist(Rujin::Get()->GetRandomEngine());
-	return m_SpawnLocations.at(idx);
+	ResourceService& resourceService = ServiceLocator::GetService<ResourceService>();
+	SceneService& sceneService = ServiceLocator::GetService<SceneService>();
+	InputService& input = ServiceLocator::GetService<InputService>();
+
+	/* Create scene with collision field with the size of the screen. */
+	const auto& windowSize = Rujin::Get()->GetWindowContext().windowSize;
+	Scene* pScene = sceneService.CreateScene("Level2", Rectf{ 0, 0, static_cast<float>(windowSize.x), static_cast<float>(windowSize.y) });
+
+	GameObject* pManagerObj = new GameObject("Manager");
+	pManagerObj->AddComponent(new EnemyListComponent());
+	auto* pSpawnList = pManagerObj->AddComponent(new SpawnLocationListComponent());
+	pScene->AddGameObject(pManagerObj);
+
+	///* Create Circuit background */
+	{
+		GameObject* go = new GameObject("Circuit_BG");
+		go->AddComponent(new TextureRenderComponent(resourceService.GetTexture("Textures/Circuit.png"), { 0.f, 0.f }));
+		pScene->AddGameObject(go);
+	}
+
+	//create pathfinding 
+	auto pGridGraph = new graph::GridGraph<graph::GridTerrainNode, graph::GraphConnection>(m_GridStart, m_GridDimensions.x, m_GridDimensions.y, m_CellSize, false, false);
+
+	/* Generate Level Grid */
+	GenerateLevelGridFromTexture(pScene, "../Data/Levels/Level2.png", pGridGraph);
+
+	//Set pathfinding based on grid
+	auto pAStar = new AStar(pGridGraph, heuristic_functions::Chebyshev);
+	pScene->SetPathfinder(pAStar);
+
+	//generate spawnlocations after generating level grid.
+	pSpawnList->GenerateSpawnLocations(pGridGraph);
+
+	/* Create surrounding colliders (so player can't move outside of bounds...*/
+	CreateLevelBoundsColliders(pScene);
+
+	/* Create player 1*/
+	{
+		GameObject* playerGO = prefabs::CreatePlayerTank("Player1", input.RegisterPlayer());
+
+		//calc position
+		playerGO->GetTransform().SetPosition
+		(
+			glm::vec2
+			{
+				(m_GridStart.x + m_CellSize),
+				(m_GridStart.y + m_CellSize)
+			}
+		);
+
+		pScene->AddGameObject(playerGO);
+
+		GameObject* pPlayerHUD = prefabs::CreatePlayerHUD("Player1_HUD", playerGO->GetComponent<TronPlayerComponent>());
+		pPlayerHUD->GetTransform().SetPosition({ 0.f, Rujin::Get()->GetWindowContext().windowSize.y });
+		pScene->AddGameObject(pPlayerHUD);
+	}
+
+
+	/* Create random teleporter */
+	{
+		auto* go = prefabs::CreateRandomTeleporter("RandomTeleporter");
+		go->GetTransform().SetPosition({ m_GridStart.x + (m_GridDimensions.x * m_CellSize) / 2.f, m_GridStart.y + (m_GridDimensions.y * m_CellSize) / 2.f });
+		pScene->AddGameObject(go);
+	}
+
+	pScene->AddGameObject(pManagerObj);
 }
 
-void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelTexturePath)
+void Tron::SpawnLevel2Enemies(Scene* pScene)
+{
+	/* Create Enemy Tank*/
+	{
+		GameObject* pEnemyGO = prefabs::CreateEnemyTank();
+
+
+		//calc position
+		pEnemyGO->GetTransform().SetPosition
+		(
+			glm::vec2
+			{
+				(m_GridStart.x + m_GridDimensions.x * m_CellSize) / 2.f,
+				(m_GridStart.y + m_GridDimensions.y * m_CellSize) / 2.f
+			}
+		);
+
+		pScene->AddGameObject(pEnemyGO);
+	}
+
+	/* Create Enemy Recognizer*/
+	{
+		GameObject* pEnemyGO = prefabs::CreateEnemyRecognizer();
+
+		//calc position
+		pEnemyGO->GetTransform().SetPosition
+		(
+			glm::vec2
+			{
+				(m_GridStart.x + m_GridDimensions.x * m_CellSize) - m_CellSize,
+				(m_GridStart.y + m_GridDimensions.y * m_CellSize) - m_CellSize
+			}
+		);
+
+		pScene->AddGameObject(pEnemyGO);
+	}
+}
+
+void Tron::LoadLevel3()
+{
+	ResourceService& resourceService = ServiceLocator::GetService<ResourceService>();
+	SceneService& sceneService = ServiceLocator::GetService<SceneService>();
+	InputService& input = ServiceLocator::GetService<InputService>();
+
+	/* Create scene with collision field with the size of the screen. */
+	const auto& windowSize = Rujin::Get()->GetWindowContext().windowSize;
+	Scene* pScene = sceneService.CreateScene("Level3", Rectf{ 0, 0, static_cast<float>(windowSize.x), static_cast<float>(windowSize.y) });
+
+	GameObject* pManagerObj = new GameObject("Manager");
+	pManagerObj->AddComponent(new EnemyListComponent());
+	auto* pSpawnList = pManagerObj->AddComponent(new SpawnLocationListComponent());
+	pScene->AddGameObject(pManagerObj);
+
+	///* Create Circuit background */
+	{
+		GameObject* go = new GameObject("Circuit_BG");
+		go->AddComponent(new TextureRenderComponent(resourceService.GetTexture("Textures/Circuit.png"), { 0.f, 0.f }));
+		pScene->AddGameObject(go);
+	}
+
+	//create pathfinding 
+	auto pGridGraph = new graph::GridGraph<graph::GridTerrainNode, graph::GraphConnection>(m_GridStart, m_GridDimensions.x, m_GridDimensions.y, m_CellSize, false, false);
+
+	/* Generate Level Grid */
+	GenerateLevelGridFromTexture(pScene, "../Data/Levels/Level3.png", pGridGraph);
+
+	//Set pathfinding based on grid
+	auto pAStar = new AStar(pGridGraph, heuristic_functions::Chebyshev);
+	pScene->SetPathfinder(pAStar);
+
+	//generate spawnlocations after generating level grid.
+	pSpawnList->GenerateSpawnLocations(pGridGraph);
+
+	/* Create surrounding colliders (so player can't move outside of bounds...*/
+	CreateLevelBoundsColliders(pScene);
+
+	/* Create player 1*/
+	{
+		GameObject* playerGO = prefabs::CreatePlayerTank("Player1", input.RegisterPlayer());
+
+		//calc position
+		playerGO->GetTransform().SetPosition
+		(
+			glm::vec2
+			{
+				(m_GridStart.x + m_CellSize),
+				(m_GridStart.y + m_CellSize)
+			}
+		);
+
+		pScene->AddGameObject(playerGO);
+
+		GameObject* pPlayerHUD = prefabs::CreatePlayerHUD("Player1_HUD", playerGO->GetComponent<TronPlayerComponent>());
+		pPlayerHUD->GetTransform().SetPosition({ 0.f, Rujin::Get()->GetWindowContext().windowSize.y });
+		pScene->AddGameObject(pPlayerHUD);
+	}
+
+
+	/* Create random teleporter */
+	{
+		auto* go = prefabs::CreateRandomTeleporter("RandomTeleporter");
+		go->GetTransform().SetPosition({ m_GridStart.x + (m_GridDimensions.x * m_CellSize) / 2.f, m_GridStart.y + (m_GridDimensions.y * m_CellSize) / 2.f });
+		pScene->AddGameObject(go);
+	}
+
+	pScene->AddGameObject(pManagerObj);
+}
+
+void Tron::SpawnLevel3Enemies(Scene* pScene)
+{
+	/* Create Enemy Tank*/
+	{
+		GameObject* pEnemyGO = prefabs::CreateEnemyTank();
+
+
+		//calc position
+		pEnemyGO->GetTransform().SetPosition
+		(
+			glm::vec2
+			{
+				(m_GridStart.x + m_GridDimensions.x * m_CellSize) / 2.f,
+				(m_GridStart.y + m_GridDimensions.y * m_CellSize) / 2.f
+			}
+		);
+
+		pScene->AddGameObject(pEnemyGO);
+	}
+
+	/* Create Enemy Recognizer*/
+	{
+		GameObject* pEnemyGO = prefabs::CreateEnemyRecognizer();
+
+		//calc position
+		pEnemyGO->GetTransform().SetPosition
+		(
+			glm::vec2
+			{
+				(m_GridStart.x + m_GridDimensions.x * m_CellSize) - m_CellSize,
+				(m_GridStart.y + m_GridDimensions.y * m_CellSize) - m_CellSize
+			}
+		);
+
+		pScene->AddGameObject(pEnemyGO);
+	}
+}
+
+void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelTexturePath, graph::GridGraph<graph::GridTerrainNode, graph::GraphConnection>* pGraph)
 {
 	/* Load level texture */
 	SDL_Surface* pLevelTex = IMG_Load(levelTexturePath.c_str());
@@ -189,16 +430,14 @@ void Tron::GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelT
 				pScene->AddGameObject(go);
 
 				//Mark this cell as Wall in the pathfinding graph
-				const int nodeIdx = m_pGridGraph->GetIndex(x, y);
-				m_pGridGraph->GetNode(nodeIdx)->SetTerrainType(graph::TerrainType::Wall);
-				m_pGridGraph->RemoveConnectionsToAdjacentNodes(nodeIdx);
-				m_pGridGraph->AddConnectionsToAdjacentCells(nodeIdx);
+				const int nodeIdx = pGraph->GetIndex(x, y);
+				pGraph->GetNode(nodeIdx)->SetTerrainType(graph::TerrainType::Wall);
+				pGraph->RemoveConnectionsToAdjacentNodes(nodeIdx);
+				pGraph->AddConnectionsToAdjacentCells(nodeIdx);
 			}
 		}
 	}
 	SDL_FreeSurface(pLevelTex);
-
-	GenerateSpawnLocations();
 }
 
 void Tron::CreateLevelBoundsColliders(Scene* pScene)
@@ -306,27 +545,4 @@ void Tron::CreateLevelBoundsColliders(Scene* pScene)
 
 	pScene->AddGameObject(pLevelCollidersGO);
 
-}
-
-void Tron::GenerateSpawnLocations()
-{
-	//TODO: can optimize
-	for (uint8_t y = 0; y < m_GridDimensions.y - 2; ++y)
-	{
-		for (uint8_t x = 0; x < m_GridDimensions.x - 2; ++x)
-		{
-			//if this, right, top, and topright cells aren't walls... then it is a spawn location!
-			if
-			(
-				m_pGridGraph->GetNode(x,y)->GetTerrainType() == graph::TerrainType::Road &&			//this
-				m_pGridGraph->GetNode(x+1,y)->GetTerrainType() == graph::TerrainType::Road &&		//right
-				m_pGridGraph->GetNode(x,y + 1)->GetTerrainType() == graph::TerrainType::Road &&		//top
-				m_pGridGraph->GetNode(x + 1,y + 1)->GetTerrainType() == graph::TerrainType::Road	//top-right
-			)
-			{
-				//add the middle of the 4 cells as spawn position
-				m_SpawnLocations.emplace_back(m_GridStart.x + (x + 1) * m_CellSize, m_GridStart.y + (y + 1) * m_CellSize);
-			}
-		}
-	}
 }

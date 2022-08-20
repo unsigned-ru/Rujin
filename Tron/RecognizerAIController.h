@@ -5,7 +5,7 @@
 
 class RecognizerComponent;
 
-class RecognizerAIController final : public EnemyAIController
+class RecognizerAIController final : public EnemyAIController, public event::IObserver
 {
 public:
 	explicit RecognizerAIController(RecognizerComponent* pRecognizerComponent);
@@ -25,12 +25,16 @@ private:
 	void ExecuteCurrentState();
 	void HandleStateTransitions();
 
+	void OnNotify(const uint32_t identifier, const event::Data* pEventData) override;
+
 	State m_State{ State::MoveToClosestPlayer };
 	std::vector<rujin::GameObject*> m_Players{};
 
 	RecognizerComponent* m_pRecognizer = nullptr;
 
-	const float m_MaxAttackDistance{ 105.f };
+	const float m_MaxAttackDistance{ 50.f };
+
+	inline static constexpr uint32_t s_Score{ 250u };
 };
 
 #endif // Include Guard: RECOGNIZER_AI_CONTROLLER_H

@@ -23,7 +23,7 @@ namespace rujin
 		Rectf GetRect() const;
 
 		CollisionResult IsOverlapping(const Collider* pOther) const override;
-		void ResolveOverlap(const CollisionResult& result) override;
+		void ResolveOverlap(const CollisionResult& result) const override;
 
 	private:
 		glm::vec2 m_Size;

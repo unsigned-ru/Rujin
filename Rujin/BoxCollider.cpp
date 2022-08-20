@@ -42,11 +42,11 @@ rujin::Rectf rujin::BoxCollider::GetRect() const
 rujin::CollisionResult rujin::BoxCollider::IsOverlapping(const Collider* pOther) const
 {
 	CollisionResult rv{};
-
+	rv.self = this;
 	rv.other = pOther;
 
 	const Rectf a = GetRect();
-	if (const BoxCollider* pOtherBox = dynamic_cast<const BoxCollider*>(pOther); pOtherBox)
+	if (const auto* pOtherBox = dynamic_cast<const BoxCollider*>(pOther); pOtherBox)
 	{
 		const Rectf b = pOtherBox->GetRect();
 
@@ -93,7 +93,7 @@ rujin::CollisionResult rujin::BoxCollider::IsOverlapping(const Collider* pOther)
 	return rv;
 }
 
-void rujin::BoxCollider::ResolveOverlap(const CollisionResult& result)
+void rujin::BoxCollider::ResolveOverlap(const CollisionResult& result) const
 {
 	if (m_IsStatic || !result.isColliding) return;
 

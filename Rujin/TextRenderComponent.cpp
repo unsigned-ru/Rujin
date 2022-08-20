@@ -42,7 +42,7 @@ void rujin::TextRenderComponent::Draw() const
 {
 	const auto& rs = ServiceLocator::GetService<RenderService>();
 	rs.SetColor(m_Color);
-	TextureRenderComponent::Draw();
+	if (!m_IsDirty) TextureRenderComponent::Draw();
 	rs.SetColor();
 }
 
@@ -68,6 +68,7 @@ void rujin::TextRenderComponent::UpdateTexture()
 {
 	const auto newTexture = ServiceLocator::GetService<ResourceService>().GetStringTexture(m_Text, m_pFont);
 	SetTexture(newTexture);
+	SetSourceRect();
 
 	m_IsDirty = false;
 }

@@ -1,9 +1,7 @@
 #ifndef ASTAR_H
 #define ASTAR_H
 
-#include <functional>
-
-#include "IGraph.h"
+#include "GridGraph.h"
 typedef float(*Heuristic)(float, float);
 
 namespace rujin
@@ -17,7 +15,7 @@ namespace rujin
 		virtual std::vector<T_NodeType*> FindPath(const glm::vec2& startPos, const glm::vec2& destination) = 0;
 		virtual glm::vec2 GetMovementDir(const glm::vec2& startPos, const glm::vec2& destination, uint32_t pathIdx= 0u) = 0;
 
-		virtual graph::IGraph<T_NodeType, T_ConnectionType>* GetGraph() const = 0;
+		virtual graph::GridGraph<T_NodeType, T_ConnectionType>* GetGraph() const = 0;
 
 		virtual ~Pathfinder() = default;
 
@@ -31,15 +29,18 @@ namespace rujin
 	class AStar final : public Pathfinder<T_NodeType, T_ConnectionType>
 	{
 	public:
-		AStar(graph::IGraph<T_NodeType, T_ConnectionType>* pGraph, Heuristic hFunction);
-		~AStar() override = default;
+		AStar(graph::GridGraph<T_NodeType, T_ConnectionType>* pGraph, Heuristic hFunction);
+		~AStar() override
+		{
+			delete m_pGraph;
+		};
 
 		AStar(const AStar&) = delete;
 		AStar(AStar&&) noexcept = delete;
 		AStar& operator=(const AStar&) = delete;
 		AStar& operator=(AStar&&) noexcept = delete;
 
-		graph::IGraph<T_NodeType, T_ConnectionType>* GetGraph() const override
+		graph::GridGraph<T_NodeType, T_ConnectionType>* GetGraph() const override
 		{
 			return m_pGraph;
 		}
@@ -89,6 +90,9 @@ namespace rujin
 
 			T_NodeType* pStartNode = m_pGraph->GetNodeAtWorldPos(startPos);
 			T_NodeType* pDestinationNode = m_pGraph->GetNodeAtWorldPos(destination);
+
+			if (!pStartNode || !pDestinationNode)
+				return {}; // if eiher the starting or ending node is outside of the pathfinding grid, then return no path...
 
 			NodeRecord currentRecord{};
 			currentRecord.pNode = pStartNode;
@@ -186,12 +190,12 @@ namespace rujin
 	private:
 		float GetHeuristicCost(T_NodeType* pStartNode, T_NodeType* pEndNode) const;
 	private:
-		graph::IGraph<T_NodeType, T_ConnectionType>* m_pGraph;
+		graph::GridGraph<T_NodeType, T_ConnectionType>* m_pGraph;
 		Heuristic m_HeuristicFunction;
 	};
 
 	template <class T_NodeType, class T_ConnectionType>
-	AStar<T_NodeType, T_ConnectionType>::AStar(graph::IGraph<T_NodeType, T_ConnectionType>* pGraph, Heuristic hFunction)
+	AStar<T_NodeType, T_ConnectionType>::AStar(graph::GridGraph<T_NodeType, T_ConnectionType>* pGraph, Heuristic hFunction)
 		: m_pGraph(pGraph)
 		, m_HeuristicFunction(hFunction)
 	{

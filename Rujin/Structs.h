@@ -146,6 +146,7 @@ namespace rujin
 	struct CollisionResult
 	{
 		bool isColliding = false;
+		const Collider* self = nullptr;
 		const Collider* other = nullptr;
 
 		//relative to me, where is the collision happening.

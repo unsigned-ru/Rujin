@@ -50,7 +50,7 @@ namespace rujin::graph
 			: GraphNode(index), m_Terrain(TerrainType::Road)
 		{
 		}
-		virtual ~GridTerrainNode() = default;
+		virtual ~GridTerrainNode() override = default;
 
 
 		TerrainType GetTerrainType() const { return m_Terrain; }

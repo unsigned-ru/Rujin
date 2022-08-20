@@ -8,6 +8,7 @@
 #pragma region Forward Declarations
 namespace rujin
 {
+	class GameObject;
 	class Scene;
 	class ResourceService;
 	class AudioService;
@@ -20,7 +21,7 @@ class Tron final : public IGame
 {
 public:
 	explicit Tron() = default;
-	~Tron() override;
+	~Tron() override = default;
 
 	Tron(const Tron&) = delete;
 	Tron(Tron&&) noexcept = delete;
@@ -30,24 +31,26 @@ public:
 	void Configure(settings::InitParams& params) override;
 	void Load() override;
 
-	const glm::vec2& GetRandomSpawnLocation() const;
+	const glm::ivec2& GetGridDimensions() const;
 
 private:
-	void GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelTexturePath);
+	void LoadLevel1();
+	void SpawnLevel1Enemies(Scene* pScene);
+
+	void LoadLevel2();
+	void SpawnLevel2Enemies(Scene* pScene);
+
+	void LoadLevel3();
+	void SpawnLevel3Enemies(Scene* pScene);
+
+	void GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelTexturePath, graph::GridGraph<graph::GridTerrainNode, graph::GraphConnection>* pGraph);
 	void CreateLevelBoundsColliders(Scene* pScene);
-	void GenerateSpawnLocations();
 
 	/*Level Grid*/
 	const glm::vec2 m_GridStart{ 15, 16 };
 	const glm::ivec2 m_GridDimensions{ 29, 26 };
 	const float m_CellSize = 25.f;
-	std::vector<glm::vec2> m_SpawnLocations{};
-
 	const float m_BoundsColliderSize{ 30.f };
-
-	/* Pathfinding */
-	graph::GridGraph<graph::GridTerrainNode, graph::GraphConnection>* m_pGridGraph;
-	AStar<graph::GridTerrainNode, graph::GraphConnection>* m_pAStar;
 };
 
 

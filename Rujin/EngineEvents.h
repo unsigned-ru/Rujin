@@ -13,6 +13,7 @@ namespace rujin::event
 	enum class Identifier : uint32_t
 	{
 		OnTransformChanged,
+		OnGameObjectDestroyed,
 
 		//always last
 		LAST_ENGINE_EVENT
@@ -30,6 +31,15 @@ namespace rujin::event
 		Transform& transform;
 
 		const TransformChanged& transformChanged;
+	};
+
+	struct OnGameObjectDestroyed_t final : Data
+	{
+		explicit OnGameObjectDestroyed_t(GameObject* pObj)
+			: pObject(pObj)
+		{}
+
+		GameObject* pObject;
 	};
 
 }

@@ -97,6 +97,7 @@ void rujin::Rujin::Run()
 	LOG_DEBUG("Loading Complete.");
 
 	LOG_DEBUG("Starting Game...");
+	sceneService.HandleSceneSwitch();
 	sceneService.ProcessAdditionsAndRemovals();
 	sceneService.Start();
 	input.Start();
@@ -147,6 +148,8 @@ void rujin::Rujin::Run()
 
 		/* render */
 		renderer.Render();
+
+		sceneService.HandleSceneSwitch();
 	}
 
 	Destroy();

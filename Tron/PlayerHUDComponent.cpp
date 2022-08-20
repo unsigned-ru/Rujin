@@ -13,10 +13,11 @@ PlayerHUDComponent::PlayerHUDComponent(TronPlayerComponent* pPlayer, GridTexture
 {
 }
 
-void PlayerHUDComponent::LateStart()
+void PlayerHUDComponent::Start()
 {
-	Component::LateStart();
+	Component::Start();
 	m_pPlayer->AddObserver(this);
+	m_pScoreRenderer->SetText(std::to_string(m_pPlayer->GetScore()));
 }
 
 void PlayerHUDComponent::OnNotify(const uint32_t identifier, const event::Data* pEventData)

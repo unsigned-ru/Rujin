@@ -29,9 +29,9 @@ public:
 		BoxColliderComponent* pTankCollider,
 		HealthComponent* pHealthComponent,
 		const Recti& bulletSourceRect,
-		float bulletSpeed = 700.f,
+		float bulletSpeed = 800.f,
 		uint32_t bulletDamage = 1u,
-		uint32_t shootingCooldown = 1'000u,
+		uint32_t shootingCooldown = 500u,
 		uint8_t bulletBounces = 5u
 	);
 

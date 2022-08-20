@@ -27,6 +27,7 @@ namespace rujin
 
 		void Start() override;
 		void LateStart() override;
+		void HandleSceneSwitch() override;
 		void Update() override;
 		void FixedUpdate() override;
 		void ProcessAdditionsAndRemovals() override;
@@ -35,9 +36,11 @@ namespace rujin
 
 		Scene* CreateScene(const std::string& name, const Rectf& collisionTreeBounds = Rectf{0, 0, 1000, 1000}, Camera* pCamera = nullptr) override;
 		Scene* GetScene(const std::string& name) const override;
-		Scene* GetScene(const size_t idx = 0) const override;
+		void SetActiveScene(Scene* pScene) override;
 
 	private:
+		Scene* m_pActiveScene = nullptr;
+		Scene* m_pActiveSceneToSet = nullptr;
 		std::vector<std::unique_ptr<Scene>> m_Scenes;
 	};
 }

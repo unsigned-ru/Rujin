@@ -202,12 +202,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="EnemyAIController.cpp" />
+    <ClCompile Include="EnemyListComponent.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="PlayerHUDComponent.cpp" />
     <ClCompile Include="Prefabs.cpp" />
+    <ClCompile Include="RandomTeleporterComponent.cpp" />
     <ClCompile Include="RecognizerAIController.cpp" />
     <ClCompile Include="RecognizerComponent.cpp" />
+    <ClCompile Include="SpawnLocationListComponent.cpp" />
     <ClCompile Include="TankAIController.cpp" />
     <ClCompile Include="TankAimingComponent.cpp" />
     <ClCompile Include="TankBulletComponent.cpp" />
@@ -226,13 +229,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EnemyAIController.h" />
+    <ClInclude Include="EnemyListComponent.h" />
     <ClInclude Include="GameEvents.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="InputEvents.h" />
     <ClInclude Include="PlayerHUDComponent.h" />
     <ClInclude Include="Prefabs.h" />
+    <ClInclude Include="RandomTeleporterComponent.h" />
     <ClInclude Include="RecognizerAIController.h" />
     <ClInclude Include="RecognizerComponent.h" />
+    <ClInclude Include="SpawnLocationListComponent.h" />
     <ClInclude Include="TankAIController.h" />
     <ClInclude Include="TankAimingComponent.h" />
     <ClInclude Include="TankBulletComponent.h" />

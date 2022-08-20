@@ -96,6 +96,8 @@ namespace rujin
 
 		// The bounds of this node.
 		Rectf m_Bounds;
+
+		std::vector<CollisionResult> m_CollisionsToResolve{};
 	};
 }
 

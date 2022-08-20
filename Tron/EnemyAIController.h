@@ -1,6 +1,7 @@
 ﻿#ifndef ENEMY_AI_CONTROLLER_H
 #define ENEMY_AI_CONTROLLER_H
 #include "Component.h"
+#include "IObserver.h"
 
 class EnemyAIController : public Component
 {

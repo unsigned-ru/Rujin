@@ -16,7 +16,7 @@ class PlayerHUDComponent : public Component, public event::IObserver
 public:
 	explicit PlayerHUDComponent(TronPlayerComponent* pPlayer, GridTextureRenderComponent* pLivesRenderer, TextRenderComponent* pScoreRenderer);
 
-	void LateStart() override;
+	void Start() override;
 
 private:
 	void OnNotify(const uint32_t identifier, const event::Data* pEventData) override;

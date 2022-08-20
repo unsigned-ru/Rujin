@@ -15,7 +15,7 @@ namespace rujin
 
 	enum class CollisionLayer : uint8_t
 	{
-		BlockAll,
+		Default,
 		OverlapAll,
 		Bullet
 	};
@@ -24,17 +24,17 @@ namespace rujin
 	const std::unordered_map<CollisionLayer, std::unordered_map<CollisionLayer, CollisionResponse>> g_CollisionResponses
 	{
 		{
-			CollisionLayer::BlockAll,
+			CollisionLayer::Default,
 			{
-				{ CollisionLayer::BlockAll, CollisionResponse::Block },
-				{ CollisionLayer::OverlapAll, CollisionResponse::Block },
+				{ CollisionLayer::Default, CollisionResponse::Block },
+				{ CollisionLayer::OverlapAll, CollisionResponse::Overlap },
 				{ CollisionLayer::Bullet, CollisionResponse::Ignore },
 			}
 		},
 		{
 			CollisionLayer::OverlapAll,
 			{
-				{ CollisionLayer::BlockAll, CollisionResponse::Overlap },
+				{ CollisionLayer::Default, CollisionResponse::Overlap },
 				{ CollisionLayer::OverlapAll, CollisionResponse::Overlap },
 				{ CollisionLayer::Bullet, CollisionResponse::Overlap },
 			}
@@ -42,7 +42,7 @@ namespace rujin
 		{
 			CollisionLayer::Bullet,
 			{
-				{ CollisionLayer::BlockAll, CollisionResponse::Overlap },
+				{ CollisionLayer::Default, CollisionResponse::Overlap },
 				{ CollisionLayer::OverlapAll, CollisionResponse::Overlap },
 				{ CollisionLayer::Bullet, CollisionResponse::Ignore },
 			}

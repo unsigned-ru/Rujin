@@ -32,7 +32,7 @@ bool EnemyAIController::IsInLineOfSight(rujin::GameObject* pObj, const std::vect
 		(
 			rayStart,
 			rayEnd,
-			CollisionLayer::BlockAll,
+			CollisionLayer::Default,
 			ignore,
 			nullptr,
 			&pHitCollider

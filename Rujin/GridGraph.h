@@ -29,6 +29,9 @@ namespace rujin::graph
 		bool IsWithinBounds(int col, int row) const;
 		int GetIndex(int col, int row) const { return row * m_NrOfColumns + col; }
 
+		const glm::vec2& GetGridStart() const { return m_StartPos; }
+		float GetCellSize() const { return m_CellSize; }
+
 		// returns the column and row of the node in a glm::vec2
 		using IGraph<T_NodeType, T_ConnectionType>::GetNodePos;
 		virtual glm::vec2 GetNodePos(T_NodeType* pNode) const override;

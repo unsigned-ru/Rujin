@@ -3,6 +3,7 @@
 
 #include "Collider.h"
 #include "ColliderComponent.h"
+#include "GameEvents.h"
 #include "GameObject.h"
 #include "HealthComponent.h"
 #include "ProjectileMovementComponent.h"
@@ -16,17 +17,28 @@ TankBulletComponent::TankBulletComponent(TankComponent* pOwner, uint8_t maxBounc
 {
 }
 
+TankBulletComponent::~TankBulletComponent()
+{
+	if (m_pOwningTank)
+		m_pOwningTank->GetHealthComponent()->RemoveObserver(this);
+}
+
 void TankBulletComponent::Start()
 {
 	m_pProjectileMovement = GameObject()->GetComponent<ProjectileMovementComponent>();
 	ASSERT_MSG(m_pProjectileMovement, "This component requires a ProjectileMovementComponent to be present on the GameObject.");
 	ASSERT_MSG(GameObject()->GetComponent<BoxColliderComponent>(), "This component requires a BoxColliderComponent to be present on the GameObject.");
+
+
+	m_pOwningTank->GetHealthComponent()->AddObserver(this);
 }
 
 void TankBulletComponent::FixedUpdate()
 {
 	Component::FixedUpdate();
-	m_HasHitPlayerThisFrame = false;
+
+	m_HitEnemyThisFrame = false;
+	m_HitWallThisFrame = false;
 }
 
 void TankBulletComponent::OnOverlap(const CollisionResult& result)
@@ -34,7 +46,7 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 	const class GameObject* pGameObject = result.other->GetComponent()->GameObject();
 
 	//hitting a wall...
-	if (pGameObject->HasTag("Wall"))
+	if (!m_HitWallThisFrame && pGameObject->HasTag("Wall"))
 	{
 		const glm::vec2& velocity = m_pProjectileMovement->GetVelocity();
 		//we hit something else.
@@ -55,36 +67,51 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 			m_pGameObject->Destroy();
 		}
 
+		m_HitWallThisFrame = true;
+
 		return;
 	}
 
-	if (m_pOwningTank->GameObject()->HasTag("Player") && pGameObject->HasTag("Enemy"))
+	if (!m_HitEnemyThisFrame)
 	{
-		if (m_HasHitPlayerThisFrame)
-			return;
-
-		m_HasHitPlayerThisFrame = true; //TODO: clean up
-		//player bullet hit enemy.
-		if (HealthComponent* pHealth = pGameObject->GetComponent<HealthComponent>(); pHealth)
+		if (GameObject()->HasTag("PlayerBullet") && pGameObject->HasTag("Enemy"))
 		{
-			pHealth->TakeDamage(m_Damage, m_pOwningTank->GameObject());
-		}
+			//player bullet hit enemy.
+			if (HealthComponent* pHealth = pGameObject->GetComponent<HealthComponent>(); pHealth)
+			{
+				pHealth->TakeDamage(m_Damage, m_pOwningTank ? m_pOwningTank->GameObject() : nullptr);
+			}
 
-		m_pGameObject->Destroy();
+			m_HitEnemyThisFrame = true;
+
+			m_pGameObject->Destroy();
+		}
+		else if (GameObject()->HasTag("EnemyBullet") && pGameObject->HasTag("Player"))
+		{
+			//Enemy bullet hit Player
+			if (HealthComponent* pHealth = pGameObject->GetComponent<HealthComponent>(); pHealth)
+			{
+				pHealth->TakeDamage(m_Damage, m_pOwningTank ? m_pOwningTank->GameObject() : nullptr);
+			}
+
+			m_HitEnemyThisFrame = true;
+
+			m_pGameObject->Destroy();
+		}
 	}
+	
+}
 
-	else if(m_pOwningTank->GameObject()->HasTag("Enemy") && pGameObject->HasTag("Player"))
+void TankBulletComponent::OnNotify(const uint32_t identifier, const event::Data* pEventData)
+{
+	if (identifier == static_cast<uint32_t>(game_event::Identifier::OnDie))
 	{
-		if (m_HasHitPlayerThisFrame)
-			return;
+		const auto* pOnDieEvent = static_cast<const game_event::OnDie_t*>(pEventData);
 
-		m_HasHitPlayerThisFrame = true; //TODO: clean up
-		//Enemy bullet hit Player
-		if (HealthComponent* pHealth = pGameObject->GetComponent<HealthComponent>(); pHealth)
+		if (m_pOwningTank && pOnDieEvent->pHealth == m_pOwningTank->GetHealthComponent())
 		{
-			pHealth->TakeDamage(m_Damage, m_pOwningTank->GameObject());
+			//the owning tank died, set owning tank to nullptr.
+			m_pOwningTank = nullptr;
 		}
-
-		m_pGameObject->Destroy();
 	}
 }

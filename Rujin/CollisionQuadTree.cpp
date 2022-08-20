@@ -133,12 +133,12 @@ const rujin::Rectf& rujin::CollisionQuadTree::GetBounds() const
 
 void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 {
-	for (Collider* pCollider : m_Colliders.GetVector())
+	for (const Collider* pCollider : m_Colliders.GetVector())
 	{
 		if (pCollider->IsStatic())
 			continue;
 
-		if (BoxCollider* pBoxCollider = dynamic_cast<BoxCollider*>(pCollider); pBoxCollider)
+		if (const BoxCollider* pBoxCollider = dynamic_cast<const BoxCollider*>(pCollider); pBoxCollider)
 		{
 			Rectf colliderBounds = pBoxCollider->GetRect();
 
@@ -158,32 +158,42 @@ void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 					switch (GetResponseForCollisionLayer(pBoxCollider->GetCollisionLayer(), result.other->GetCollisionLayer()))
 					{
 					case CollisionResponse::Block: //intentional break-through
-						pBoxCollider->ResolveOverlap(result);
-						pBoxCollider->GetComponent()->GameObject()->GetTransform().UpdateSelfAndChildren();
+						m_CollisionsToResolve.push_back(result);
+						//pBoxCollider->ResolveOverlap(result);
+						//pBoxCollider->GetComponent()->GameObject()->GetTransform().UpdateSelfAndChildren();
 					case CollisionResponse::Overlap:
 						pBoxCollider->GetComponent()->GameObject()->BroadcastOverlap(result);
 						break;
 					case CollisionResponse::Ignore: //intentional break-through
 					default: break;
 					}
+				}
 
+				if (result.other->IsStatic() && GetResponseForCollisionLayer(result.other->GetCollisionLayer(), pBoxCollider->GetCollisionLayer()) != CollisionResponse::Ignore)
+				{
+					//also let the other know we overlapped!
+					result.self = pPossibleOverlapCollider;
+					result.other = pBoxCollider;
 
-					if (GetResponseForCollisionLayer(result.other->GetCollisionLayer(), pBoxCollider->GetCollisionLayer()) != CollisionResponse::Ignore)
-					{
-						//also let the other know we overlapped!
-						result.other = pBoxCollider;
+					//invert collision direction
+					result.collisionDirection = GetInverted(result.collisionDirection);
 
-						//invert collision direction
-						result.collisionDirection = GetInverted(result.collisionDirection);
-
-						pPossibleOverlapCollider->GetComponent()->GameObject()->BroadcastOverlap(result);
-					}
+					pPossibleOverlapCollider->GetComponent()->GameObject()->BroadcastOverlap(result);
 				}
 			}
 		}
 		else
 			LOG_WARNING("Unimplemented Collider detected. Did you forget to implement?");
 	}
+
+	//overlaps are done, resolve all collisions
+	for (CollisionResult& result : m_CollisionsToResolve)
+	{
+		result.self->ResolveOverlap(result);
+		result.self->GetComponent()->GameObject()->GetTransform().UpdateSelfAndChildren();
+	}
+
+	m_CollisionsToResolve.clear();
 
 	//if we have children
 	if (m_Children[0])

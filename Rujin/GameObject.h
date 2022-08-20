@@ -20,7 +20,7 @@ namespace rujin
 	 * - DOES NOT OWN pointer to parent
 	 * - Parent nullptr if at root of scene.
 	 */
-	class GameObject final : public IGameLoopObject, public StatefullObject
+	class GameObject final : public IGameLoopObject, public StatefullObject, public event::Subject
 	{
 	public:
 		explicit GameObject(const std::string& name);

@@ -1,7 +1,6 @@
 #include "RujinPCH.h"
 #include "SceneProvider.h"
 
-#include "Camera.h"
 #include "Rujin.h"
 #include "Scene.h"
 
@@ -10,6 +9,7 @@ rujin::SceneProvider::~SceneProvider() = default;
 
 void rujin::SceneProvider::Start()
 {
+	//start all scenes
 	for (const auto& scene : m_Scenes)
 	{
 		scene->Start();
@@ -18,57 +18,56 @@ void rujin::SceneProvider::Start()
 
 void rujin::SceneProvider::LateStart()
 {
+	//late start all scenes
 	for (const auto& scene : m_Scenes)
 	{
 		scene->LateStart();
 	}
 }
 
+void rujin::SceneProvider::HandleSceneSwitch()
+{
+	if (m_pActiveSceneToSet != nullptr)
+	{
+		m_pActiveScene = m_pActiveSceneToSet;
+		m_pActiveSceneToSet = nullptr;
+	}
+}
+
 void rujin::SceneProvider::Update()
 {
-	for (const auto& scene : m_Scenes)
-	{
-		scene->Update();
-	}
+	m_pActiveScene->Update();
 }
 
 void rujin::SceneProvider::FixedUpdate()
 {
-	for (const auto& scene : m_Scenes)
-	{
-		scene->FixedUpdate();
-	}
+	m_pActiveScene->FixedUpdate();
 }
 
 void rujin::SceneProvider::ProcessAdditionsAndRemovals()
 {
-	for (const auto& scene : m_Scenes)
-	{
-		scene->ProcessAdditionsAndRemovals();
-	}
+	m_pActiveScene->ProcessAdditionsAndRemovals();
 }
 
 void rujin::SceneProvider::OnGui(SDL_Window* pWindow)
 {
-	for (const auto& scene : m_Scenes)
-	{
-		scene->OnGui(pWindow);
-	}
+	m_pActiveScene->OnGui(pWindow);
 }
 
 
 void rujin::SceneProvider::Draw() const
 {
-	for (const auto& scene : m_Scenes)
-	{
-		scene->Draw();
-	}
+	m_pActiveScene->Draw();
 }
 
 rujin::Scene* rujin::SceneProvider::CreateScene(const std::string& name, const Rectf& collisionTreeBounds, Camera* pCamera)
 {
 	auto* pScene = new Scene(name, collisionTreeBounds, pCamera);
 	m_Scenes.push_back(std::unique_ptr<rujin::Scene>(pScene));
+
+	if (m_Scenes.size() == 1)
+		SetActiveScene(pScene);
+
 	return pScene;
 }
 
@@ -89,15 +88,7 @@ rujin::Scene* rujin::SceneProvider::GetScene(const std::string& name) const
 	return it->get();
 }
 
-rujin::Scene* rujin::SceneProvider::GetScene(const size_t idx) const
+void rujin::SceneProvider::SetActiveScene(Scene* pScene)
 {
-	//TODO: could possibly optimize
-	try
-	{
-		return m_Scenes.at(idx).get();
-	}
-	catch (std::out_of_range& )
-	{
-		return nullptr;
-	}
+	m_pActiveSceneToSet = pScene;
 }

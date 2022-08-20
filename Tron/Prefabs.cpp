@@ -6,6 +6,7 @@
 #include "GridTextureRenderComponent.h"
 #include "HealthComponent.h"
 #include "PlayerHUDComponent.h"
+#include "RandomTeleporterComponent.h"
 #include "RecognizerAIController.h"
 #include "RecognizerComponent.h"
 #include "ResourceService.h"
@@ -113,7 +114,7 @@ GameObject* prefabs::CreateEnemyTank()
 
 	auto* pTankMovement = pEnemyGO->AddComponent
 	(
-		new TronMovementComponent(pTankCollider)
+		new TronMovementComponent(pTankCollider, 125.f)
 	);
 
 #ifdef _DEBUG
@@ -220,12 +221,12 @@ GameObject* prefabs::CreatePlayerHUD(const std::string& name, TronPlayerComponen
 	(
 		new TextRenderComponent
 		(
-			resources.GetFont("Fonts/Arcade.ttf", 20),
+			resources.GetFont("Fonts/Arcade.ttf", 50),
 			glm::vec4{1.f, 1.f, 1.f, 1.f},
 			glm::vec2{0.f, 1.f}
 		)
 	);
-	pScoreChild->GetTransform().AddLocalPosition({ 25.f, -75.f });
+	pScoreChild->GetTransform().AddLocalPosition({ 25.f, -60.f });
 
 	pPlayerHUD->AddChild(pLivesChild);
 	pPlayerHUD->AddChild(pScoreChild);
@@ -242,4 +243,35 @@ GameObject* prefabs::CreatePlayerHUD(const std::string& name, TronPlayerComponen
 
 
 	return pPlayerHUD;
+}
+
+GameObject* prefabs::CreateRandomTeleporter(const std::string& name)
+{
+	auto& resources = ServiceLocator::GetService<ResourceService>();
+
+	GameObject* pRandomTeleporterGO = new GameObject(name);
+	pRandomTeleporterGO->AddComponent
+	(
+		new TextureRenderComponent
+		(
+			resources.GetTexture("Textures/Spritesheet.png"),
+			{ 0.5f, 0.5f },
+			Recti{ 0, 200, 100, 100 }
+		)
+	);
+
+	pRandomTeleporterGO->AddComponent
+	(
+		new BoxColliderComponent
+		(
+			{75, 75},
+			true,
+			{0.5f, 0.5f},
+			CollisionLayer::OverlapAll
+		)
+	);
+
+	pRandomTeleporterGO->AddComponent(new RandomTeleporterComponent());
+
+	return pRandomTeleporterGO;
 }

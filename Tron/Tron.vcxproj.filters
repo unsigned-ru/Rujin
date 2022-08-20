@@ -59,6 +59,15 @@
     <ClCompile Include="PlayerHUDComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="RandomTeleporterComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyListComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SpawnLocationListComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TronPCH.h">
@@ -105,5 +114,14 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="GameEvents.h" />
+    <ClInclude Include="RandomTeleporterComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyListComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SpawnLocationListComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

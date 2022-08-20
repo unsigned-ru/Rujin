@@ -7,6 +7,8 @@
 
 #include <ranges>
 
+#include "EngineEvents.h"
+
 using namespace rujin;
 
 unsigned int Scene::m_IdCounter = 0;
@@ -32,6 +34,15 @@ Scene::Scene(const std::string& name, const Rectf& collisionTreeBounds, Camera* 
 			pObj->SetScene(this);
 			pObj->GetTransform().UpdateSelfAndChildren();
 			pObj->Start();
+		}
+	);
+
+	m_GameObjects.SetElementRemovedCallback
+	(
+		[](GameObject* pObj)
+		{
+			const event::OnGameObjectDestroyed_t eventData(pObj);
+			pObj->Notify(static_cast<uint32_t>(event::Identifier::OnGameObjectDestroyed), &eventData);
 		}
 	);
 }

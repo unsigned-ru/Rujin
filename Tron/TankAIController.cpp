@@ -4,7 +4,9 @@
 #include <ranges>
 
 #include "CollisionFunctions.h"
+#include "GameEvents.h"
 #include "GameObject.h"
+#include "HealthComponent.h"
 #include "Scene.h"
 #include "TankComponent.h"
 #include "TronMovementComponent.h"
@@ -29,6 +31,8 @@ void TankAIController::Start()
 			return rutils::StartsWith(pObj->GetName(), "Player") && pObj->GetComponent<TronPlayerComponent>();
 		}
 	);
+
+	m_pTank->GetHealthComponent()->AddObserver(this);
 }
 
 void TankAIController::FixedUpdate()
@@ -87,6 +91,27 @@ void TankAIController::HandleStateTransitions()
 				m_State = State::MoveToClosestPlayer;
 			}
 		}
+	}
+}
+
+void TankAIController::OnNotify(const uint32_t identifier, const event::Data* pEventData)
+{
+	if (identifier == static_cast<uint32_t>(game_event::Identifier::OnDie))
+	{
+		const auto* pOnDieEvent = static_cast<const game_event::OnDie_t*>(pEventData);
+
+		//if we got killed by a player, hand the player the score
+		if (pOnDieEvent->pKilledBy && pOnDieEvent->pKilledBy->HasTag("Player"))
+		{
+			if (TronPlayerComponent* pPlayer = pOnDieEvent->pKilledBy->GetComponent<TronPlayerComponent>(); pPlayer)
+			{
+				pPlayer->AddScore(s_Score);
+			}
+		}
+
+
+		//destroy our root game object
+		GameObject()->GetRootParent()->Destroy();
 	}
 }
 

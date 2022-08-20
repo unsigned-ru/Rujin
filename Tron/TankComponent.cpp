@@ -78,7 +78,7 @@ void TankComponent::Shoot()
 	//check if bullet will spawn inside wall
 	for (const Collider* pPossibleOverlapCollider : GameObject()->GetScene()->GetCollisionQuadTree()->Search(bulletRect))
 	{
-		//if the response to the collider isn't block, then we don't need to worry about it
+		//if the response to the collider isn't block, then we don't need to worry about it 
 		if (GetResponseForCollisionLayer(pPossibleOverlapCollider->GetCollisionLayer(), CollisionLayer::Bullet) != CollisionResponse::Block)
 			continue;
 
@@ -103,5 +103,11 @@ void TankComponent::Shoot()
 	pBulletGO->GetTransform().SetLocalRotation(bulletSpawnRot);
 
 	GameObject()->GetScene()->AddGameObject(pBulletGO);
+
+	if (GameObject()->HasTag("Player"))
+		pBulletGO->AddTag("PlayerBullet");
+	else if (GameObject()->HasTag("Enemy"))
+		pBulletGO->AddTag("EnemyBullet");
+
 	m_LastShotTime = std::chrono::high_resolution_clock::now();
 }

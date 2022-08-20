@@ -10,8 +10,9 @@
 #include "ServiceLocator.h"
 #include "TankComponent.h"
 
-TronMovementComponent::TronMovementComponent(BoxColliderComponent* pMovementCollider)
+TronMovementComponent::TronMovementComponent(BoxColliderComponent* pMovementCollider, const float moveSpeed)
 	: m_pMovementCollider(pMovementCollider)
+	, m_MoveSpeed(moveSpeed)
 {
 }
 

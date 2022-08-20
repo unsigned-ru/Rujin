@@ -10,7 +10,7 @@ namespace rujin::graph
 
 class TankComponent;
 
-class TankAIController final : public EnemyAIController
+class TankAIController final : public EnemyAIController, public event::IObserver
 {
 public:
 	explicit TankAIController(TankComponent* pTank);
@@ -30,12 +30,16 @@ private:
 	void ExecuteCurrentState();
 	void HandleStateTransitions();
 
+	void OnNotify(const uint32_t identifier, const event::Data* pEventData) override;
+
 	State m_State{ State::MoveToClosestPlayer };
 	std::vector<rujin::GameObject*> m_Players{};
 
 	TankComponent* m_pTank = nullptr;
 
 	const float m_MaxShootDistance{ 700.f };
+
+	inline static constexpr uint32_t s_Score{ 100u };
 };
 
 

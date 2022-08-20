@@ -10,7 +10,9 @@
 #include "TankComponent.h"
 #include "TronMovementComponent.h"
 #include "GameEvents.h"
-#include "Tron.h"
+#include "Scene.h"
+#include "SpawnLocationListComponent.h"
+
 
 
 TronPlayerComponent::TronPlayerComponent(TankComponent* pTank, PlayerIndex playerIndex)
@@ -64,6 +66,9 @@ void TronPlayerComponent::Start()
 {
 	Component::Start();
 
+	m_pManagerObject = GameObject()->GetScene()->GetRootGameObjectByPredicate([](const class GameObject* pObj) {return pObj->GetName() == "Manager"; });
+	ASSERT(m_pManagerObject)
+
 	GameObject()->AddTag("Player");
 	m_pTank->GetHealthComponent()->AddObserver(this);
 }
@@ -91,6 +96,16 @@ PlayerIndex TronPlayerComponent::GetPlayerIndex() const
 uint8_t TronPlayerComponent::GetLives() const { return m_Lives; }
 
 uint32_t TronPlayerComponent::GetScore() const { return m_Score; }
+
+void TronPlayerComponent::AddScore(uint32_t scoreToAdd)
+{
+	if (scoreToAdd == 0) return;
+
+	m_Score += scoreToAdd;
+
+	const game_event::OnScoreChanged_t scoreChangedEvent(this, m_Score);
+	Notify(static_cast<uint32_t>(game_event::Identifier::OnScoreChanged), &scoreChangedEvent);
+}
 
 void TronPlayerComponent::HandleMovement(const InputService& input)
 {
@@ -160,7 +175,7 @@ void TronPlayerComponent::OnNotify(const uint32_t identifier, const event::Data*
 			pTankHealth->SetHealth(pTankHealth->GetMaxHealth());
 
 			//randomize position1
-			GameObject()->GetTransform().SetLocalPosition(Rujin::Get()->GetGame<Tron>()->GetRandomSpawnLocation());
+			GameObject()->GetTransform().SetLocalPosition(m_pManagerObject->GetComponent<SpawnLocationListComponent>()->GetRandomSpawnLocation());
 
 			//notify LivesChanged
 			const game_event::OnLivesChanged_t livesChangedEvent{ this, m_Lives };
