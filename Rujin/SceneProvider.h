@@ -30,6 +30,7 @@ namespace rujin
 		void HandleSceneSwitch() override;
 		void Update() override;
 		void FixedUpdate() override;
+		void ProcessAdditionsAndRemovalsForAllScenes() override;
 		void ProcessAdditionsAndRemovals() override;
 		void OnGui(SDL_Window* pWindow) override;
 		void Draw() const override;
@@ -37,6 +38,8 @@ namespace rujin
 		Scene* CreateScene(const std::string& name, const Rectf& collisionTreeBounds = Rectf{0, 0, 1000, 1000}, Camera* pCamera = nullptr) override;
 		Scene* GetScene(const std::string& name) const override;
 		void SetActiveScene(Scene* pScene) override;
+		void SetActiveScene(const std::string& name) override;
+		Scene* GetActiveScene() const override;
 
 	private:
 		Scene* m_pActiveScene = nullptr;

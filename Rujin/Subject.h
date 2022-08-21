@@ -6,6 +6,8 @@
 #include "IObserver.h"
 #include <vector>
 
+#include "DefferedRemovalVector.h"
+
 namespace rujin::event
 {
 	class Subject
@@ -23,73 +25,53 @@ namespace rujin::event
 		Subject& operator=(const Subject&) = delete;
 		Subject& operator=(Subject&&) noexcept = delete;
 
+		virtual void ProcessAdditionsAndRemovals()
+		{
+			m_Observers.ProcessAdditions();
+			m_Observers.ProcessRemovals();
+		}
 
 		void AddObserver(IObserver* pObserver)
 		{
-			const auto it = std::ranges::find(m_Observers, pObserver);
-
-			//if removal is pending
-			if (m_PendRemoval)
+			//check if said observer is in the to-remove list
+			if (const auto it = std::ranges::find(m_Observers.GetElementsToRemove(), pObserver); it != m_Observers.GetElementsToRemove().end())
 			{
-				//check if we have the observer
-				if (it == m_Observers.end())
-					return;
-
-				// do we wanna add a observer that's pending removal, then.. just don't pend it for removal!
-				const auto removalIt = std::find_if(m_ObserversToRemove.begin(), m_ObserversToRemove.end(), [pObserver](const auto& vecIt) { return  *vecIt == pObserver; });
-				if (removalIt != m_ObserversToRemove.end())
-				{
-					(**removalIt)->m_PendingRemove = false;
-					m_ObserversToRemove.erase(removalIt);
-					return;
-				}
+				//if the observer we want to add is in the to-be removed list, then just remove it from the to-be-removed list
+				m_Observers.GetElementsToRemove().erase(it);
+				return;
 			}
 
-			// don't register if already registered
-			if (it != m_Observers.end()) return;
-			
-			m_Observers.push_back(pObserver);
+			//check if we already have the observer
+			if (auto it = std::ranges::find(m_Observers.GetVector(), pObserver); it != m_Observers.GetVector().end())
+				return; //if we do, don't add it
+
+			//add observer.
+			m_Observers.GetVector().push_back(pObserver);
 		}
+
 		void RemoveObserver(IObserver* pObserver)
 		{
-			const auto it = std::ranges::find(m_Observers, pObserver);
-
-			// if we don't have this observer, we cannot remove it. return.
-			if (it == m_Observers.end()) return;
-
-			
-			if (m_PendRemoval) //removals should be pended.
+			//check if said observer is in the to-be-added list
+			if (const auto it = std::ranges::find(m_Observers.GetElementsToAdd(), pObserver); it != m_Observers.GetElementsToAdd().end())
 			{
-				m_ObserversToRemove.push_back(it);
+				//if the observer we want to remove is in the to-be added list, then just remove it from the to-be-added list
+				m_Observers.GetElementsToAdd().erase(it);
+				return;
 			}
-			else 
-				m_Observers.erase(it); //removals don't have to be pended, can instantly remove.
+
+			//remove observer.
+ 			m_Observers.PendRemove(pObserver);
 		}
 
 	protected:
 		void Notify(const uint32_t identifier, const Data* pData)
 		{
-			//ensures any removals are going to happen AFTER we are done iterating
-			m_PendRemoval = true;
-
-			for (auto* pObserver : m_Observers)
+			for (auto* pObserver : m_Observers.GetVector())
 				pObserver->OnNotify(identifier, pData);
-
-			m_PendRemoval = false;
-
-
-			//erase the observers pending removal
-			for (const auto it : m_ObserversToRemove)
-				m_Observers.erase(it);
-			m_ObserversToRemove.clear();
 		}
 
 	private:
-		std::vector<IObserver*> m_Observers{};
-
-		//used to delay
-		bool m_PendRemoval{false};
-		std::vector<std::ranges::borrowed_iterator_t<std::vector<IObserver*>&>> m_ObserversToRemove{};
+		DeferredVector<IObserver*, IObserver*> m_Observers{};
 	};
 
 	inline Subject::~Subject() = default;

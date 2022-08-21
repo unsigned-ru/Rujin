@@ -32,7 +32,7 @@ private:
 
 	RecognizerComponent* m_pRecognizer = nullptr;
 
-	const float m_MaxAttackDistance{ 50.f };
+	const float m_MaxAttackDistance{ 60.f };
 
 	inline static constexpr uint32_t s_Score{ 250u };
 };

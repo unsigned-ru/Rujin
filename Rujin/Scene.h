@@ -29,9 +29,11 @@ namespace rujin
 
 		void AddGameObject(GameObject* gameObject);
 		void RemoveGameObject(GameObject* gameObject);
+		void MoveGameObject(GameObject* gameObject, Scene* pNewScene);
 
-		GameObject* GetRootGameObjectByPredicate(const std::function<bool(GameObject*)>& predicate);
-		std::vector<GameObject*> GetAllRootGameObjectsByPredicate(const std::function<bool(GameObject*)>& predicate);
+
+		GameObject* GetRootGameObjectByPredicate(const std::function<bool(GameObject*)>& predicate, bool pendingAdd = false);
+		std::vector<GameObject*> GetAllRootGameObjectsByPredicate(const std::function<bool(GameObject*)>& predicate, bool pendingAdd = false);
 
 		void SetPathfinder(Pathfinder<graph::GridTerrainNode, graph::GraphConnection>* pPathfinder);
 		Pathfinder<graph::GridTerrainNode, graph::GraphConnection>* GetPathfinder();
@@ -57,6 +59,8 @@ namespace rujin
 		DeferredVector<GameObject*, GameObject*> m_ActiveGameObjects{};
 		DeferredVector<GameObject*, GameObject*> m_InactiveGameObjects{};
 		DeferredVector<std::unique_ptr<GameObject>, GameObject*> m_GameObjects{};
+		std::vector<std::pair<GameObject*, Scene*>> m_GameObjectsToMove{}; //GO's that have to move to another scene 
+
 
 		Camera* m_pActiveCamera;
 		Camera* m_pDefaultCamera = nullptr;

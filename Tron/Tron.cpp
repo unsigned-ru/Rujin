@@ -29,18 +29,57 @@ void Tron::Configure(settings::InitParams& params)
 
 void Tron::Load()
 {
-	//SceneService& sceneService = ServiceLocator::GetService<SceneService>();
-
 	LoadLevel1();
 	LoadLevel2();
 	LoadLevel3();
-
-
 }
 
 const glm::ivec2& Tron::GetGridDimensions() const
 {
 	return m_GridDimensions;
+}
+
+void Tron::SwitchToNextLevel()
+{
+	m_CurrentLevel = (m_CurrentLevel + 1 - 1) % 3 + 1;
+
+	auto& scenes = ServiceLocator::GetService<SceneService>();
+
+	//get player gameobject and HUD
+	const auto currentScene = scenes.GetActiveScene();
+	const auto pObjectsToMove = currentScene->GetAllRootGameObjectsByPredicate([](const GameObject* pObj) { return pObj->HasTag("LevelPersistent"); });
+
+	//TODO: remove all bullets
+
+	Scene* pNewScene;
+	switch (m_CurrentLevel)
+	{
+		default:
+		case 1:
+		{
+			pNewScene = scenes.GetScene("Level1");
+			SpawnLevel1Enemies(pNewScene);
+			break;
+		}
+		case 2:
+		{
+			pNewScene = scenes.GetScene("Level2");
+			SpawnLevel2Enemies(pNewScene);
+			break;
+		}
+		case 3:
+		{
+			pNewScene = scenes.GetScene("Level3");
+			SpawnLevel3Enemies(pNewScene);
+			break;
+		}
+	}
+
+	for (GameObject* pObjToMove : pObjectsToMove)
+		currentScene->MoveGameObject(pObjToMove, pNewScene);
+
+ 	pNewScene->GetRootGameObjectByPredicate([](const GameObject* pObj) {return pObj->GetName() == "Manager"; })->GetComponent<EnemyListComponent>()->SetDirty();
+	scenes.SetActiveScene(pNewScene);
 }
 
 void Tron::LoadLevel1()
@@ -110,8 +149,6 @@ void Tron::LoadLevel1()
 		pScene->AddGameObject(go);
 	}
 
-	pScene->AddGameObject(pManagerObj);
-
 	SpawnLevel1Enemies(pScene);
 }
 
@@ -157,7 +194,6 @@ void Tron::LoadLevel2()
 {
 	ResourceService& resourceService = ServiceLocator::GetService<ResourceService>();
 	SceneService& sceneService = ServiceLocator::GetService<SceneService>();
-	InputService& input = ServiceLocator::GetService<InputService>();
 
 	/* Create scene with collision field with the size of the screen. */
 	const auto& windowSize = Rujin::Get()->GetWindowContext().windowSize;
@@ -191,36 +227,12 @@ void Tron::LoadLevel2()
 	/* Create surrounding colliders (so player can't move outside of bounds...*/
 	CreateLevelBoundsColliders(pScene);
 
-	/* Create player 1*/
-	{
-		GameObject* playerGO = prefabs::CreatePlayerTank("Player1", input.RegisterPlayer());
-
-		//calc position
-		playerGO->GetTransform().SetPosition
-		(
-			glm::vec2
-			{
-				(m_GridStart.x + m_CellSize),
-				(m_GridStart.y + m_CellSize)
-			}
-		);
-
-		pScene->AddGameObject(playerGO);
-
-		GameObject* pPlayerHUD = prefabs::CreatePlayerHUD("Player1_HUD", playerGO->GetComponent<TronPlayerComponent>());
-		pPlayerHUD->GetTransform().SetPosition({ 0.f, Rujin::Get()->GetWindowContext().windowSize.y });
-		pScene->AddGameObject(pPlayerHUD);
-	}
-
-
 	/* Create random teleporter */
 	{
 		auto* go = prefabs::CreateRandomTeleporter("RandomTeleporter");
 		go->GetTransform().SetPosition({ m_GridStart.x + (m_GridDimensions.x * m_CellSize) / 2.f, m_GridStart.y + (m_GridDimensions.y * m_CellSize) / 2.f });
 		pScene->AddGameObject(go);
 	}
-
-	pScene->AddGameObject(pManagerObj);
 }
 
 void Tron::SpawnLevel2Enemies(Scene* pScene)
@@ -265,7 +277,6 @@ void Tron::LoadLevel3()
 {
 	ResourceService& resourceService = ServiceLocator::GetService<ResourceService>();
 	SceneService& sceneService = ServiceLocator::GetService<SceneService>();
-	InputService& input = ServiceLocator::GetService<InputService>();
 
 	/* Create scene with collision field with the size of the screen. */
 	const auto& windowSize = Rujin::Get()->GetWindowContext().windowSize;
@@ -299,27 +310,6 @@ void Tron::LoadLevel3()
 	/* Create surrounding colliders (so player can't move outside of bounds...*/
 	CreateLevelBoundsColliders(pScene);
 
-	/* Create player 1*/
-	{
-		GameObject* playerGO = prefabs::CreatePlayerTank("Player1", input.RegisterPlayer());
-
-		//calc position
-		playerGO->GetTransform().SetPosition
-		(
-			glm::vec2
-			{
-				(m_GridStart.x + m_CellSize),
-				(m_GridStart.y + m_CellSize)
-			}
-		);
-
-		pScene->AddGameObject(playerGO);
-
-		GameObject* pPlayerHUD = prefabs::CreatePlayerHUD("Player1_HUD", playerGO->GetComponent<TronPlayerComponent>());
-		pPlayerHUD->GetTransform().SetPosition({ 0.f, Rujin::Get()->GetWindowContext().windowSize.y });
-		pScene->AddGameObject(pPlayerHUD);
-	}
-
 
 	/* Create random teleporter */
 	{
@@ -327,8 +317,6 @@ void Tron::LoadLevel3()
 		go->GetTransform().SetPosition({ m_GridStart.x + (m_GridDimensions.x * m_CellSize) / 2.f, m_GridStart.y + (m_GridDimensions.y * m_CellSize) / 2.f });
 		pScene->AddGameObject(go);
 	}
-
-	pScene->AddGameObject(pManagerObj);
 }
 
 void Tron::SpawnLevel3Enemies(Scene* pScene)
@@ -336,7 +324,6 @@ void Tron::SpawnLevel3Enemies(Scene* pScene)
 	/* Create Enemy Tank*/
 	{
 		GameObject* pEnemyGO = prefabs::CreateEnemyTank();
-
 
 		//calc position
 		pEnemyGO->GetTransform().SetPosition

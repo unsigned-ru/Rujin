@@ -10,7 +10,7 @@
 #include "RenderService.h"
 #include "ServiceLocator.h"
 
-rujin::CollisionQuadTree::CollisionQuadTree(const Rectf& bounds) : CollisionQuadTree(15, 5, 0, bounds, nullptr) {}
+rujin::CollisionQuadTree::CollisionQuadTree(const Rectf& bounds) : CollisionQuadTree(5, 1, 0, bounds, nullptr) {}
 
 rujin::CollisionQuadTree::CollisionQuadTree
 (
@@ -64,44 +64,6 @@ rujin::Collider* rujin::CollisionQuadTree::Insert(Collider* pCollider)
 	return pCollider;
 }
 
-void rujin::CollisionQuadTree::Remove(Collider* pCollider)
-{
-	if (!m_pParent && !pCollider->IsStatic()) //if we are root and collider isn't static.
-		//stop observing the colliders transform, we no longer need to update it's position in the quadtree
-		pCollider->GetComponent()->GameObject()->GetTransform().RemoveObserver(this); //NOTE: only root should observe.
-
-	if (const BoxCollider* pBoxCollider = dynamic_cast<BoxCollider*>(pCollider); pBoxCollider)
-	{
-		const int8_t idx = GetChildIndexForObject(pBoxCollider->GetRect());
-
-		//check if collider belongs to this node and has no children...
-		if (idx == s_ThisTree || m_Children[idx] == nullptr)
-		{
-			//Collider must be in this node!
-			//Find it by comparing the owning component.
-
-			Component* pColliderComp = pCollider->GetComponent();
-
-			const auto it = std::ranges::find_if
-			(m_Colliders.GetVector(), 
-				[pColliderComp](const Collider* pCurrCollider)
-				{
-					return pCurrCollider->GetComponent() == pColliderComp;
-				}
-			);
-
-			if (it != m_Colliders.GetVector().end()) //if we found the collider in this tree's vector...
-			{
-				m_Colliders.GetVector().erase(it); //...remove it
-			}
- 		}
-		else //search it in our children
-			return m_Children[idx]->Remove(pCollider);
-	}
-	else
-		LOG_WARNING("Unimplemented Collider detected. Did you forget to implement?");
-}
-
 std::vector<const rujin::Collider*> rujin::CollisionQuadTree::Search(const Rectf& area)
 {
 	//get all colliders inside of nodes overlapping the search area
@@ -151,6 +113,7 @@ void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 				if (pCollider == pPossibleOverlapCollider)
 					continue;
 
+
 				CollisionResult result = pBoxCollider->IsOverlapping(pPossibleOverlapCollider);
 
 				if (result.isColliding)
@@ -159,8 +122,7 @@ void rujin::CollisionQuadTree::HandleCollision(CollisionQuadTree* pRoot)
 					{
 					case CollisionResponse::Block: //intentional break-through
 						m_CollisionsToResolve.push_back(result);
-						//pBoxCollider->ResolveOverlap(result);
-						//pBoxCollider->GetComponent()->GameObject()->GetTransform().UpdateSelfAndChildren();
+
 					case CollisionResponse::Overlap:
 						pBoxCollider->GetComponent()->GameObject()->BroadcastOverlap(result);
 						break;
@@ -522,7 +484,7 @@ void rujin::CollisionQuadTree::OnNotify(const uint32_t identifier, const event::
 			Collider* pCollider = pColliderComp->GetCollider();
 
 			//remove it from this quad-tree.
-			Remove_(pCollider);
+			Remove(pCollider);
 
 			//insert it again in the root (parent) tree!
 			Insert(pCollider);
@@ -540,7 +502,7 @@ rujin::CollisionQuadTree* rujin::CollisionQuadTree::GetRoot()
 	return pRoot;
 }
 
-void rujin::CollisionQuadTree::Remove_(Collider* pCollider)
+void rujin::CollisionQuadTree::Remove(Collider* pCollider)
 {
 	if (!m_pParent && !pCollider->IsStatic()) //if we are root and collider isn't static.
 		//stop observing the colliders transform, we no longer need to update it's position in the quadtree

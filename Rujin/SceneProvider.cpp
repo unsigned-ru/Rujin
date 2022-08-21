@@ -29,7 +29,7 @@ void rujin::SceneProvider::HandleSceneSwitch()
 {
 	if (m_pActiveSceneToSet != nullptr)
 	{
-		m_pActiveScene = m_pActiveSceneToSet;
+  		m_pActiveScene = m_pActiveSceneToSet;
 		m_pActiveSceneToSet = nullptr;
 	}
 }
@@ -42,6 +42,15 @@ void rujin::SceneProvider::Update()
 void rujin::SceneProvider::FixedUpdate()
 {
 	m_pActiveScene->FixedUpdate();
+}
+
+void rujin::SceneProvider::ProcessAdditionsAndRemovalsForAllScenes()
+{
+	//late start all scenes
+	for (const auto& scene : m_Scenes)
+	{
+		scene->ProcessAdditionsAndRemovals();
+	}
 }
 
 void rujin::SceneProvider::ProcessAdditionsAndRemovals()
@@ -91,4 +100,14 @@ rujin::Scene* rujin::SceneProvider::GetScene(const std::string& name) const
 void rujin::SceneProvider::SetActiveScene(Scene* pScene)
 {
 	m_pActiveSceneToSet = pScene;
+}
+
+void rujin::SceneProvider::SetActiveScene(const std::string& name)
+{
+	SetActiveScene(GetScene(name));
+}
+
+rujin::Scene* rujin::SceneProvider::GetActiveScene() const
+{
+	return m_pActiveScene;
 }

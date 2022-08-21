@@ -41,7 +41,7 @@ GameObject* prefabs::CreatePlayerTank(const std::string& name, rujin::PlayerInde
 
 	auto* pTankMovement = playerGO->AddComponent
 	(
-		new TronMovementComponent(pTankCollider)
+		new TronMovementComponent(pTankCollider, 125.f)
 	);
 
 #ifdef _DEBUG
@@ -114,7 +114,7 @@ GameObject* prefabs::CreateEnemyTank()
 
 	auto* pTankMovement = pEnemyGO->AddComponent
 	(
-		new TronMovementComponent(pTankCollider, 125.f)
+		new TronMovementComponent(pTankCollider, 100.f)
 	);
 
 #ifdef _DEBUG
@@ -168,7 +168,7 @@ GameObject* prefabs::CreateEnemyRecognizer()
 
 	auto* pTankMovement = pEnemyGO->AddComponent
 	(
-		new TronMovementComponent(pCollider)
+		new TronMovementComponent(pCollider, 100.f)
 	);
 
 #ifdef _DEBUG
@@ -199,7 +199,7 @@ GameObject* prefabs::CreatePlayerHUD(const std::string& name, TronPlayerComponen
 	auto& resources = ServiceLocator::GetService<ResourceService>();
 
 	GameObject* pPlayerHUD = new GameObject(name);
-
+	pPlayerHUD->AddTag("LevelPersistent");
 
 	GameObject* pLivesChild = new GameObject(name + "_Lives");
 	auto* pLivesRenderer = pLivesChild->AddComponent

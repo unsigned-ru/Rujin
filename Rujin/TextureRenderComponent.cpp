@@ -27,7 +27,7 @@ void rujin::TextureRenderComponent::Draw() const
 
 void rujin::TextureRenderComponent::SetTexture(const std::shared_ptr<Texture>& texture)
 {
-	m_pTexture = texture;
+ 	m_pTexture = texture;
 }
 
 void rujin::TextureRenderComponent::SetSourceRect(const Recti& sourceRect)

@@ -19,6 +19,7 @@ public:
 	std::vector<ElementType>& GetVector() { return m_Elements; }
 	const std::vector<ElementType>& GetVector() const { return m_Elements; }
 	const std::vector<ElementType>& GetElementsToAdd() const { return m_ElementsToAdd; }
+	std::vector<ElementType>& GetElementsToAdd() { return m_ElementsToAdd; }
 
 	std::vector<PointerType>&  GetElementsToRemove() { return m_ElementsToRemove; }
 	const std::vector<PointerType>&  GetElementsToRemove() const { return m_ElementsToRemove; }

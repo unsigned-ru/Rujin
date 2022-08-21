@@ -6,6 +6,8 @@
 namespace rujin
 {
 	class Transform;
+	class Scene;
+	class GameObject;
 }
 
 namespace rujin::event
@@ -14,6 +16,7 @@ namespace rujin::event
 	{
 		OnTransformChanged,
 		OnGameObjectDestroyed,
+		OnGameObjectMoved,
 
 		//always last
 		LAST_ENGINE_EVENT
@@ -42,6 +45,15 @@ namespace rujin::event
 		GameObject* pObject;
 	};
 
-}
+	struct OnGameObjectMoved_t final : Data
+	{
+		explicit OnGameObjectMoved_t(GameObject* pObj, Scene* pNewScene)
+			: pObject(pObj)
+			, pNewScene(pNewScene)
+		{}
 
+		GameObject* pObject;
+		Scene* pNewScene;
+	};
+}
 #endif

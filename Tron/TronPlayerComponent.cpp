@@ -11,6 +11,7 @@
 #include "TronMovementComponent.h"
 #include "GameEvents.h"
 #include "Scene.h"
+#include "SceneService.h"
 #include "SpawnLocationListComponent.h"
 
 
@@ -70,6 +71,7 @@ void TronPlayerComponent::Start()
 	ASSERT(m_pManagerObject)
 
 	GameObject()->AddTag("Player");
+	GameObject()->AddTag("LevelPersistent");
 	m_pTank->GetHealthComponent()->AddObserver(this);
 }
 
@@ -153,7 +155,6 @@ void TronPlayerComponent::HandleAiming(const InputService& input)
 
 	if (inputTriggered)
 	{
-		LOG_DEBUG_("Aiming direction: [{}, {}]", aimingDirection.x, aimingDirection.y);
 		m_pTank->GetAiming()->AimAt(aimingDirection);
 	}
 }

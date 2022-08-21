@@ -2,12 +2,13 @@
 #define COLLIDER_COMPONENT_H
 
 #include "Component.h"
+#include "IObserver.h"
 
 namespace rujin
 {
 	class RenderService;
 
-	class ColliderComponent : public Component
+	class ColliderComponent : public Component, public event::IObserver
 	{
 	public:
 		explicit ColliderComponent() = default;
@@ -29,6 +30,8 @@ namespace rujin
 		virtual Collider* GetCollider() const = 0;
 
 	private:
+		void OnNotify(const uint32_t identifier, const event::Data* pEventData) override;
+
 #ifdef _DEBUG
 		virtual void DrawDebug(const RenderService& renderer) const = 0;
 

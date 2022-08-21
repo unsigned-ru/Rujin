@@ -13,15 +13,10 @@ TankBulletComponent::TankBulletComponent(TankComponent* pOwner, uint8_t maxBounc
 	: m_MaxBounces(maxBounces)
 	, m_BulletSpeed(bulletSpeed)
 	, m_Damage(damage)
-	, m_pOwningTank(pOwner)
+	, m_pOwnerTank(pOwner)
 {
 }
 
-TankBulletComponent::~TankBulletComponent()
-{
-	if (m_pOwningTank)
-		m_pOwningTank->GetHealthComponent()->RemoveObserver(this);
-}
 
 void TankBulletComponent::Start()
 {
@@ -29,8 +24,8 @@ void TankBulletComponent::Start()
 	ASSERT_MSG(m_pProjectileMovement, "This component requires a ProjectileMovementComponent to be present on the GameObject.");
 	ASSERT_MSG(GameObject()->GetComponent<BoxColliderComponent>(), "This component requires a BoxColliderComponent to be present on the GameObject.");
 
-
-	m_pOwningTank->GetHealthComponent()->AddObserver(this);
+	GameObject()->AddObserver(this);
+	m_pOwnerTank->GetHealthComponent()->AddObserver(this);
 }
 
 void TankBulletComponent::FixedUpdate()
@@ -44,6 +39,10 @@ void TankBulletComponent::FixedUpdate()
 void TankBulletComponent::OnOverlap(const CollisionResult& result)
 {
 	const class GameObject* pGameObject = result.other->GetComponent()->GameObject();
+
+
+	if (!m_pOwnerTank)
+		return;
 
 	//hitting a wall...
 	if (!m_HitWallThisFrame && pGameObject->HasTag("Wall"))
@@ -79,7 +78,7 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 			//player bullet hit enemy.
 			if (HealthComponent* pHealth = pGameObject->GetComponent<HealthComponent>(); pHealth)
 			{
-				pHealth->TakeDamage(m_Damage, m_pOwningTank ? m_pOwningTank->GameObject() : nullptr);
+				pHealth->TakeDamage(m_Damage, m_pOwnerTank->GameObject());
 			}
 
 			m_HitEnemyThisFrame = true;
@@ -91,7 +90,7 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 			//Enemy bullet hit Player
 			if (HealthComponent* pHealth = pGameObject->GetComponent<HealthComponent>(); pHealth)
 			{
-				pHealth->TakeDamage(m_Damage, m_pOwningTank ? m_pOwningTank->GameObject() : nullptr);
+				pHealth->TakeDamage(m_Damage, m_pOwnerTank->GameObject());
 			}
 
 			m_HitEnemyThisFrame = true;
@@ -108,10 +107,24 @@ void TankBulletComponent::OnNotify(const uint32_t identifier, const event::Data*
 	{
 		const auto* pOnDieEvent = static_cast<const game_event::OnDie_t*>(pEventData);
 
-		if (m_pOwningTank && pOnDieEvent->pHealth == m_pOwningTank->GetHealthComponent())
+		if (pOnDieEvent->pHealth->GameObject() == m_pOwnerTank->GameObject())
 		{
-			//the owning tank died, set owning tank to nullptr.
-			m_pOwningTank = nullptr;
+			LOG_DEBUG_("{}(Player>{}): stopped observing {}", GameObject()->GetName(), GameObject()->HasTag("PlayerBullet"), m_pOwnerTank->GameObject()->GetName());
+			pOnDieEvent->pHealth->RemoveObserver(this);
+			GameObject()->GetRootParent()->Destroy();
+
+			m_pOwnerTank = nullptr;
 		}
+	}
+	else if (identifier == static_cast<uint32_t>(event::Identifier::OnGameObjectDestroyed))
+	{
+		const auto* pOnDestroyedEvent = static_cast<const event::OnGameObjectDestroyed_t*>(pEventData);
+
+		if (pOnDestroyedEvent->pObject == GameObject() && m_pOwnerTank)
+		{
+			m_pOwnerTank->GetHealthComponent()->RemoveObserver(this);
+			LOG_DEBUG_("{}(Player>{}): stopped observing {}", GameObject()->GetName(), GameObject()->HasTag("PlayerBullet"), m_pOwnerTank->GameObject()->GetName());
+		}
+
 	}
 }

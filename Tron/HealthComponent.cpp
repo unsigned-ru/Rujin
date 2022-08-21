@@ -26,6 +26,7 @@ void HealthComponent::TakeDamage(uint32_t damage, class GameObject* pSource)
 
 	//notify damage
 	const auto damageTakenEvent = game_event::OnDamageTaken_t(this, oldHealth - m_CurrentHealth, pSource);
+
 	Notify
 	(
 		static_cast<uint32_t>(game_event::Identifier::OnDamageTaken),

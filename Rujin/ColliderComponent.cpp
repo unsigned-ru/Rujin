@@ -1,7 +1,7 @@
 ﻿#include "RujinPCH.h"
 #include "ColliderComponent.h"
-#include "Collider.h"
 #include "CollisionQuadTree.h"
+#include "EngineEvents.h"
 #include "GameObject.h"
 #include "RenderService.h"
 #include "Scene.h"
@@ -10,6 +10,7 @@
 void rujin::ColliderComponent::Start()
 {
 	m_pGameObject->GetScene()->GetCollisionQuadTree()->Insert(GetCollider());
+	m_pGameObject->AddObserver(this);
 }
 
 void rujin::ColliderComponent::Draw() const
@@ -34,5 +35,19 @@ void rujin::ColliderComponent::EnableDebugDrawing(const bool enable)
 void rujin::ColliderComponent::SetDebugDrawingColor(const glm::vec4& color)
 {
 	m_DebugDrawingColor = color;
+}
+
+void rujin::ColliderComponent::OnNotify(const uint32_t identifier, const event::Data* pEventData)
+{
+	if (identifier == static_cast<uint32_t>(event::Identifier::OnGameObjectMoved))
+	{
+		const auto* pGameObjectMovedEvent = static_cast<const event::OnGameObjectMoved_t*>(pEventData);
+
+		//remove collider from old scene
+		m_pGameObject->GetScene()->GetCollisionQuadTree()->Remove(GetCollider());
+
+		//add collider to new scene
+		pGameObjectMovedEvent->pNewScene->GetCollisionQuadTree()->Insert(GetCollider());
+	}
 }
 #endif

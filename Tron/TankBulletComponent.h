@@ -15,7 +15,6 @@ class TankBulletComponent final : public Component, public event::IObserver
 {
 public:
 	explicit TankBulletComponent(TankComponent* pOwner, uint8_t maxBounces, float bulletSpeed, uint32_t damage);
-	~TankBulletComponent() override;
 
 private:
 	void Start() override;
@@ -30,8 +29,9 @@ private:
 
 	uint8_t m_CurrentBounces{};
 
+
+	TankComponent* m_pOwnerTank = nullptr;
 	ProjectileMovementComponent* m_pProjectileMovement = nullptr;
-	TankComponent* m_pOwningTank = nullptr;
 
 	bool m_HitEnemyThisFrame{ false };
 	bool m_HitWallThisFrame{ false };

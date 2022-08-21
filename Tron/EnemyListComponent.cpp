@@ -4,13 +4,27 @@
 #include "EngineEvents.h"
 #include "GameObject.h"
 #include "Scene.h"
-#include "SceneService.h"
-#include "ServiceLocator.h"
+#include "Tron.h"
 
-void EnemyListComponent::LateStart()
+void EnemyListComponent::Update()
 {
-	Component::LateStart();
+	Component::Update();
 
+	if (m_IsDirty && ++m_DirtyFrameCounter > 1)
+	{
+		m_IsDirty = false;
+		m_DirtyFrameCounter = 0;
+		UpdateEnemyList();
+	}
+}
+
+void EnemyListComponent::SetDirty(bool dirty)
+{
+	m_IsDirty = dirty;
+}
+
+void EnemyListComponent::UpdateEnemyList()
+{
 	m_pEnemies = GameObject()->GetScene()->GetAllRootGameObjectsByPredicate([](const rujin::GameObject* pGameObject) { return  pGameObject->HasTag("Enemy"); });
 
 	for (class GameObject* pEnemyGO : m_pEnemies)
@@ -21,7 +35,7 @@ void EnemyListComponent::LateStart()
 
 void EnemyListComponent::OnNotify(const uint32_t identifier, const event::Data* pEventData)
 {
-	if (identifier == static_cast<uint32_t>(event::Identifier::OnGameObjectDestroyed))
+ 	if (identifier == static_cast<uint32_t>(event::Identifier::OnGameObjectDestroyed))
 	{
 		const auto* pGameObjectDestroyedEvent = static_cast<const event::OnGameObjectDestroyed_t*>(pEventData);
 
@@ -31,7 +45,6 @@ void EnemyListComponent::OnNotify(const uint32_t identifier, const event::Data* 
 	if (m_pEnemies.size() == 0)
 	{
 		//all enemies died, we want to load next level!
-		LOG_DEBUG("Loading next level!");
-		ServiceLocator::GetService<SceneService>().SetActiveScene(ServiceLocator::GetService<SceneService>().GetScene("Level2"));
+ 		Rujin::Get()->GetGame<Tron>()->SwitchToNextLevel();
 	}
 }

@@ -1,7 +1,6 @@
 ﻿#ifndef TRON_H
 #define TRON_H
 
-#include "AStar.h"
 #include "GridGraph.h"
 #include "IGame.h"
 
@@ -20,6 +19,13 @@ namespace rujin
 class Tron final : public IGame
 {
 public:
+	enum class TronGameMode
+	{
+		SINGLE_PLAYER,
+		CO_OP,
+
+	};
+
 	explicit Tron() = default;
 	~Tron() override = default;
 
@@ -32,6 +38,8 @@ public:
 	void Load() override;
 
 	const glm::ivec2& GetGridDimensions() const;
+
+	void SwitchToNextLevel();
 
 private:
 	void LoadLevel1();
@@ -51,6 +59,8 @@ private:
 	const glm::ivec2 m_GridDimensions{ 29, 26 };
 	const float m_CellSize = 25.f;
 	const float m_BoundsColliderSize{ 30.f };
+
+	uint8_t m_CurrentLevel = 1;
 };
 
 

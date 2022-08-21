@@ -33,7 +33,12 @@ Scene::Scene(const std::string& name, const Rectf& collisionTreeBounds, Camera* 
 			//apply construction-time transformations.
 			pObj->SetScene(this);
 			pObj->GetTransform().UpdateSelfAndChildren();
-			pObj->Start();
+
+			if (m_IsStarted)
+			{
+				pObj->Start();
+				pObj->LateStart();
+			}
 		}
 	);
 
@@ -55,7 +60,11 @@ Scene::~Scene()
 
 void Scene::Start()
 {
-	//starting of children is handled by process pending. (DeferredVector)
+	for (const std::unique_ptr<GameObject>& pGameObject : m_GameObjects.GetVector())
+	{
+		pGameObject->Start();
+	}
+
 	m_IsStarted = true;
 }
 
@@ -112,7 +121,50 @@ void Scene::ProcessAdditionsAndRemovals()
 	m_ActiveGameObjects.ProcessAdditions();
 	m_GameObjects.ProcessAdditions();
 
+	for (auto& [pGameObject, pScene] : m_GameObjectsToMove)
+	{
+		if (!pScene)
+			return;
 
+		//find dynamic gameobject ptr
+		auto it = std::ranges::find_if(m_GameObjects.GetVector(), [pGameObject](const std::unique_ptr<GameObject>& gameObject) {return gameObject.get() == pGameObject; });
+		if (it == m_GameObjects.GetVector().end()) continue;
+
+		//trigger on_move event
+		event::OnGameObjectMoved_t gameObjectMovedEvent(pGameObject, pScene);
+		pGameObject->Notify(static_cast<uint32_t>(event::Identifier::OnGameObjectMoved), &gameObjectMovedEvent);
+
+		//we take temporary ownership of the object.
+		std::unique_ptr<GameObject> uniqueGameObject = std::move(*it);
+
+		auto& activeGameObjects = m_ActiveGameObjects.GetVector();
+		auto& inactiveGameObjects = m_InactiveGameObjects.GetVector();
+		auto& otherActiveGameObjects = pScene->m_ActiveGameObjects.GetVector();
+		auto& otherInactiveGameObjects = pScene->m_InactiveGameObjects.GetVector();
+
+
+		//remove GameObject from current scene
+		if (pGameObject->IsEnabled())
+			activeGameObjects.erase(std::ranges::find(activeGameObjects, uniqueGameObject.get()));
+		else
+			inactiveGameObjects.erase(std::ranges::find(inactiveGameObjects, uniqueGameObject.get()));
+
+		m_GameObjects.GetVector().erase(it);
+
+
+		//add GameObject to other scene
+		if (uniqueGameObject->IsEnabled())
+			otherActiveGameObjects.push_back(uniqueGameObject.get());
+		else
+			otherInactiveGameObjects.push_back(uniqueGameObject.get());
+
+		//set scene pointer on gameobject
+		uniqueGameObject->SetScene(pScene);
+
+		pScene->m_GameObjects.GetVector().push_back(std::move(uniqueGameObject)); //we pass ownership to new scene.
+	}
+
+	m_GameObjectsToMove.clear();
 }
 
 void Scene::OnGui(SDL_Window* pWindow)
@@ -155,23 +207,43 @@ void Scene::RemoveGameObject(GameObject* gameObject)
 	m_GameObjects.PendRemove(std::ranges::find_if(m_GameObjects.GetVector(), [gameObject](const std::unique_ptr<GameObject>& pObject) { return pObject.get() == gameObject; })->get());
 }
 
-GameObject* Scene::GetRootGameObjectByPredicate(const std::function<bool(GameObject*)>& predicate)
+void Scene::MoveGameObject(GameObject* gameObject, Scene* pNewScene)
+{
+	m_GameObjectsToMove.push_back(std::make_pair(gameObject, pNewScene));
+}
+
+GameObject* Scene::GetRootGameObjectByPredicate(const std::function<bool(GameObject*)>& predicate, const bool toBeAdded)
 {
 	const auto it = std::ranges::find_if(m_GameObjects.GetVector(), [&predicate](const std::unique_ptr<GameObject>& pObj) { return predicate(pObj.get()); });
 
-	if (it == m_GameObjects.GetVector().end())
-		return nullptr;
+	if (it != m_GameObjects.GetVector().end())
+		return it->get();
 
-	return it->get();
+	if(toBeAdded)
+	{
+		const auto futureIt = std::ranges::find_if(m_GameObjects.GetElementsToAdd(), [&predicate](const std::unique_ptr<GameObject>& pObj) { return predicate(pObj.get()); });
+
+		if (futureIt != m_GameObjects.GetElementsToAdd().end())
+			return it->get();
+	}
+
+	return nullptr;
 }
 
-std::vector<GameObject*> Scene::GetAllRootGameObjectsByPredicate(const std::function<bool(GameObject*)>& predicate)
+std::vector<GameObject*> Scene::GetAllRootGameObjectsByPredicate(const std::function<bool(GameObject*)>& predicate, const bool toBeAdded)
 {
 	std::vector<GameObject*> rv{};
 
 	for (const std::unique_ptr<GameObject>& pObj : m_GameObjects.GetVector())
 		if (GameObject* rawPtr = pObj.get(); predicate(rawPtr))
 			rv.emplace_back(rawPtr);
+
+	if (toBeAdded)
+	{
+		for (const std::unique_ptr<GameObject>& pObj : m_GameObjects.GetElementsToAdd())
+			if (GameObject* rawPtr = pObj.get(); predicate(rawPtr))
+				rv.emplace_back(rawPtr);
+	}
 
 	return rv;
 }

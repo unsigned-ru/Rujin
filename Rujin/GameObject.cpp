@@ -62,6 +62,9 @@ void GameObject::FixedUpdate()
 
 void GameObject::ProcessAdditionsAndRemovals()
 {
+	Subject::ProcessAdditionsAndRemovals();
+	m_Transform.ProcessAdditionsAndRemovals();
+
 	m_DisabledComponents.ProcessRemovals();
 	m_EnabledComponents.ProcessRemovals();
 	m_Components.ProcessRemovals();
@@ -78,6 +81,18 @@ void GameObject::ProcessAdditionsAndRemovals()
 	for (GameObject* pChild : m_EnabledChildren.GetElementsToAdd())
 	{
 		pChild->ProcessAdditionsAndRemovals();
+	}
+
+	for (Component* pComp : m_EnabledComponents.GetVector())
+	{
+		if (auto* pSubject = dynamic_cast<Subject*>(pComp); pSubject)
+			pSubject->ProcessAdditionsAndRemovals();
+	}
+
+	for (Component* pComp : m_EnabledComponents.GetElementsToAdd())
+	{
+		if (auto* pSubject = dynamic_cast<Subject*>(pComp); pSubject)
+			pSubject->ProcessAdditionsAndRemovals();
 	}
 
 	m_DisabledComponents.ProcessAdditions();

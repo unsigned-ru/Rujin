@@ -12,6 +12,8 @@
 #include "ServiceLocator.h"
 
 #include "Texture.h"
+#include "ResourceService.h"
+
 int GetOpenGLDriverIndex()
 {
 	auto openglIndex = -1;

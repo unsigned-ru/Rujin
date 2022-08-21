@@ -13,10 +13,9 @@ namespace rujin
 		explicit CollisionQuadTree(const Rectf& bounds);
 		explicit CollisionQuadTree(uint32_t maxObjects, uint32_t maxLevels, uint32_t level, const Rectf& bounds, CollisionQuadTree* pParent);
 		~CollisionQuadTree() override = default;
+
 		// Inserts pCollider into our quadtree.
 		Collider* Insert(Collider* pCollider);
-
-		// Removes pCollider from our quadtree when we no longer need it to collide.
 		void Remove(Collider* pCollider);
 
 		// Returns vector of colliders that intersect with the search area.
@@ -70,10 +69,6 @@ namespace rujin
 		void OnNotify(const uint32_t identifier, const event::Data* pEventData) override;
 
 		CollisionQuadTree* GetRoot();
-
-		// Removes via stored ptr. For internal use only.
-		void Remove_(Collider* pCollider);
-
 	private:
 		std::unique_ptr<CollisionQuadTree> m_Children[4];
 		inline static constexpr int8_t s_ChildIdxNE = 0;

@@ -93,12 +93,14 @@ void rujin::Rujin::Run()
 	const RenderService& renderer = ServiceLocator::GetService<RenderService>();
 	SceneService& sceneService = ServiceLocator::GetService<SceneService>();
 	InputService& input = ServiceLocator::GetService<InputService>();
+	ResourceService& resources = ServiceLocator::GetService<ResourceService>();
+	resources;
 
 	LOG_DEBUG("Loading Complete.");
 
 	LOG_DEBUG("Starting Game...");
 	sceneService.HandleSceneSwitch();
-	sceneService.ProcessAdditionsAndRemovals();
+	sceneService.ProcessAdditionsAndRemovalsForAllScenes();
 	sceneService.Start();
 	input.Start();
 	sceneService.LateStart();
