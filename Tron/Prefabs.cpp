@@ -137,7 +137,8 @@ GameObject* prefabs::CreateEnemyTank()
 			nullptr,
 			pTankCollider,
 			pHealth,
-			Recti{ 50, 50 + 2 * 15, 19, 15 }
+			Recti{ 50, 50 + 2 * 15, 19, 15 },
+			700, 1, 500, 0
 		)
 	);
 	
@@ -168,7 +169,7 @@ GameObject* prefabs::CreateEnemyRecognizer()
 
 	auto* pTankMovement = pEnemyGO->AddComponent
 	(
-		new TronMovementComponent(pCollider, 150)
+		new TronMovementComponent(pCollider, 100)
 	);
 
 #ifdef _DEBUG

@@ -16,7 +16,6 @@ rujin::BoxColliderComponent::BoxColliderComponent(const glm::vec2& size, bool is
 
 rujin::BoxColliderComponent::~BoxColliderComponent()
 {
-	m_pGameObject->GetScene()->GetCollisionQuadTree()->Remove(m_pCollider);
 	delete m_pCollider;
 };
 

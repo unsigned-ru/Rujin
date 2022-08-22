@@ -36,6 +36,7 @@ void rujin::ColliderComponent::SetDebugDrawingColor(const glm::vec4& color)
 {
 	m_DebugDrawingColor = color;
 }
+#endif
 
 void rujin::ColliderComponent::OnNotify(const uint32_t identifier, const event::Data* pEventData)
 {
@@ -49,5 +50,13 @@ void rujin::ColliderComponent::OnNotify(const uint32_t identifier, const event::
 		//add collider to new scene
 		pGameObjectMovedEvent->pNewScene->GetCollisionQuadTree()->Insert(GetCollider());
 	}
+
+	if (identifier == static_cast<uint32_t>(event::Identifier::OnGameObjectDestroyed))
+	{
+		const auto* pGameObjectDestroyedEvent = static_cast<const event::OnGameObjectDestroyed_t*>(pEventData);
+
+		//remove collider from scene
+		if (pGameObjectDestroyedEvent->pObject == GameObject())
+			m_pGameObject->GetScene()->GetCollisionQuadTree()->Remove(GetCollider());
+	}
 }
-#endif

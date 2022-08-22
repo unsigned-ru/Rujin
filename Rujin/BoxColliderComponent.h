@@ -28,7 +28,6 @@ namespace rujin
 	private:
 		BoxCollider* m_pCollider;
 	};
-
 }
 
 #endif // Include Guard: BOX_COLLIDER_COMPONENT_H

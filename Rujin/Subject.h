@@ -18,7 +18,8 @@ namespace rujin::event
 			for (auto* pObserver : pObservers)
 				AddObserver(pObserver);
 		}
-		virtual ~Subject() = 0;
+
+		virtual ~Subject() = default;
 
 		Subject(const Subject&) = delete;
 		Subject(Subject&&) noexcept = delete;
@@ -60,7 +61,22 @@ namespace rujin::event
 			}
 
 			//remove observer.
- 			m_Observers.PendRemove(pObserver);
+			auto it = std::ranges::find(m_Observers.GetVector(), pObserver);
+ 			if (it != m_Observers.GetVector().end()) m_Observers.GetVector().erase(it);
+		}
+
+		void RemoveObserverInstant(IObserver* pObserver)
+		{
+			//check if said observer is in the to-be-added list
+			if (const auto it = std::ranges::find(m_Observers.GetElementsToAdd(), pObserver); it != m_Observers.GetElementsToAdd().end())
+			{
+				//if the observer we want to remove is in the to-be added list, then just remove it from the to-be-added list
+				m_Observers.GetElementsToAdd().erase(it);
+				return;
+			}
+
+			//remove observer.
+			m_Observers.GetVector().erase(std::ranges::find(m_Observers.GetVector(), pObserver));
 		}
 
 	protected:
@@ -73,8 +89,6 @@ namespace rujin::event
 	private:
 		DeferredVector<IObserver*, IObserver*> m_Observers{};
 	};
-
-	inline Subject::~Subject() = default;
 }
 
 

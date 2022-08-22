@@ -151,7 +151,6 @@ void rujin::Rujin::Run()
 
 		sceneService.HandleSceneSwitch();
 	}
-
 	Destroy();
 }
 

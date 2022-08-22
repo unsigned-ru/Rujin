@@ -24,7 +24,7 @@ namespace rujin
 	{
 	public:
 		explicit GameObject(const std::string& name);
-		~GameObject() override;
+		~GameObject() override = default;
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;

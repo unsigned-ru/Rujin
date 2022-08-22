@@ -317,6 +317,17 @@ void Tron::SpawnLevel2Enemies(Scene* pScene)
 		pScene->AddGameObject(pEnemyGO);
 	}
 
+	/* Create Enemy Tank*/
+	{
+		GameObject* pEnemyGO = prefabs::CreateEnemyTank();
+
+
+		//calc position
+		pEnemyGO->GetTransform().SetPosition(pSpawnLocations->GetRandomSpawnLocation());
+
+		pScene->AddGameObject(pEnemyGO);
+	}
+
 	/* Create Enemy Recognizer*/
 	{
 		GameObject* pEnemyGO = prefabs::CreateEnemyRecognizer();
@@ -382,6 +393,26 @@ void Tron::SpawnLevel3Enemies(Scene* pScene)
 	/* Create Enemy Tank*/
 	{
 		GameObject* pEnemyGO = prefabs::CreateEnemyTank();
+
+		//calc position
+		pEnemyGO->GetTransform().SetPosition(pSpawnLocations->GetRandomSpawnLocation());
+
+		pScene->AddGameObject(pEnemyGO);
+	}
+
+	/* Create Enemy Tank*/
+	{
+		GameObject* pEnemyGO = prefabs::CreateEnemyTank();
+
+		//calc position
+		pEnemyGO->GetTransform().SetPosition(pSpawnLocations->GetRandomSpawnLocation());
+
+		pScene->AddGameObject(pEnemyGO);
+	}
+
+	/* Create Enemy Recognizer*/
+	{
+		GameObject* pEnemyGO = prefabs::CreateEnemyRecognizer();
 
 		//calc position
 		pEnemyGO->GetTransform().SetPosition(pSpawnLocations->GetRandomSpawnLocation());

@@ -371,9 +371,4 @@ GameObject::GameObject(const std::string& name)
 	, m_Name(name)
 {
 }
-
-GameObject::~GameObject()
-{
-	LOG_DEBUG_("GameObject Destroyed: {}", m_Name);
-}
  

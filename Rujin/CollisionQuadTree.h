@@ -82,7 +82,7 @@ namespace rujin
 
 		CollisionQuadTree* m_pParent;
 		
-		DeferredVector<Collider*, Collider*> m_Colliders;
+		std::vector<Collider*> m_Colliders;
 
 		// How deep the current node is from the base node. 
 		// The first node starts at 0 and then its child node 	

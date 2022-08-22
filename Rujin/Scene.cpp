@@ -186,7 +186,9 @@ void Scene::Draw() const
 		pGameObject->Draw();
 	}
 
+#ifdef _DEBUG
 	m_pCollisionQuadTree->DrawDebug();
+#endif
 
 	glPopMatrix();
 }

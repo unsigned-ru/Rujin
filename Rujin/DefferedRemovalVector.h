@@ -16,6 +16,7 @@ public:
 		: m_Elements(vec)
 	{}
 
+
 	std::vector<ElementType>& GetVector() { return m_Elements; }
 	const std::vector<ElementType>& GetVector() const { return m_Elements; }
 	const std::vector<ElementType>& GetElementsToAdd() const { return m_ElementsToAdd; }
