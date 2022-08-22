@@ -23,6 +23,31 @@ void TankAIController::Start()
 {
 	EnemyAIController::Start();
 
+	FindPlayers();
+}
+
+void TankAIController::FixedUpdate()
+{
+	EnemyAIController::FixedUpdate();
+
+	if (m_Players.empty())
+	{
+		FindPlayers();
+		return;
+	}
+
+	/* Sort players by distance ascending. idx 0 = closest player*/
+	{
+		const Position& currentPos = GameObject()->GetTransform().GetPosition();
+		std::ranges::sort(m_Players, [&currentPos](rujin::GameObject* a, rujin::GameObject* b) { return distance2(currentPos, a->GetTransform().GetPosition()) < distance2(currentPos, b->GetTransform().GetPosition()); });
+	}
+
+	ExecuteCurrentState();
+	HandleStateTransitions();
+}
+
+void TankAIController::FindPlayers()
+{
 	//find the players
 	m_Players = GameObject()->GetScene()->GetAllRootGameObjectsByPredicate
 	(
@@ -33,20 +58,6 @@ void TankAIController::Start()
 	);
 
 	m_pTank->GetHealthComponent()->AddObserver(this);
-}
-
-void TankAIController::FixedUpdate()
-{
-	EnemyAIController::FixedUpdate();
-
-	/* Sort players by distance ascending. idx 0 = closest player*/
-	{
-		const Position& currentPos = GameObject()->GetTransform().GetPosition();
-		std::ranges::sort(m_Players, [&currentPos](rujin::GameObject* a, rujin::GameObject* b) { return distance2(currentPos, a->GetTransform().GetPosition()) < distance2(currentPos, b->GetTransform().GetPosition()); });
-	}
-
-	ExecuteCurrentState();
-	HandleStateTransitions();
 }
 
 void TankAIController::ExecuteCurrentState()

@@ -25,6 +25,8 @@ public:
 	};
 
 private:
+	void FindPlayers();
+
 	void MoveToClosestPlayer();
 
 	void ExecuteCurrentState();

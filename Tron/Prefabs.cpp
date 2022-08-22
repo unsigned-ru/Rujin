@@ -41,7 +41,7 @@ GameObject* prefabs::CreatePlayerTank(const std::string& name, rujin::PlayerInde
 
 	auto* pTankMovement = playerGO->AddComponent
 	(
-		new TronMovementComponent(pTankCollider, 125.f)
+		new TronMovementComponent(pTankCollider, 100.f)
 	);
 
 #ifdef _DEBUG
@@ -114,7 +114,7 @@ GameObject* prefabs::CreateEnemyTank()
 
 	auto* pTankMovement = pEnemyGO->AddComponent
 	(
-		new TronMovementComponent(pTankCollider, 100.f)
+		new TronMovementComponent(pTankCollider, 75.f)
 	);
 
 #ifdef _DEBUG
@@ -168,7 +168,7 @@ GameObject* prefabs::CreateEnemyRecognizer()
 
 	auto* pTankMovement = pEnemyGO->AddComponent
 	(
-		new TronMovementComponent(pCollider, 100.f)
+		new TronMovementComponent(pCollider, 150)
 	);
 
 #ifdef _DEBUG
@@ -194,7 +194,7 @@ GameObject* prefabs::CreateEnemyRecognizer()
 	return pEnemyGO;
 }
 
-GameObject* prefabs::CreatePlayerHUD(const std::string& name, TronPlayerComponent* pPlayer)
+GameObject* prefabs::CreatePlayerHUD(const std::string& name, TronPlayerComponent* pPlayer, float horizontalOffset, const glm::vec2& pivot)
 {
 	auto& resources = ServiceLocator::GetService<ResourceService>();
 
@@ -209,12 +209,13 @@ GameObject* prefabs::CreatePlayerHUD(const std::string& name, TronPlayerComponen
 			glm::ivec2{ 3, 1 },
 			glm::vec2{ 10.f, 0.f },
 			resources.GetTexture("Textures/Spritesheet.png"),
-			glm::vec2{0.f, 1.f},
-			Recti{0, 150, 38, 50}
+			pivot,
+			Recti{0, 150, 38, 50},
+			abs(pivot.x - 1.f) <= FLT_EPSILON
 		)
 	);
 
-	pLivesChild->GetTransform().AddLocalPosition({ 25.f, -10.f });
+	pLivesChild->GetTransform().AddLocalPosition({ horizontalOffset, -10.f });
 
 	GameObject* pScoreChild = new GameObject(name + "_Score");
 	auto* pScoreRenderer = pScoreChild->AddComponent
@@ -223,10 +224,10 @@ GameObject* prefabs::CreatePlayerHUD(const std::string& name, TronPlayerComponen
 		(
 			resources.GetFont("Fonts/Arcade.ttf", 50),
 			glm::vec4{1.f, 1.f, 1.f, 1.f},
-			glm::vec2{0.f, 1.f}
+			pivot
 		)
 	);
-	pScoreChild->GetTransform().AddLocalPosition({ 25.f, -60.f });
+	pScoreChild->GetTransform().AddLocalPosition({ horizontalOffset, -60.f });
 
 	pPlayerHUD->AddChild(pLivesChild);
 	pPlayerHUD->AddChild(pScoreChild);

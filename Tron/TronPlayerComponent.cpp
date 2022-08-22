@@ -13,7 +13,7 @@
 #include "Scene.h"
 #include "SceneService.h"
 #include "SpawnLocationListComponent.h"
-
+#include "Tron.h"
 
 
 TronPlayerComponent::TronPlayerComponent(TankComponent* pTank, PlayerIndex playerIndex)
@@ -184,7 +184,37 @@ void TronPlayerComponent::OnNotify(const uint32_t identifier, const event::Data*
 		}
 		else
 		{
-			//... We fully died, game over.
+			auto* pTron = Rujin::Get()->GetGame<Tron>();
+			switch (pTron->GetGameMode())
+			{
+				case Tron::GameMode::SINGLE_PLAYER:
+				{
+					pTron->LoadHighScoreScene(m_Score);
+					break;
+				}
+				case Tron::GameMode::CO_OP:
+				{
+					GameObject()->Destroy();
+					const auto players = GameObject()->GetScene()->GetAllRootGameObjectsByPredicate([](const class GameObject* pObj) { return pObj->HasTag("Player"); });
+					if (players.size() <= 1)
+					{
+						pTron->LoadHighScoreScene(m_Score + m_CoOpScore);
+					}
+					else
+					{
+						for (auto* pPlayer : players)
+							if (pPlayer != GameObject())
+								pPlayer->GetComponent<TronPlayerComponent>()->m_CoOpScore = m_Score;
+					}
+					break;
+				}
+
+				case Tron::GameMode::PLAYER_VS_PLAYER:
+				{
+					pTron->LoadGameOverScene();
+					break;
+				}
+			}
 		}
 	}
 }

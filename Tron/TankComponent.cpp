@@ -104,10 +104,10 @@ void TankComponent::Shoot()
 
 	GameObject()->GetScene()->AddGameObject(pBulletGO);
 
-	if (GameObject()->HasTag("Player"))
-		pBulletGO->AddTag("PlayerBullet");
-	else if (GameObject()->HasTag("Enemy"))
-		pBulletGO->AddTag("EnemyBullet");
+	if (GameObject()->HasTag("Faction1"))
+		pBulletGO->AddTag("Faction1Bullet");
+	else if (GameObject()->HasTag("Faction2"))
+		pBulletGO->AddTag("Faction2Bullet");
 
 	m_LastShotTime = std::chrono::high_resolution_clock::now();
 }

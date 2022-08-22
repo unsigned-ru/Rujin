@@ -10,7 +10,7 @@
 #include "RenderService.h"
 #include "ServiceLocator.h"
 
-rujin::CollisionQuadTree::CollisionQuadTree(const Rectf& bounds) : CollisionQuadTree(5, 1, 0, bounds, nullptr) {}
+rujin::CollisionQuadTree::CollisionQuadTree(const Rectf& bounds) : CollisionQuadTree(5, 7, 0, bounds, nullptr) {}
 
 rujin::CollisionQuadTree::CollisionQuadTree
 (

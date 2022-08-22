@@ -60,11 +60,13 @@ public:
 
 			if constexpr (std::is_pointer<ElementType>())
 			{
-				m_Elements.erase(std::find_if(m_Elements.begin(), m_Elements.end(), [pElementToRemove](ElementType element) { return element == pElementToRemove; }));
+				if (auto it = std::find_if(m_Elements.begin(), m_Elements.end(), [pElementToRemove](ElementType element) { return element == pElementToRemove; }); it != m_Elements.end())
+					m_Elements.erase(it);
 			}
 			else
 			{
-				m_Elements.erase(std::find_if(m_Elements.begin(), m_Elements.end(), [pElementToRemove](ElementType& element) { return element.get() == pElementToRemove; }));
+				if (auto it = std::find_if(m_Elements.begin(), m_Elements.end(), [pElementToRemove](ElementType& element) { return element.get() == pElementToRemove; }); it != m_Elements.end())
+					m_Elements.erase(it);
 			}
 		}
 

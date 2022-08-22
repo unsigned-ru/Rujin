@@ -5,10 +5,12 @@
 #include "RenderService.h"
 #include "ServiceLocator.h"
 
-rujin::GridTextureRenderComponent::GridTextureRenderComponent(const glm::ivec2& gridDimensions, const glm::vec2& cellOffset, const std::shared_ptr<Texture>& texture, const glm::vec2& pivot, const Recti& sourceRect)
-	: TextureRenderComponent{texture, pivot, sourceRect}
+rujin::GridTextureRenderComponent::GridTextureRenderComponent(const glm::ivec2& gridDimensions, const glm::vec2& cellOffset, const std::shared_ptr<Texture>& texture, const glm::vec2& texturePivot, const Recti& sourceRect, bool growLeft, bool growDown)
+	: TextureRenderComponent{texture, texturePivot, sourceRect}
 	, m_GridDimensions(gridDimensions)
 	, m_CellOffset(cellOffset)
+	, m_GrowLeft(growLeft)
+	, m_GrowDown(growDown)
 {
 }
 
@@ -47,14 +49,22 @@ void rujin::GridTextureRenderComponent::Draw() const
 	{
 		for (int32_t x = 0; x < m_GridDimensions.x; ++x)
 		{
+			Position pos;
+
+			if (m_GrowLeft)
+				pos.x = startPos.x - x * (m_SourceRect.width * scale.x + m_CellOffset.x);
+			else
+				pos.x = startPos.x + x * (m_SourceRect.width * scale.x + m_CellOffset.x);
+
+			if (m_GrowDown)
+				pos.y = startPos.y - y * (m_SourceRect.height * scale.y + m_CellOffset.y);
+			else
+				pos.y = startPos.y + y * (m_SourceRect.height * scale.y + m_CellOffset.y);
+
 			renderer.RenderTexture
 			(
 				*m_pTexture.get(),
-				Position
-				{
-					startPos.x + x * (m_SourceRect.width * scale.x + m_CellOffset.x),
-					startPos.y + y * (m_SourceRect.height * scale.y + m_CellOffset.y)
-				},
+				pos,
 				rot,
 				scale,
 				m_Pivot,

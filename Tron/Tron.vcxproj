@@ -205,6 +205,7 @@
     <ClCompile Include="EnemyListComponent.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MainMenuComponent.cpp" />
     <ClCompile Include="PlayerHUDComponent.cpp" />
     <ClCompile Include="Prefabs.cpp" />
     <ClCompile Include="RandomTeleporterComponent.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="GameEvents.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="InputEvents.h" />
+    <ClInclude Include="MainMenuComponent.h" />
     <ClInclude Include="PlayerHUDComponent.h" />
     <ClInclude Include="Prefabs.h" />
     <ClInclude Include="RandomTeleporterComponent.h" />

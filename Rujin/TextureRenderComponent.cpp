@@ -22,7 +22,7 @@ void rujin::TextureRenderComponent::LateStart()
 
 void rujin::TextureRenderComponent::Draw() const
 {
-	ServiceLocator::GetService<RenderService>().RenderTexture(*m_pTexture, GameObject()->GetTransform(), m_Pivot, &m_SourceRect, m_IsFlippedX, m_IsFlippedY);
+	if (m_pTexture) ServiceLocator::GetService<RenderService>().RenderTexture(*m_pTexture, GameObject()->GetTransform(), m_Pivot, &m_SourceRect, m_IsFlippedX, m_IsFlippedY);
 }
 
 void rujin::TextureRenderComponent::SetTexture(const std::shared_ptr<Texture>& texture)

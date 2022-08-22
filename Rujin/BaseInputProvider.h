@@ -30,6 +30,8 @@ namespace rujin
 		void ProcessInput() override;
 
 		PlayerIndex RegisterPlayer() override;
+		void UnRegisterPlayer(PlayerIndex idx) override;
+
 
 		void AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds) override;
 		void AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds) override;

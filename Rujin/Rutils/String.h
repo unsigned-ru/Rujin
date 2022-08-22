@@ -11,7 +11,7 @@ namespace rutils
     std::string Indent(const std::string& src, size_t level, char delimiter = ' ');
     std::string PrefixFill(const std::string& src, const int desiredLength, const char fillChar = '0');
     std::string SuffixFill(const std::string& src, const int desiredLength, const char fillChar = '0');
-    std::string ToLower(const std::string& src);
+    //std::string ToLower(const std::string& src);
     std::string ShrinkToFit(const std::string& src, const size_t maxLength, const std::string& truncation = "...");
     std::string ReplaceAll(std::string str, const std::string& from, const std::string& to);
     std::string LoadFileData(const std::string& path);

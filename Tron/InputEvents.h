@@ -5,7 +5,10 @@
 
 enum class InputAction : uint32_t
 {
-	Shoot
+	Shoot,
+	Accept,
+	MenuUp,
+	MenuDown,
 };
 
 enum class AxisAction : uint32_t

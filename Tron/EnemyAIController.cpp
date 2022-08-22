@@ -13,6 +13,7 @@ void EnemyAIController::Start()
 	Component::Start();
 
 	GameObject()->AddTag("Enemy");
+	GameObject()->AddTag("Faction2");
 }
 
 bool EnemyAIController::IsInRange(rujin::GameObject* pObj, const float range) const

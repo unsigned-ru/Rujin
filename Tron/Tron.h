@@ -19,11 +19,11 @@ namespace rujin
 class Tron final : public IGame
 {
 public:
-	enum class TronGameMode
+	enum class GameMode
 	{
 		SINGLE_PLAYER,
 		CO_OP,
-
+		PLAYER_VS_PLAYER
 	};
 
 	explicit Tron() = default;
@@ -39,9 +39,16 @@ public:
 
 	const glm::ivec2& GetGridDimensions() const;
 
+	void StartGame(GameMode gamemode);
 	void SwitchToNextLevel();
+	void LoadHighScoreScene(uint32_t newScore);
+	void LoadGameOverScene();
 
+
+	GameMode GetGameMode() const;
 private:
+	void LoadMenuScreen();
+
 	void LoadLevel1();
 	void SpawnLevel1Enemies(Scene* pScene);
 
@@ -50,6 +57,9 @@ private:
 
 	void LoadLevel3();
 	void SpawnLevel3Enemies(Scene* pScene);
+
+
+	std::vector<uint32_t> LoadHighScoresFromFile(const std::string& filename);
 
 	void GenerateLevelGridFromTexture(Scene* pScene, const std::string& levelTexturePath, graph::GridGraph<graph::GridTerrainNode, graph::GraphConnection>* pGraph);
 	void CreateLevelBoundsColliders(Scene* pScene);
@@ -61,6 +71,8 @@ private:
 	const float m_BoundsColliderSize{ 30.f };
 
 	uint8_t m_CurrentLevel = 1;
+
+	GameMode m_GameMode{};
 };
 
 

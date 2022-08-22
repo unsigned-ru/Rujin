@@ -19,17 +19,17 @@ std::string rutils::SuffixFill(const std::string& src, const int desiredLength, 
 {
 	return src + std::string(desiredLength - src.length(), fillChar);
 }
-
-std::string rutils::ToLower(const std::string& src)
-{
-	std::string ret{};
-	ret.reserve(src.length());
-
-	std::transform(src.begin(), src.end(), ret.begin(),
-		[](unsigned char c) { return std::tolower(c); });
-
-	return ret;
-}
+//
+//std::string rutils::ToLower(const std::string& src)
+//{
+//	std::string ret{};
+//	ret.reserve(src.length());
+//
+//	std::transform(src.begin(), src.end(), ret.begin(),
+//		[](char c) { return std::tolower(c); });
+//
+//	return ret;
+//}
 
 std::string rutils::ShrinkToFit(const std::string& src, const size_t maxLength, const std::string& truncation)
 {

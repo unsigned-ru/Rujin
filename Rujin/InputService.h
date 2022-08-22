@@ -26,11 +26,13 @@ namespace rujin
 		virtual glm::ivec2 GetMouseMovement() const = 0;
 
 		virtual PlayerIndex RegisterPlayer() = 0;
+		virtual void UnRegisterPlayer(PlayerIndex player) = 0;
 
 		virtual void Start() = 0;
 
 		virtual void AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds) = 0;
 		virtual void AddAxisAction(PlayerIndex player, uint32_t axisAction, const AxisActionKeybinds& keybinds) = 0;
+
 		virtual void SetLeftVibration(PlayerIndex player, float intensity) = 0;
 		virtual void SetRightVibration(PlayerIndex player, float intensity) = 0;
 		virtual void SetVibration(PlayerIndex player, float intensity) = 0;

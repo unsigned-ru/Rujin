@@ -40,6 +40,7 @@ private:
 	TankComponent* m_pTank = nullptr;
 	uint8_t m_Lives = 3u;
 	uint32_t m_Score = 0u;
+	uint32_t m_CoOpScore = 0u;
 
 	class GameObject* m_pManagerObject = nullptr;
 };

@@ -212,14 +212,14 @@ void Scene::MoveGameObject(GameObject* gameObject, Scene* pNewScene)
 	m_GameObjectsToMove.push_back(std::make_pair(gameObject, pNewScene));
 }
 
-GameObject* Scene::GetRootGameObjectByPredicate(const std::function<bool(GameObject*)>& predicate, const bool toBeAdded)
+GameObject* Scene::GetRootGameObjectByPredicate(const std::function<bool(GameObject*)>& predicate, const bool pendingAdd)
 {
 	const auto it = std::ranges::find_if(m_GameObjects.GetVector(), [&predicate](const std::unique_ptr<GameObject>& pObj) { return predicate(pObj.get()); });
 
 	if (it != m_GameObjects.GetVector().end())
 		return it->get();
 
-	if(toBeAdded)
+	if(pendingAdd)
 	{
 		const auto futureIt = std::ranges::find_if(m_GameObjects.GetElementsToAdd(), [&predicate](const std::unique_ptr<GameObject>& pObj) { return predicate(pObj.get()); });
 
@@ -230,7 +230,7 @@ GameObject* Scene::GetRootGameObjectByPredicate(const std::function<bool(GameObj
 	return nullptr;
 }
 
-std::vector<GameObject*> Scene::GetAllRootGameObjectsByPredicate(const std::function<bool(GameObject*)>& predicate, const bool toBeAdded)
+std::vector<GameObject*> Scene::GetAllRootGameObjectsByPredicate(const std::function<bool(GameObject*)>& predicate, const bool pendingAdd)
 {
 	std::vector<GameObject*> rv{};
 
@@ -238,7 +238,7 @@ std::vector<GameObject*> Scene::GetAllRootGameObjectsByPredicate(const std::func
 		if (GameObject* rawPtr = pObj.get(); predicate(rawPtr))
 			rv.emplace_back(rawPtr);
 
-	if (toBeAdded)
+	if (pendingAdd)
 	{
 		for (const std::unique_ptr<GameObject>& pObj : m_GameObjects.GetElementsToAdd())
 			if (GameObject* rawPtr = pObj.get(); predicate(rawPtr))

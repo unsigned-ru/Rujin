@@ -73,7 +73,7 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 
 	if (!m_HitEnemyThisFrame)
 	{
-		if (GameObject()->HasTag("PlayerBullet") && pGameObject->HasTag("Enemy"))
+		if (GameObject()->HasTag("Faction1Bullet") && pGameObject->HasTag("Faction2"))
 		{
 			//player bullet hit enemy.
 			if (HealthComponent* pHealth = pGameObject->GetComponent<HealthComponent>(); pHealth)
@@ -85,7 +85,7 @@ void TankBulletComponent::OnOverlap(const CollisionResult& result)
 
 			m_pGameObject->Destroy();
 		}
-		else if (GameObject()->HasTag("EnemyBullet") && pGameObject->HasTag("Player"))
+		else if (GameObject()->HasTag("Faction2Bullet") && pGameObject->HasTag("Faction1"))
 		{
 			//Enemy bullet hit Player
 			if (HealthComponent* pHealth = pGameObject->GetComponent<HealthComponent>(); pHealth)
@@ -109,7 +109,6 @@ void TankBulletComponent::OnNotify(const uint32_t identifier, const event::Data*
 
 		if (pOnDieEvent->pHealth->GameObject() == m_pOwnerTank->GameObject())
 		{
-			LOG_DEBUG_("{}(Player>{}): stopped observing {}", GameObject()->GetName(), GameObject()->HasTag("PlayerBullet"), m_pOwnerTank->GameObject()->GetName());
 			pOnDieEvent->pHealth->RemoveObserver(this);
 			GameObject()->GetRootParent()->Destroy();
 
@@ -123,7 +122,6 @@ void TankBulletComponent::OnNotify(const uint32_t identifier, const event::Data*
 		if (pOnDestroyedEvent->pObject == GameObject() && m_pOwnerTank)
 		{
 			m_pOwnerTank->GetHealthComponent()->RemoveObserver(this);
-			LOG_DEBUG_("{}(Player>{}): stopped observing {}", GameObject()->GetName(), GameObject()->HasTag("PlayerBullet"), m_pOwnerTank->GameObject()->GetName());
 		}
 
 	}

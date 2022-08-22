@@ -52,6 +52,11 @@ rujin::PlayerIndex rujin::BaseInputProvider::RegisterPlayer()
 	return playerIndex;
 }
 
+void rujin::BaseInputProvider::UnRegisterPlayer(PlayerIndex idx)
+{
+	m_Players.erase(idx);
+}
+
 void rujin::BaseInputProvider::AddInputAction(PlayerIndex player, uint32_t inputAction, const InputActionKeybinds& keybinds)
 {
 	if (const auto it = m_Players.find(player); it != m_Players.end())

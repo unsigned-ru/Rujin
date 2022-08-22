@@ -300,7 +300,6 @@
     <ClInclude Include="AStar.h">
       <Filter>Pathfinding\AStar</Filter>
     </ClInclude>
-    <ClInclude Include="Rutils\String.h" />
     <ClInclude Include="EnumBitmask.h">
       <Filter>Rutils</Filter>
     </ClInclude>
@@ -309,6 +308,9 @@
     </ClInclude>
     <ClInclude Include="GridTextureRenderComponent.h">
       <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Rutils\String.h">
+      <Filter>Rutils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -445,11 +447,11 @@
     <ClCompile Include="GraphConnectionTypes.cpp">
       <Filter>Pathfinding\Graph</Filter>
     </ClCompile>
-    <ClCompile Include="Rutils\String.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="GridTextureRenderComponent.cpp">
       <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Rutils\String.cpp">
+      <Filter>Rutils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

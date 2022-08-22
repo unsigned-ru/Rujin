@@ -20,7 +20,7 @@ namespace rujin
 			glm::ivec2 windowSize = { 630 , 480 };
 			std::string resourcePath = "../Data/";
 			VSyncMode vsyncMode = VSyncMode::ON;
-			float fixedUpdateTimestep = 0.01f;
+			float fixedUpdateTimestep = 0.015f;
 			glm::vec4 glClearColor{ 0.f, 0.f, 0.f, 1.f };
 		};
 	}

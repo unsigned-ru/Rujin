@@ -17,7 +17,7 @@ namespace prefabs
 
 	GameObject* CreateEnemyRecognizer();
 
-	GameObject* CreatePlayerHUD(const std::string& name, TronPlayerComponent* pPlayer);
+	GameObject* CreatePlayerHUD(const std::string& name, TronPlayerComponent* pPlayer, float horizontalOffset, const glm::vec2& pivot);
 
 	GameObject* CreateRandomTeleporter(const std::string& name);
 }
